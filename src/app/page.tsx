@@ -26,14 +26,14 @@ export default function HomePage() {
       <section className="section-begin px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center">
           <h1 className="text-display md:text-display font-bold text-begin-blue mb-8 text-balance">
-            Help Your Child's Teacher Understand Their{' '}
+            Help Your Child&apos;s Teacher Understand Their{' '}
             <span className="text-begin-teal">Unique Learning Style</span>{' '}
             from Day 1
           </h1>
           
           <p className="text-body-lg text-begin-blue/80 mb-10 max-w-4xl mx-auto leading-relaxed">
             Join 50,000+ families using Begin Learning Profiles to strengthen school-home connections. 
-            Get personalized insights and Begin product recommendations tailored to your child's learning strengths.
+            Get personalized insights and Begin product recommendations tailored to your child&apos;s learning strengths.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
@@ -88,7 +88,7 @@ export default function HomePage() {
                 <Star className="h-10 w-10 text-begin-teal" />
               </div>
               <h3 className="text-heading-lg font-bold mb-4 text-begin-blue">Personalized Recommendations</h3>
-              <p className="text-body text-begin-blue/70 leading-relaxed">Get Begin product suggestions and activities matched to your child's unique learning profile.</p>
+              <p className="text-body text-begin-blue/70 leading-relaxed">Get Begin product suggestions and activities matched to your child&apos;s unique learning profile.</p>
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function HomePage() {
       <section id="preview" className="section-begin bg-begin-gray/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-hero font-bold text-begin-blue mb-6 text-balance">See What You'll Get</h2>
+            <h2 className="text-hero font-bold text-begin-blue mb-6 text-balance">See What You&apos;ll Get</h2>
             <p className="text-body-lg text-begin-blue/80 max-w-3xl mx-auto">
               Interactive learning profiles that help both teachers and parents understand your child
             </p>
@@ -107,7 +107,7 @@ export default function HomePage() {
           <div className="bg-white rounded-card shadow-lg p-8 lg:p-12 max-w-5xl mx-auto">
             <div className="text-center">
               <div className="bg-gradient-to-r from-begin-teal to-begin-cyan text-white rounded-card p-8 mb-8">
-                <h3 className="text-heading-lg font-bold mb-3">Emma's Learning Profile</h3>
+                <h3 className="text-heading-lg font-bold mb-3">Emma&apos;s Learning Profile</h3>
                 <p className="text-body-lg opacity-90">Creative Collaborator</p>
               </div>
               
@@ -163,8 +163,8 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <div className="card-begin bg-begin-light-blue/10 border border-begin-light-blue/30">
               <p className="text-body text-begin-blue/90 mb-6 italic leading-relaxed">
-                "The Begin Learning Profile helped me understand why my daughter was struggling in traditional math activities. 
-                Now I know she's a kinesthetic learner, and we use Begin's hands-on math kit at home. Her confidence has soared!"
+                &ldquo;The Begin Learning Profile helped me understand why my daughter was struggling in traditional math activities. 
+                Now I know she&apos;s a kinesthetic learner, and we use Begin&apos;s hands-on math kit at home. Her confidence has soared!&rdquo;
               </p>
               <div className="border-t border-begin-light-blue/30 pt-4">
                 <div className="font-bold text-begin-blue">Sarah M.</div>
@@ -174,8 +174,8 @@ export default function HomePage() {
             
             <div className="card-begin bg-begin-cyan/5 border border-begin-cyan/20">
               <p className="text-body text-begin-blue/90 mb-6 italic leading-relaxed">
-                "As a kindergarten teacher, having learning profiles from Day 1 completely changed how I approach my classroom. 
-                I can differentiate instruction from the start instead of spending weeks figuring out each child's needs."
+                &ldquo;As a kindergarten teacher, having learning profiles from Day 1 completely changed how I approach my classroom. 
+                I can differentiate instruction from the start instead of spending weeks figuring out each child&apos;s needs.&rdquo;
               </p>
               <div className="border-t border-begin-cyan/20 pt-4">
                 <div className="font-bold text-begin-blue">Mrs. Rodriguez</div>
@@ -190,7 +190,7 @@ export default function HomePage() {
       <section className="section-begin bg-begin-teal text-white">
         <div className="max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-hero font-bold mb-6 text-balance">
-            Ready to Discover Your Child's Learning Language?
+            Ready to Discover Your Child&apos;s Learning Language?
           </h2>
           <p className="text-body-lg mb-10 opacity-90 max-w-4xl mx-auto leading-relaxed">
             Join thousands of families strengthening the school-home connection with personalized learning insights.
@@ -199,7 +199,7 @@ export default function HomePage() {
             href="/assessment/start"
             className="bg-white text-begin-teal px-10 py-5 rounded-begin text-body-lg font-bold hover:bg-begin-cream transition-all duration-200 inline-flex items-center gap-3 shadow-lg hover:shadow-xl"
           >
-            Start Your Child's Profile
+            Start Your Child&apos;s Profile
             <ArrowRight className="h-6 w-6" />
           </Link>
         </div>

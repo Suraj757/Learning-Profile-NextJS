@@ -8,10 +8,9 @@ import { calculateScores, getPersonalityLabel, generateDescription } from '@/lib
 export default function AssessmentCompletePage() {
   const router = useRouter()
   const [childName, setChildName] = useState('')
-  const [grade, setGrade] = useState('')
   const [isProcessing, setIsProcessing] = useState(true)
   const [profileData, setProfileData] = useState<{
-    scores: any
+    scores: Record<string, number>
     personalityLabel: string
     description: string
   } | null>(null)
@@ -29,7 +28,6 @@ export default function AssessmentCompletePage() {
       }
 
       setChildName(name)
-      setGrade(gradeLevel || '')
 
       // Process the responses
       const parsedResponses = JSON.parse(responses)

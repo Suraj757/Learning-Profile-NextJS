@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react'
-import { QUESTIONS, LIKERT_SCALE } from '@/lib/questions'
+import { QUESTIONS } from '@/lib/questions'
 
 export default function QuestionPage() {
   const params = useParams()
