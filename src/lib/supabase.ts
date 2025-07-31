@@ -1,9 +1,14 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabase = createSupabaseClient(supabaseUrl, supabaseKey)
+
+// Server-side client for RSC
+export function createClient() {
+  return createSupabaseClient(supabaseUrl, supabaseKey)
+}
 
 // Database schema types
 export interface Teacher {
@@ -39,4 +44,16 @@ export interface ProfileAssignment {
   assessment_id?: number
   assigned_at: string
   completed_at?: string
+}
+
+export interface LearningProfile {
+  id: string
+  child_name: string
+  grade: string
+  responses: Record<number, number>
+  scores?: Record<string, number>
+  personality_label?: string
+  description?: string
+  created_at: string
+  updated_at: string
 }

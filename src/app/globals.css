@@ -1,26 +1,65 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FFF9EF;
+  --foreground: #0B3064;
+  --begin-blue: #0B3064;
+  --begin-teal: #007A72;
+  --begin-teal-hover: #00625B;
+  --begin-cream: #FFF9EF;
+  --begin-cyan: #00D1FF;
+  --begin-light-blue: #B1E2FE;
+  --begin-gray: #EBECEC;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #FFF9EF;
+    --foreground: #0B3064;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+  font-variant: normal;
+}
+
+/* Begin Learning Button Styles */
+.btn-begin-primary {
+  @apply bg-begin-teal text-white px-8 py-4 rounded-begin text-body-lg font-semibold hover:bg-begin-teal-hover transition-all duration-200 shadow-sm hover:shadow-md;
+}
+
+.btn-begin-secondary {
+  @apply border-2 border-begin-teal text-begin-teal px-8 py-4 rounded-begin text-body-lg font-semibold hover:bg-begin-teal hover:text-white transition-all duration-200;
+}
+
+/* Begin Learning Card Styles */
+.card-begin {
+  @apply bg-white rounded-card shadow-sm hover:shadow-md transition-shadow duration-200 p-6;
+}
+
+/* Begin Learning Section Spacing */
+.section-begin {
+  @apply py-16 lg:py-20;
+}
+
+/* Typography Improvements */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: var(--begin-blue);
+}
+
+.text-balance {
+  text-wrap: balance;
 }
