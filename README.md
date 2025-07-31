@@ -28,3 +28,4 @@ npm run dev
 - Tailwind CSS
 - Supabase
 - Recharts for visualizations
+- Lucide React for icons
