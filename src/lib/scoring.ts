@@ -1,4 +1,4 @@
-import { CATEGORIES, QUESTIONS, type Category } from './questions'
+import { CATEGORIES, QUESTIONS } from './questions'
 
 export interface Scores {
   [key: string]: number
@@ -49,7 +49,7 @@ export function getPersonalityLabel(scores: Scores): string {
   return labelMap[key] || 'Unique Learner'
 }
 
-export function generateDescription(scores: Scores, personalityLabel: string): string {
+export function generateDescription(scores: Scores): string {
   const topCategory = Object.entries(scores)
     .sort(([,a], [,b]) => b - a)[0][0]
   
