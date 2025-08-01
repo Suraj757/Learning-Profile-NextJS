@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, Share, Download, Star, ArrowRight, Sparkles, Copy, Check, ExternalLink } from 'lucide-react'
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts'
+import DelightfulLoading from '@/components/loading/DelightfulLoading'
 
 interface ProfileData {
   id: string
@@ -92,10 +93,31 @@ export default function SharedProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-begin-cream flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-begin-teal mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading shared profile...</p>
+      <div className="min-h-screen bg-begin-cream">
+        {/* Header */}
+        <header className="bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex justify-center">
+              <Link href="/" className="flex items-center space-x-2">
+                <BookOpen className="h-8 w-8 text-begin-blue" />
+                <span className="text-2xl font-bold text-begin-blue">Begin Learning Profile</span>
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <DelightfulLoading 
+            type="profile"
+            size="lg"
+            customMessages={[
+              "🔗 Fetching shared learning profile...",
+              "✨ Preparing the magical reveal...",
+              "🎨 Loading personalized insights...",
+              "📈 Gathering achievement data...",
+              "🎆 Almost ready to share the magic!"
+            ]}
+          />
         </div>
       </div>
     )

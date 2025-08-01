@@ -54,13 +54,16 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      fontFamily: {
+        'sans': ['var(--font-inter)', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+      },
       fontSize: {
-        'display': ['3.5rem', { lineHeight: '1.1' }],
-        'hero': ['3rem', { lineHeight: '1.2' }],
-        'heading-lg': ['2rem', { lineHeight: '1.3' }],
-        'heading': ['1.5rem', { lineHeight: '1.4' }],
-        'body-lg': ['1.25rem', { lineHeight: '1.6' }],
-        'body': ['1.125rem', { lineHeight: '1.6' }],
+        'display': ['clamp(2.5rem, 5vw, 3.5rem)', { lineHeight: '1.1' }],
+        'hero': ['clamp(2rem, 4vw, 3rem)', { lineHeight: '1.2' }],
+        'heading-lg': ['clamp(1.5rem, 3vw, 2rem)', { lineHeight: '1.3' }],
+        'heading': ['clamp(1.25rem, 2.5vw, 1.5rem)', { lineHeight: '1.4' }],
+        'body-lg': ['clamp(1.125rem, 2vw, 1.25rem)', { lineHeight: '1.6' }],
+        'body': ['clamp(1rem, 1.5vw, 1.125rem)', { lineHeight: '1.6' }],
       },
       borderRadius: {
         'begin': '48px',

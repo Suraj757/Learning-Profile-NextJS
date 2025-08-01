@@ -18,6 +18,7 @@ import {
 import { useTeacherAuth } from '@/lib/teacher-auth'
 import { getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
 import type { Classroom, ProfileAssignment } from '@/lib/supabase'
+import DelightfulLoading from '@/components/loading/DelightfulLoading'
 
 function TeacherDashboardContent() {
   const { teacher, loading: authLoading, isAuthenticated } = useTeacherAuth()
@@ -65,10 +66,54 @@ function TeacherDashboardContent() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-begin-cream flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-begin-teal mx-auto mb-4"></div>
-          <p className="text-begin-blue">Loading your dashboard...</p>
+      <div className="min-h-screen bg-begin-cream">
+        {/* Header Skeleton */}
+        <header className="bg-white shadow-sm border-b border-begin-gray">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-3">
+                <BookOpen className="h-8 w-8 text-begin-teal" />
+                <div>
+                  <span className="text-2xl font-bold text-begin-blue">Teacher Dashboard</span>
+                  <div className="h-4 bg-gray-200 rounded w-32 mt-1 animate-pulse" />
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="w-8 h-8 bg-gray-200 rounded animate-pulse" />
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <DelightfulLoading 
+            type="teacher"
+            size="lg"
+            customMessages={[
+              "📚 Organizing your classroom insights...",
+              "📈 Calculating student progress...",
+              "⭐ Gathering achievement highlights...",
+              "🎨 Designing your teaching dashboard...",
+              "💡 Preparing learning recommendations...",
+              "🎆 Almost ready for the grand reveal!"
+            ]}
+          />
+          
+          {/* Dashboard skeleton preview */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="card-begin p-6 animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg animate-pulse" />
+                  <div className="w-6 h-6 bg-gray-200 rounded animate-pulse" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
+                  <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     )

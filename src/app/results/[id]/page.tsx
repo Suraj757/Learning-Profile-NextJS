@@ -22,16 +22,55 @@ export default function ResultsPage() {
   const [copiedEmail, setCopiedEmail] = useState(false)
 
   useEffect(() => {
-    // In a real app, this would fetch from a database
-    // For now, we'll get it from sessionStorage
-    const latestProfile = sessionStorage.getItem('latestProfile')
-    
-    if (latestProfile) {
-      const data = JSON.parse(latestProfile)
-      setProfileData(data)
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(`/api/profiles/${params.id}`)
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            // Profile not found, try sessionStorage as fallback
+            const latestProfile = sessionStorage.getItem('latestProfile')
+            if (latestProfile) {
+              const data = JSON.parse(latestProfile)
+              setProfileData(data)
+            }
+          }
+          setLoading(false)
+          return
+        }
+        
+        const { profile } = await response.json()
+        
+        // Transform the API response to match our interface
+        const transformedProfile: ProfileData = {
+          id: profile.id,
+          childName: profile.child_name,
+          grade: profile.grade || profile.grade_level || '3rd Grade',
+          scores: profile.scores,
+          personalityLabel: profile.personality_label,
+          description: profile.description || 'A unique learner with special strengths and talents.',
+          createdAt: profile.created_at || new Date().toISOString()
+        }
+        
+        setProfileData(transformedProfile)
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching profile:', error)
+        
+        // Fallback to sessionStorage if API fails
+        const latestProfile = sessionStorage.getItem('latestProfile')
+        if (latestProfile) {
+          const data = JSON.parse(latestProfile)
+          setProfileData(data)
+        }
+        
+        setLoading(false)
+      }
     }
-    
-    setLoading(false)
+
+    if (params.id) {
+      fetchProfile()
+    }
   }, [params.id])
 
   // Get age-appropriate grade level activities

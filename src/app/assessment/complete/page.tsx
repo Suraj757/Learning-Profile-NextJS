@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, CheckCircle, Sparkles, ArrowRight, AlertCircle, Star, Heart, Zap, Trophy } from 'lucide-react'
 import { calculateScores, getPersonalityLabel, generateDescription } from '@/lib/scoring'
+import DelightfulLoading from '@/components/loading/DelightfulLoading'
 
 export default function AssessmentCompletePage() {
   const router = useRouter()
@@ -114,42 +115,60 @@ export default function AssessmentCompletePage() {
         </header>
 
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="card-begin p-8 text-center">
-            <div className="mb-8">
-              <div className="relative mx-auto mb-6">
-                <div className="bg-gradient-to-br from-begin-teal to-begin-cyan w-24 h-24 rounded-full flex items-center justify-center animate-pulse shadow-lg">
-                  <Sparkles className="h-12 w-12 text-white" />
+          {/* Enhanced Delightful Loading */}
+          <DelightfulLoading 
+            type="assessment"
+            size="lg"
+            childName={childName}
+            customMessages={[
+              `🎭 Creating ${childName}'s Learning Profile...`,
+              `🧠 Our learning scientists are thinking hard about ${childName}...`,
+              `✨ Discovering ${childName}'s unique learning superpowers...`,
+              `🎨 Painting ${childName}'s personalized masterpiece...`,
+              `🌟 Mapping ${childName}'s learning constellation...`,
+              `🎪 Preparing the grand reveal for ${childName}...`
+            ]}
+          />
+          
+          {/* Enhanced Processing Steps with Personality */}
+          <div className="card-begin p-6 mt-8 relative overflow-hidden">
+            {/* Subtle animated background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-begin-cyan/5 via-begin-teal/5 to-purple-500/5 animate-gradient-shift rounded-card" />
+            
+            <div className="relative z-10">
+              <h3 className="text-lg font-semibold text-begin-blue text-center mb-6">Behind the Scenes Magic ✨</h3>
+              
+              <div className="space-y-4 text-left max-w-md mx-auto">
+                <div className="flex items-center gap-3 animate-fade-in-up">
+                  <CheckCircle className="h-5 w-5 text-begin-teal flex-shrink-0 animate-bounce-in" />
+                  <span className="text-sm text-gray-700">📝 Assessment responses collected</span>
                 </div>
-                <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce">
-                  <Star className="h-4 w-4 text-white" />
+                <div className="flex items-center gap-3 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                  <CheckCircle className="h-5 w-5 text-begin-teal flex-shrink-0 animate-bounce-in" style={{ animationDelay: '0.2s' }} />
+                  <span className="text-sm text-gray-700">🧬 6C framework analysis complete</span>
+                </div>
+                <div className="flex items-center gap-3 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                  <div className="h-5 w-5 border-2 border-begin-teal rounded-full animate-spin flex-shrink-0" />
+                  <span className="text-sm text-gray-700">🎨 Generating learning profile...</span>
+                </div>
+                <div className="flex items-center gap-3 opacity-50 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+                  <div className="h-5 w-5 border-2 border-gray-300 rounded-full flex-shrink-0 animate-pulse" />
+                  <span className="text-sm text-gray-500">🎁 Creating Begin product recommendations</span>
                 </div>
               </div>
-              <h1 className="text-begin-hero font-bold text-begin-blue mb-4">
-                🎭 Creating {childName}&apos;s Learning Profile...
-              </h1>
-              <p className="text-begin-body text-gray-600">
-                Our learning scientists are analyzing your responses to discover {childName}&apos;s unique 
-                learning superpowers and create their personalized profile! ✨
-              </p>
-            </div>
-
-            {/* Processing Steps */}
-            <div className="space-y-4 text-left max-w-md mx-auto">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-begin-teal flex-shrink-0" />
-                <span className="text-sm text-gray-700">Assessment responses collected</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-begin-teal flex-shrink-0" />
-                <span className="text-sm text-gray-700">6C framework analysis complete</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="h-5 w-5 border-2 border-begin-teal rounded-full animate-spin flex-shrink-0" />
-                <span className="text-sm text-gray-700">Generating learning profile...</span>
-              </div>
-              <div className="flex items-center gap-3 opacity-50">
-                <div className="h-5 w-5 border-2 border-gray-300 rounded-full flex-shrink-0" />
-                <span className="text-sm text-gray-500">Creating Begin product recommendations</span>
+              
+              {/* Fun progress indication */}
+              <div className="mt-6 text-center">
+                <div className="text-sm text-gray-500 mb-2">Almost there...</div>
+                <div className="flex justify-center space-x-1">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-2 h-2 bg-begin-teal rounded-full animate-bounce"
+                      style={{ animationDelay: `${i * 0.1}s` }}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -225,23 +244,49 @@ export default function AssessmentCompletePage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="card-begin p-8 text-center">
           <div className="mb-8">
+            {/* Epic Celebration Animation */}
             <div className="relative mx-auto mb-6">
-              <div className="bg-gradient-to-br from-green-400 to-emerald-500 w-24 h-24 rounded-full flex items-center justify-center shadow-lg animate-bounce">
-                <Trophy className="h-12 w-12 text-white" />
+              {/* Main trophy with enhanced animation */}
+              <div className="bg-gradient-to-br from-green-400 to-emerald-500 w-32 h-32 rounded-full flex items-center justify-center shadow-2xl animate-bounce-in">
+                <Trophy className="h-16 w-16 text-white animate-heartbeat" />
               </div>
-              <div className="absolute -inset-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 rounded-full opacity-20 animate-ping" />
-              <div className="absolute -top-3 -right-3 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center animate-pulse">
-                <Star className="h-4 w-4 text-white" />
+              
+              {/* Multiple celebration rings */}
+              <div className="absolute -inset-6 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 rounded-full opacity-20 animate-ping" />
+              <div className="absolute -inset-8 bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 rounded-full opacity-10 animate-ping" style={{ animationDelay: '0.5s' }} />
+              <div className="absolute -inset-10 bg-gradient-to-r from-purple-400 via-pink-500 to-yellow-400 rounded-full opacity-5 animate-ping" style={{ animationDelay: '1s' }} />
+              
+              {/* Orbiting celebration elements */}
+              <div className="absolute -top-4 -right-4 w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center animate-orbit-1 shadow-lg">
+                <Star className="h-5 w-5 text-white animate-sparkle" />
               </div>
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-pink-400 rounded-full flex items-center justify-center animate-pulse delay-300">
-                <Heart className="h-3 w-3 text-white" />
+              <div className="absolute -bottom-3 -left-3 w-8 h-8 bg-gradient-to-br from-pink-400 to-red-500 rounded-full flex items-center justify-center animate-orbit-2 shadow-lg">
+                <Heart className="h-4 w-4 text-white animate-sparkle" style={{ animationDelay: '0.3s' }} />
               </div>
+              <div className="absolute top-1/2 -right-6 w-6 h-6 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center animate-orbit-3 shadow-lg">
+                <Zap className="h-3 w-3 text-white animate-sparkle" style={{ animationDelay: '0.6s' }} />
+              </div>
+              
+              {/* Confetti effect */}
+              {[...Array(12)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-3 h-3 rounded-full animate-float"
+                  style={{
+                    background: ['#007A72', '#00D1FF', '#B1E2FE', '#FFD700', '#FF69B4', '#9370DB'][i % 6],
+                    left: `${20 + (i * 60) % 120}%`,
+                    top: `${10 + (i * 70) % 100}%`,
+                    animationDelay: `${i * 0.1}s`,
+                    opacity: 0.7
+                  }}
+                />
+              ))}
             </div>
-            <h1 className="text-begin-hero font-bold text-begin-blue mb-4 animate-fade-in">
+            <h1 className="text-begin-hero font-bold text-begin-blue mb-4 animate-bounce-in">
               🎆 {childName}&apos;s Learning Profile is Ready!
             </h1>
-            <p className="text-begin-body text-gray-600 mb-6">
-              Amazing work! You&apos;ve unlocked {childName}&apos;s unique learning superpowers. 
+            <p className="text-begin-body text-gray-600 mb-6 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+              🎉 Amazing work! You&apos;ve unlocked {childName}&apos;s unique learning superpowers. 
               Get ready to see their special strengths and discover personalized ways to help them shine even brighter! ✨
             </p>
             
