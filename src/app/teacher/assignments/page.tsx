@@ -56,18 +56,17 @@ export default function AssignmentsPage() {
     }
   }
 
-  if (!isAuthenticated) {
-    return null
-  }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-begin-cream flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-begin-teal mx-auto mb-4"></div>
-          <p className="text-begin-blue">Loading assignments...</p>
+      <AuthRequired>
+        <div className="min-h-screen bg-begin-cream flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-begin-teal mx-auto mb-4"></div>
+            <p className="text-begin-blue">Loading assignments...</p>
+          </div>
         </div>
-      </div>
+      </AuthRequired>
     )
   }
 
@@ -87,7 +86,8 @@ export default function AssignmentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-begin-cream">
+    <AuthRequired>
+      <div className="min-h-screen bg-begin-cream">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-begin-gray">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -416,5 +416,6 @@ export default function AssignmentsPage() {
         </div>
       )}
     </div>
+    </AuthRequired>
   )
 }
