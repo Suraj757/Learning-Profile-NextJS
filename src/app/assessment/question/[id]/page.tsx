@@ -1,18 +1,41 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, ArrowLeft, ArrowRight, CheckCircle, Sparkles, Star, Heart } from 'lucide-react'
 import { QUESTIONS, PARENT_SCALE, PROGRESS_MESSAGES, CATEGORY_METADATA } from '@/lib/questions'
+import ProgressIndicator from '@/components/ProgressIndicator'
+import ProgressRecoveryModal from '@/components/ProgressRecoveryModal'
+import { 
+  getOrCreateSessionId, 
+  saveProgress, 
+  loadProgress, 
+  clearSessionId,
+  ProgressAutoSaver,
+  LocalProgressManager
+} from '@/lib/progress-manager'
 
 export default function QuestionPage() {
   const params = useParams()
   const router = useRouter()
   const questionId = parseInt(params.id as string)
   const [childName, setChildName] = useState('')
+  const [grade, setGrade] = useState('')
   const [selectedValue, setSelectedValue] = useState<number | null>(null)
   const [responses, setResponses] = useState<Record<number, number>>({})
   const [showDebugPanel, setShowDebugPanel] = useState(false)
+  const [assignmentToken, setAssignmentToken] = useState('')
+  
+  // Progress saving state
+  const [sessionId, setSessionId] = useState('')
+  const [isOnline, setIsOnline] = useState(true)
+  const [lastSaved, setLastSaved] = useState<string | undefined>()
+  const [expiresAt, setExpiresAt] = useState<string | undefined>()
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [showRecoveryModal, setShowRecoveryModal] = useState(false)
+  
+  const autoSaver = useRef<ProgressAutoSaver | null>(null)
 
   const question = QUESTIONS.find(q => q.id === questionId)
   const totalQuestions = QUESTIONS.length
@@ -32,28 +55,94 @@ export default function QuestionPage() {
   }, [progressMessage])
 
   useEffect(() => {
-    // Load child name and existing responses from sessionStorage
-    const name = sessionStorage.getItem('childName')
-    const savedResponses = sessionStorage.getItem('assessmentResponses')
+    // Initialize auto-saver
+    autoSaver.current = new ProgressAutoSaver()
     
-    if (!name) {
-      router.push('/assessment/start')
-      return
+    // Initialize session and load progress
+    const initializeSession = async () => {
+      const name = sessionStorage.getItem('childName')
+      const gradeValue = sessionStorage.getItem('grade')
+      const token = sessionStorage.getItem('assignmentToken')
+      
+      if (!name) {
+        router.push('/assessment/start')
+        return
+      }
+      
+      setChildName(name)
+      setGrade(gradeValue || '')
+      setAssignmentToken(token || '')
+      
+      const currentSessionId = getOrCreateSessionId()
+      setSessionId(currentSessionId)
+      
+      // Try to load existing progress from backend
+      const progressResult = await loadProgress(currentSessionId)
+      
+      if (progressResult.found && progressResult.progress) {
+        // Resume from saved progress
+        const progress = progressResult.progress
+        setResponses(progress.responses)
+        setLastSaved(progress.last_saved)
+        setExpiresAt(progress.expires_at)
+        
+        // Navigate to correct question if needed
+        if (progress.current_question !== questionId) {
+          router.push(`/assessment/question/${progress.current_question}`)
+          return
+        }
+        
+        // Set current question's response if it exists
+        if (progress.responses[questionId]) {
+          setSelectedValue(progress.responses[questionId])
+        }
+      } else {
+        // Try local storage fallback
+        const localProgress = LocalProgressManager.load(currentSessionId)
+        if (localProgress) {
+          setResponses(localProgress.responses)
+          setLastSaved(localProgress.last_saved)
+          setExpiresAt(localProgress.expires_at)
+          
+          if (localProgress.current_question !== questionId) {
+            router.push(`/assessment/question/${localProgress.current_question}`)
+            return
+          }
+          
+          if (localProgress.responses[questionId]) {
+            setSelectedValue(localProgress.responses[questionId])
+          }
+        } else {
+          // Check if there might be progress on another device
+          const hasShownRecovery = sessionStorage.getItem('hasShownRecovery')
+          if (!hasShownRecovery && questionId === 1) {
+            setShowRecoveryModal(true)
+            sessionStorage.setItem('hasShownRecovery', 'true')
+          }
+        }
+      }
     }
     
-    setChildName(name)
+    initializeSession()
     
-    if (savedResponses) {
-      const parsedResponses = JSON.parse(savedResponses)
-      setResponses(parsedResponses)
-      // Set current question's response if it exists
-      if (parsedResponses[questionId]) {
-        setSelectedValue(parsedResponses[questionId])
+    // Online/offline detection
+    const handleOnline = () => setIsOnline(true)
+    const handleOffline = () => setIsOnline(false)
+    
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    setIsOnline(navigator.onLine)
+    
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+      if (autoSaver.current) {
+        autoSaver.current.cleanup()
       }
     }
   }, [questionId, router])
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selectedValue === null) return
     
     // Save response
@@ -61,10 +150,15 @@ export default function QuestionPage() {
     setResponses(updatedResponses)
     sessionStorage.setItem('assessmentResponses', JSON.stringify(updatedResponses))
     
+    // Save progress immediately before navigation
+    await saveProgressNow(updatedResponses, questionId < totalQuestions ? questionId + 1 : questionId)
+    
     // Navigate to next question or completion
     if (questionId < totalQuestions) {
       router.push(`/assessment/question/${questionId + 1}`)
     } else {
+      // Clear session when completing assessment
+      clearSessionId()
       router.push('/assessment/complete')
     }
   }
@@ -75,6 +169,80 @@ export default function QuestionPage() {
     }
   }
 
+  // Auto-save progress when response changes
+  useEffect(() => {
+    if (selectedValue !== null && autoSaver.current) {
+      const updatedResponses = { ...responses, [questionId]: selectedValue }
+      
+      autoSaver.current.saveWithDebounce({
+        session_id: sessionId,
+        child_name: childName,
+        grade: grade,
+        responses: updatedResponses,
+        current_question: questionId,
+        assignment_token: assignmentToken || undefined
+      })
+    }
+  }, [selectedValue, sessionId, childName, grade, responses, questionId, assignmentToken])
+  
+  // Save progress immediately (for navigation)
+  const saveProgressNow = async (updatedResponses: Record<number, number>, nextQuestion: number) => {
+    if (!sessionId) return
+    
+    setIsSaving(true)
+    setSaveError(null)
+    
+    const progressData = {
+      session_id: sessionId,
+      child_name: childName,
+      grade: grade,
+      responses: updatedResponses,
+      current_question: nextQuestion,
+      assignment_token: assignmentToken || undefined
+    }
+    
+    // Try to save to backend
+    const result = await saveProgress(progressData)
+    
+    if (result.success) {
+      setLastSaved(result.last_saved)
+      setExpiresAt(result.expires_at)
+    } else {
+      setSaveError(result.error || 'Save failed')
+      // Fallback to local storage
+      LocalProgressManager.save(progressData)
+    }
+    
+    setIsSaving(false)
+  }
+  
+  // Resume from recovered session
+  const handleResumeSession = async (recoveredSessionId: string) => {
+    setSessionId(recoveredSessionId)
+    
+    const progressResult = await loadProgress(recoveredSessionId)
+    if (progressResult.found && progressResult.progress) {
+      const progress = progressResult.progress
+      setChildName(progress.child_name)
+      setGrade(progress.grade)
+      setResponses(progress.responses)
+      setLastSaved(progress.last_saved)
+      setExpiresAt(progress.expires_at)
+      setAssignmentToken(progress.assignment_token || '')
+      
+      // Update session storage
+      sessionStorage.setItem('childName', progress.child_name)
+      sessionStorage.setItem('grade', progress.grade)
+      sessionStorage.setItem('assessmentResponses', JSON.stringify(progress.responses))
+      if (progress.assignment_token) {
+        sessionStorage.setItem('assignmentToken', progress.assignment_token)
+      }
+      
+      // Navigate to correct question
+      router.push(`/assessment/question/${progress.current_question}`)
+    }
+  }
+  
   // Debug function to auto-complete the quiz
   const autoCompleteQuiz = (profileType: 'creative' | 'analytical' | 'collaborative' | 'confident') => {
     const testResponses = {
@@ -87,6 +255,9 @@ export default function QuestionPage() {
     const selectedResponses = testResponses[profileType]
     setResponses(selectedResponses)
     sessionStorage.setItem('assessmentResponses', JSON.stringify(selectedResponses))
+    
+    // Clear session when auto-completing
+    clearSessionId()
     router.push('/assessment/complete')
   }
 
@@ -123,51 +294,33 @@ export default function QuestionPage() {
         </div>
       </header>
 
-      {/* Enhanced Progress Bar with Celebration */}
-      <div className="bg-white border-b relative overflow-hidden">
-        {showCelebration && (
+      {/* Progress Indicator with Auto-Save */}
+      <ProgressIndicator
+        isOnline={isOnline}
+        lastSaved={lastSaved}
+        expiresAt={expiresAt}
+        isSaving={isSaving}
+        saveError={saveError}
+        questionNumber={questionId}
+        totalQuestions={totalQuestions}
+        childName={childName}
+      />
+      
+      {/* Celebration Banner */}
+      {progressMessage && showCelebration && (
+        <div className="bg-white border-b relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-yellow-500/10 animate-pulse" />
-        )}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="py-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-begin-blue">
-                  {childName}&apos;s Learning Journey
-                </span>
-                {categoryInfo && (
-                  <span className="text-lg">{categoryInfo.emoji}</span>
-                )}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div className="py-4 text-center animate-bounce">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
+                <Sparkles className="h-4 w-4" />
+                {progressMessage.message}
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  {Math.round(progress)}% Complete
-                </span>
-                {progress > 50 && <Star className="h-4 w-4 text-yellow-500" />}
-              </div>
+              <p className="text-xs text-gray-500 mt-1">{progressMessage.subtext}</p>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3 relative overflow-hidden">
-              <div 
-                className="bg-gradient-to-r from-begin-teal to-begin-cyan h-3 rounded-full transition-all duration-500 ease-out relative"
-                style={{ width: `${progress}%` }}
-              >
-                {progress > 10 && (
-                  <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse" />
-                )}
-              </div>
-            </div>
-            {progressMessage && showCelebration && (
-              <div className="mt-3 text-center animate-bounce">
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
-                  <Sparkles className="h-4 w-4" />
-                  {progressMessage.message}
-                </div>
-                <p className="text-xs text-gray-500 mt-1">{progressMessage.subtext}</p>
-              </div>
-            )}
           </div>
         </div>
-      </div>
+      )}
 
       {/* Debug Panel */}
       {showDebugPanel && (
@@ -342,6 +495,13 @@ export default function QuestionPage() {
             </p>
           </div>
         </div>
+        
+        {/* Progress Recovery Modal */}
+        <ProgressRecoveryModal
+          isOpen={showRecoveryModal}
+          onClose={() => setShowRecoveryModal(false)}
+          onResumeSession={handleResumeSession}
+        />
       </div>
     </div>
   )

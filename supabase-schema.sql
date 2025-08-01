@@ -109,3 +109,86 @@ CREATE POLICY "Results are viewable with public profiles" ON results
 
 CREATE POLICY "Anyone can insert results" ON results
     FOR INSERT WITH CHECK (true);
+
+-- Teachers table for teacher functionality
+CREATE TABLE IF NOT EXISTS teachers (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    school TEXT,
+    classroom_name TEXT,
+    invite_code TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_teachers_email ON teachers(email);
+CREATE INDEX IF NOT EXISTS idx_teachers_invite_code ON teachers(invite_code);
+
+-- RLS for teachers table
+ALTER TABLE teachers ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Teachers can view their own profile" ON teachers
+    FOR SELECT USING (true); -- For now, allow all reads for simplicity
+
+CREATE POLICY "Anyone can create teacher accounts" ON teachers
+    FOR INSERT WITH CHECK (true);
+
+-- Assignment progress table for progress saving
+CREATE TABLE IF NOT EXISTS assessment_progress (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    session_id TEXT UNIQUE NOT NULL,
+    child_name TEXT NOT NULL,
+    grade TEXT NOT NULL,
+    parent_email TEXT,
+    responses JSONB DEFAULT '{}',
+    current_question INTEGER DEFAULT 1,
+    assignment_token TEXT,
+    expires_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + INTERVAL '7 days'),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_assessment_progress_session_id ON assessment_progress(session_id);
+CREATE INDEX IF NOT EXISTS idx_assessment_progress_parent_email ON assessment_progress(parent_email);
+CREATE INDEX IF NOT EXISTS idx_assessment_progress_expires_at ON assessment_progress(expires_at);
+
+-- RLS for assessment_progress table
+ALTER TABLE assessment_progress ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can manage assessment progress" ON assessment_progress
+    FOR ALL USING (true);
+
+-- Teacher assignments table (linking teachers to student profiles)
+CREATE TABLE IF NOT EXISTS teacher_assignments (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    teacher_id UUID REFERENCES teachers(id) ON DELETE CASCADE,
+    profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    assignment_token TEXT NOT NULL,
+    assigned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(teacher_id, profile_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_teacher_assignments_teacher_id ON teacher_assignments(teacher_id);
+CREATE INDEX IF NOT EXISTS idx_teacher_assignments_profile_id ON teacher_assignments(profile_id);
+CREATE INDEX IF NOT EXISTS idx_teacher_assignments_token ON teacher_assignments(assignment_token);
+
+-- RLS for teacher_assignments table
+ALTER TABLE teacher_assignments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Teachers can view their assignments" ON teacher_assignments
+    FOR SELECT USING (true); -- Simplified for now
+
+CREATE POLICY "Anyone can create assignments" ON teacher_assignments
+    FOR INSERT WITH CHECK (true);
+
+-- Update triggers for new tables
+CREATE TRIGGER update_teachers_updated_at 
+    BEFORE UPDATE ON teachers 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_assessment_progress_updated_at 
+    BEFORE UPDATE ON assessment_progress 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
