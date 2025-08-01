@@ -16,9 +16,10 @@ import {
 import { useTeacherAuth } from '@/lib/teacher-auth'
 import { createProfileAssignment } from '@/lib/supabase'
 import { generateAssessmentLink } from '@/lib/email-templates'
+import AuthRequired from '@/components/teacher/AuthRequired'
 
 export default function SendAssessmentPage() {
-  const { teacher, isAuthenticated } = useTeacherAuth()
+  const { teacher } = useTeacherAuth()
   const [studentInfo, setStudentInfo] = useState({
     child_name: '',
     parent_email: ''
@@ -29,11 +30,6 @@ export default function SendAssessmentPage() {
   const [step, setStep] = useState<'form' | 'link' | 'success'>('form')
   const [copied, setCopied] = useState(false)
   const router = useRouter()
-
-  if (!isAuthenticated) {
-    router.push('/teacher/register')
-    return null
-  }
 
   const handleCreateAssignment = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -109,7 +105,8 @@ Used by 50,000+ families to strengthen school-home connections`
   }
 
   return (
-    <div className="min-h-screen bg-begin-cream">
+    <AuthRequired>
+      <div className="min-h-screen bg-begin-cream">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-begin-gray">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -344,5 +341,6 @@ Used by 50,000+ families to strengthen school-home connections`
         )}
       </div>
     </div>
+    </AuthRequired>
   )
 }
