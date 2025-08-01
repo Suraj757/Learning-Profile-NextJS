@@ -1,10 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, ArrowRight, Clock, Users, School, Star } from 'lucide-react'
 
-export default function AssessmentStartPage() {
+function AssessmentStartContent() {
   const [childName, setChildName] = useState('')
   const [grade, setGrade] = useState('')
   const [assignmentToken, setAssignmentToken] = useState('')
@@ -211,5 +211,20 @@ export default function AssessmentStartPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function AssessmentStartPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-begin-cream flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-begin-teal mx-auto mb-4"></div>
+          <p className="text-begin-blue">Loading assessment...</p>
+        </div>
+      </div>
+    }>
+      <AssessmentStartContent />
+    </Suspense>
   )
 }

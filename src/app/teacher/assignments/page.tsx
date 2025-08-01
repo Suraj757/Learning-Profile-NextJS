@@ -85,7 +85,9 @@ export default function AssignmentsPage() {
   })
 
   const handleCopyShareUrl = () => {
-    navigator.clipboard.writeText(shareUrl)
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl)
+    }
   }
 
   return (
@@ -289,8 +291,12 @@ export default function AssignmentsPage() {
                         ) : (
                           <button
                             onClick={() => {
-                              const link = `${window.location.origin}/assessment/start?ref=${assignment.assignment_token}`
-                              navigator.clipboard.writeText(link)
+                              if (typeof window !== 'undefined') {
+                                const link = `${window.location.origin}/assessment/start?ref=${assignment.assignment_token}`
+                                if (navigator.clipboard) {
+                                  navigator.clipboard.writeText(link)
+                                }
+                              }
                             }}
                             className="p-2 text-begin-blue/70 hover:text-begin-blue transition-colors"
                             title="Copy Link"

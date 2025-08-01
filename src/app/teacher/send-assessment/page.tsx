@@ -58,7 +58,7 @@ export default function SendAssessmentPage() {
         child_name: studentInfo.child_name.trim()
       })
 
-      const link = generateAssessmentLink(assignment.assignment_token, window.location.origin)
+      const link = generateAssessmentLink(assignment.assignment_token, typeof window !== 'undefined' ? window.location.origin : '')
       setAssignmentLink(link)
       setStep('link')
     } catch (err: any) {
@@ -69,16 +69,20 @@ export default function SendAssessmentPage() {
   }
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(assignmentLink)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(assignmentLink)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
   }
 
   const handleCopyEmail = () => {
-    const emailContent = generateEmailContent()
-    navigator.clipboard.writeText(emailContent)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      const emailContent = generateEmailContent()
+      navigator.clipboard.writeText(emailContent)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
   }
 
   const generateEmailContent = () => {
@@ -293,9 +297,11 @@ Used by 50,000+ families to strengthen school-home connections`
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={() => {
-                  const subject = encodeURIComponent(`Help Me Understand ${studentInfo.child_name}'s Learning Style`)
-                  const body = encodeURIComponent(generateEmailContent())
-                  window.location.href = `mailto:${studentInfo.parent_email}?subject=${subject}&body=${body}`
+                  if (typeof window !== 'undefined') {
+                    const subject = encodeURIComponent(`Help Me Understand ${studentInfo.child_name}'s Learning Style`)
+                    const body = encodeURIComponent(generateEmailContent())
+                    window.location.href = `mailto:${studentInfo.parent_email}?subject=${subject}&body=${body}`
+                  }
                 }}
                 className="btn-begin-primary flex items-center gap-2 justify-center"
               >

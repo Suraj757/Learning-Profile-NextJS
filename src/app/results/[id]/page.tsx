@@ -312,10 +312,12 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
   }
 
   const copyEmailToClipboard = (emailText: string) => {
-    navigator.clipboard.writeText(emailText).then(() => {
-      setCopiedEmail(true)
-      setTimeout(() => setCopiedEmail(false), 2000)
-    })
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(emailText).then(() => {
+        setCopiedEmail(true)
+        setTimeout(() => setCopiedEmail(false), 2000)
+      })
+    }
   }
 
   if (loading) {
@@ -941,14 +943,14 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
               <div>
                 <h3 className="font-bold text-begin-blue mb-2">They Learn Best When:</h3>
                 <ul className="text-sm text-gray-700 space-y-1">
-                  {profileData.personalityLabel === 'Creative Collaborator' 
+                  {(profileData.personalityLabel === 'Creative Collaborator' 
                     ? ['• They can express ideas creatively', '• Working with others', '• Using hands-on materials']
                     : profileData.personalityLabel === 'Analytical Thinker'
                     ? ['• Understanding "why" behind concepts', '• Having time to process', '• Exploring cause and effect']
                     : profileData.personalityLabel === 'Social Connector'
                     ? ['• Learning through discussion', '• Helping others understand', '• Working in groups']
                     : ['• Having choices in their learning', '• Working at their own pace', '• Feeling in control']
-                  }.map((item, i) => <li key={i}>{item}</li>)
+                  ).map((item, i) => <li key={i}>{item}</li>)}
                 </ul>
                 
                 <h3 className="font-bold text-begin-blue mb-2 mt-4">Growth Area:</h3>

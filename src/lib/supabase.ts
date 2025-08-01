@@ -1,12 +1,19 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// Use fallback values during build time if env vars are not available
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
 
-export const supabase = createSupabaseClient(supabaseUrl, supabaseKey)
+// Only create client if we have real values (not placeholders)
+export const supabase = (supabaseUrl === 'https://placeholder.supabase.co' || supabaseKey === 'placeholder-key') 
+  ? null 
+  : createSupabaseClient(supabaseUrl, supabaseKey)
 
 // Server-side client for RSC
 export function createClient() {
+  if (supabaseUrl === 'https://placeholder.supabase.co' || supabaseKey === 'placeholder-key') {
+    return null
+  }
   return createSupabaseClient(supabaseUrl, supabaseKey)
 }
 
@@ -51,6 +58,10 @@ export async function createProfile(profileData: {
   personality_label: string
   description: string
 }): Promise<{ data: LearningProfile | null; error: any }> {
+  if (!supabase) {
+    return { data: null, error: new Error('Supabase not configured') }
+  }
+  
   const shareToken = generateShareToken()
   
   const { data, error } = await supabase
@@ -72,6 +83,10 @@ export async function createProfile(profileData: {
 }
 
 export async function getProfile(profileId: string): Promise<{ data: LearningProfile | null; error: any }> {
+  if (!supabase) {
+    return { data: null, error: new Error('Supabase not configured') }
+  }
+  
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
@@ -82,6 +97,10 @@ export async function getProfile(profileId: string): Promise<{ data: LearningPro
 }
 
 export async function getProfileByShareToken(shareToken: string): Promise<{ data: LearningProfile | null; error: any }> {
+  if (!supabase) {
+    return { data: null, error: new Error('Supabase not configured') }
+  }
+  
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
@@ -93,6 +112,10 @@ export async function getProfileByShareToken(shareToken: string): Promise<{ data
 }
 
 export async function updateProfilePrivacy(profileId: string, isPublic: boolean): Promise<{ error: any }> {
+  if (!supabase) {
+    return { error: new Error('Supabase not configured') }
+  }
+  
   const { error } = await supabase
     .from('profiles')
     .update({ is_public: isPublic })
@@ -202,6 +225,10 @@ export async function createTeacher(data: {
   school?: string
   grade_level?: string
 }) {
+  if (!supabase) {
+    throw new Error('Supabase not configured')
+  }
+  
   const { data: teacher, error } = await supabase
     .from('teachers')
     .insert([{
@@ -219,6 +246,10 @@ export async function createTeacher(data: {
 }
 
 export async function getTeacherByEmail(email: string) {
+  if (!supabase) {
+    throw new Error('Supabase not configured')
+  }
+  
   const { data, error } = await supabase
     .from('teachers')
     .select('*')
@@ -235,6 +266,10 @@ export async function createClassroom(teacherId: number, data: {
   grade_level: string
   school_year: string
 }) {
+  if (!supabase) {
+    throw new Error('Supabase not configured')
+  }
+  
   const { data: classroom, error } = await supabase
     .from('classrooms')
     .insert([{
@@ -251,6 +286,10 @@ export async function createClassroom(teacherId: number, data: {
 }
 
 export async function getTeacherClassrooms(teacherId: number) {
+  if (!supabase) {
+    throw new Error('Supabase not configured')
+  }
+  
   const { data, error } = await supabase
     .from('classrooms')
     .select('*')
@@ -268,6 +307,10 @@ export async function addStudentToClassroom(classroomId: number, data: {
   grade_level: string
   notes?: string
 }) {
+  if (!supabase) {
+    throw new Error('Supabase not configured')
+  }
+  
   const { data: student, error } = await supabase
     .from('students')
     .insert([{
@@ -285,6 +328,10 @@ export async function addStudentToClassroom(classroomId: number, data: {
 }
 
 export async function getClassroomStudents(classroomId: number) {
+  if (!supabase) {
+    throw new Error('Supabase not configured')
+  }
+  
   const { data, error } = await supabase
     .from('students')
     .select('*')
@@ -302,6 +349,10 @@ export async function createProfileAssignment(data: {
   child_name: string
   student_id?: number
 }) {
+  if (!supabase) {
+    throw new Error('Supabase not configured')
+  }
+  
   const assignment_token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
   
   const { data: assignment, error } = await supabase
@@ -321,6 +372,10 @@ export async function createProfileAssignment(data: {
 }
 
 export async function getTeacherAssignments(teacherId: number) {
+  if (!supabase) {
+    throw new Error('Supabase not configured')
+  }
+  
   const { data, error } = await supabase
     .from('profile_assignments')
     .select('*')
@@ -332,6 +387,10 @@ export async function getTeacherAssignments(teacherId: number) {
 }
 
 export async function updateAssignmentStatus(assignmentId: number, status: 'sent' | 'completed', assessmentId?: number) {
+  if (!supabase) {
+    throw new Error('Supabase not configured')
+  }
+  
   const updateData: any = { status }
   if (assessmentId) updateData.assessment_id = assessmentId
   if (status === 'completed') updateData.completed_at = new Date().toISOString()

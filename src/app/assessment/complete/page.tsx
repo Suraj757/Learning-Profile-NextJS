@@ -192,7 +192,7 @@ export default function AssessmentCompletePage() {
                 onClick={() => {
                   setError(null)
                   setIsProcessing(true)
-                  window.location.reload()
+                  typeof window !== 'undefined' && window.location.reload()
                 }}
                 className="btn-begin-primary flex items-center gap-2 mx-auto"
               >

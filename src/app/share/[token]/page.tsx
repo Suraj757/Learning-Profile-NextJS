@@ -45,7 +45,7 @@ export default function SharedProfilePage() {
         setProfileData(profile)
         
         // Set share URL
-        const baseUrl = window.location.origin
+        const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
         setShareUrl(`${baseUrl}/share/${profile.share_token}`)
         
         setLoading(false)
@@ -62,7 +62,7 @@ export default function SharedProfilePage() {
   }, [params.token])
 
   const handleShare = async () => {
-    if (navigator.share && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    if (typeof window !== 'undefined' && navigator.share && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
       try {
         await navigator.share({
           title: `${profileData?.child_name}'s Learning Profile`,
@@ -79,12 +79,14 @@ export default function SharedProfilePage() {
   }
 
   const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(shareUrl)
-      setCopySuccess(true)
-      setTimeout(() => setCopySuccess(false), 2000)
-    } catch (err) {
-      console.error('Failed to copy:', err)
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(shareUrl)
+        setCopySuccess(true)
+        setTimeout(() => setCopySuccess(false), 2000)
+      } catch (err) {
+        console.error('Failed to copy:', err)
+      }
     }
   }
 
@@ -117,7 +119,7 @@ export default function SharedProfilePage() {
             </Link>
             {error !== 'Profile not found' && (
               <button 
-                onClick={() => window.location.reload()}
+                onClick={() => typeof window !== 'undefined' && window.location.reload()}
                 className="btn-begin-secondary block w-full"
               >
                 Try Again

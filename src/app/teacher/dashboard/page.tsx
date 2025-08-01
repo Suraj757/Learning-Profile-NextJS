@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { 
@@ -19,7 +19,7 @@ import { useTeacherAuth } from '@/lib/teacher-auth'
 import { getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
 import type { Classroom, ProfileAssignment } from '@/lib/supabase'
 
-export default function TeacherDashboardPage() {
+function TeacherDashboardContent() {
   const { teacher, loading: authLoading, isAuthenticated } = useTeacherAuth()
   const [classrooms, setClassrooms] = useState<Classroom[]>([])
   const [assignments, setAssignments] = useState<ProfileAssignment[]>([])
@@ -346,5 +346,20 @@ export default function TeacherDashboardPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function TeacherDashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-begin-cream flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-begin-teal mx-auto mb-4"></div>
+          <p className="text-begin-blue">Loading dashboard...</p>
+        </div>
+      </div>
+    }>
+      <TeacherDashboardContent />
+    </Suspense>
   )
 }
