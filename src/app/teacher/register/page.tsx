@@ -128,18 +128,42 @@ export default function TeacherRegisterPage() {
                 Want to see the teacher dashboard immediately? No signup required.
               </p>
               <button
-                onClick={() => {
-                  const demoTeacher = {
-                    id: 999,
-                    name: 'Demo Teacher',
-                    email: 'demo@school.edu',
-                    school: 'Demo Elementary School',
-                    grade_level: '3rd Grade',
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
+                onClick={async () => {
+                  try {
+                    // Try to create or get demo teacher from database
+                    let demoTeacher
+                    const existingDemo = await getTeacherByEmail('demo@school.edu')
+                    
+                    if (existingDemo) {
+                      demoTeacher = existingDemo
+                    } else {
+                      // Create demo teacher in database
+                      demoTeacher = await createTeacher({
+                        email: 'demo@school.edu',
+                        name: 'Demo Teacher',
+                        school: 'Demo Elementary School',
+                        grade_level: '3rd Grade'
+                      })
+                    }
+                    
+                    login(demoTeacher)
+                    router.push('/teacher/dashboard?welcome=true')
+                  } catch (error) {
+                    console.error('Demo teacher creation failed:', error)
+                    // Fallback to offline demo
+                    const offlineDemoTeacher = {
+                      id: 999999, // Use a very high ID that won't conflict
+                      name: 'Demo Teacher (Offline)',
+                      email: 'demo@offline.local',
+                      school: 'Demo Elementary School',
+                      grade_level: '3rd Grade',
+                      created_at: new Date().toISOString(),
+                      updated_at: new Date().toISOString(),
+                      isOfflineDemo: true
+                    }
+                    login(offlineDemoTeacher)
+                    router.push('/teacher/dashboard?welcome=true&demo=offline')
                   }
-                  login(demoTeacher)
-                  router.push('/teacher/dashboard?welcome=true')
                 }}
                 className="bg-white text-begin-teal px-6 py-3 rounded-card font-bold hover:bg-begin-cream transition-colors"
               >

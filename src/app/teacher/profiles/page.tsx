@@ -13,6 +13,7 @@ import {
   TrendingUp
 } from 'lucide-react'
 import { useTeacherAuth } from '@/lib/teacher-auth'
+import AuthRequired from '@/components/teacher/AuthRequired'
 
 interface StudentProfile {
   id: number
@@ -28,7 +29,7 @@ interface StudentProfile {
 }
 
 export default function TeacherProfilesPage() {
-  const { teacher, isAuthenticated } = useTeacherAuth()
+  const { teacher } = useTeacherAuth()
   const [profiles, setProfiles] = useState<StudentProfile[]>([])
   const [loading, setLoading] = useState(true)
   const [analytics, setAnalytics] = useState({
@@ -36,18 +37,12 @@ export default function TeacherProfilesPage() {
     personalityTypes: {} as Record<string, number>,
     averageScores: {} as Record<string, number>
   })
-  const router = useRouter()
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/teacher/register')
-      return
-    }
-
     if (teacher) {
       loadProfiles()
     }
-  }, [teacher, isAuthenticated, router])
+  }, [teacher])
 
   const loadProfiles = async () => {
     if (!teacher) return
@@ -101,18 +96,16 @@ export default function TeacherProfilesPage() {
     })
   }
 
-  if (!isAuthenticated) {
-    return null
-  }
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-begin-cream flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-begin-teal mx-auto mb-4"></div>
-          <p className="text-begin-blue">Loading student profiles...</p>
+      <AuthRequired>
+        <div className="min-h-screen bg-begin-cream flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-begin-teal mx-auto mb-4"></div>
+            <p className="text-begin-blue">Loading student profiles...</p>
+          </div>
         </div>
-      </div>
+      </AuthRequired>
     )
   }
 
@@ -120,7 +113,8 @@ export default function TeacherProfilesPage() {
     .sort((a, b) => b[1] - a[1])[0]
 
   return (
-    <div className="min-h-screen bg-begin-cream">
+    <AuthRequired>
+      <div className="min-h-screen bg-begin-cream">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-begin-gray">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -335,5 +329,6 @@ export default function TeacherProfilesPage() {
         )}
       </div>
     </div>
+    </AuthRequired>
   )
 }

@@ -69,18 +69,44 @@ export default function AuthRequired({ children, fallback }: AuthRequiredProps) 
             
             <div className="space-y-4">
               <button
-                onClick={() => {
-                  const demoTeacher = {
-                    id: 999,
-                    name: 'Demo Teacher',
-                    email: 'demo@school.edu',
-                    school: 'Demo Elementary School',
-                    grade_level: '3rd Grade',
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
+                onClick={async () => {
+                  try {
+                    // Import the Supabase functions
+                    const { getTeacherByEmail, createTeacher } = await import('@/lib/supabase')
+                    
+                    // Try to create or get demo teacher from database
+                    let demoTeacher
+                    const existingDemo = await getTeacherByEmail('demo@school.edu')
+                    
+                    if (existingDemo) {
+                      demoTeacher = existingDemo
+                    } else {
+                      // Create demo teacher in database
+                      demoTeacher = await createTeacher({
+                        email: 'demo@school.edu',
+                        name: 'Demo Teacher',
+                        school: 'Demo Elementary School',
+                        grade_level: '3rd Grade'
+                      })
+                    }
+                    
+                    login(demoTeacher)
+                    // Don't redirect here, let the auth effect handle it
+                  } catch (error) {
+                    console.error('Demo teacher creation failed:', error)
+                    // Fallback to offline demo
+                    const offlineDemoTeacher = {
+                      id: 999999,
+                      name: 'Demo Teacher (Offline)',
+                      email: 'demo@offline.local',
+                      school: 'Demo Elementary School',
+                      grade_level: '3rd Grade',
+                      created_at: new Date().toISOString(),
+                      updated_at: new Date().toISOString(),
+                      isOfflineDemo: true
+                    }
+                    login(offlineDemoTeacher)
                   }
-                  login(demoTeacher)
-                  // Don't redirect here, let the auth effect handle it
                 }}
                 className="btn-begin-primary px-8 py-3 font-bold"
               >

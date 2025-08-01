@@ -5,9 +5,10 @@ import Link from 'next/link'
 import { BookOpen, ArrowRight, Users, Calendar, School, ArrowLeft } from 'lucide-react'
 import { useTeacherAuth } from '@/lib/teacher-auth'
 import { createClassroom } from '@/lib/supabase'
+import AuthRequired from '@/components/teacher/AuthRequired'
 
 export default function CreateClassroomPage() {
-  const { teacher, isAuthenticated } = useTeacherAuth()
+  const { teacher } = useTeacherAuth()
   const [formData, setFormData] = useState({
     name: '',
     grade_level: '',
@@ -29,18 +30,6 @@ export default function CreateClassroomPage() {
     `${currentYear - 1}-${currentYear}`,
     `${currentYear + 1}-${currentYear + 2}`
   ]
-
-  if (!isAuthenticated) {
-    router.push('/teacher/register')
-    return (
-      <div className="min-h-screen bg-begin-cream flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-begin-blue mb-4">Redirecting to teacher login...</p>
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-begin-teal mx-auto"></div>
-        </div>
-      </div>
-    )
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -82,7 +71,8 @@ export default function CreateClassroomPage() {
   }
 
   return (
-    <div className="min-h-screen bg-begin-cream">
+    <AuthRequired>
+      <div className="min-h-screen bg-begin-cream">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-begin-gray">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -233,5 +223,6 @@ export default function CreateClassroomPage() {
         </div>
       </div>
     </div>
+    </AuthRequired>
   )
 }

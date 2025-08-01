@@ -48,15 +48,31 @@ export default function SendAssessmentPage() {
         throw new Error('Please enter a valid email address')
       }
 
-      const assignment = await createProfileAssignment({
-        teacher_id: teacher.id,
-        parent_email: studentInfo.parent_email.trim(),
-        child_name: studentInfo.child_name.trim()
-      })
+      // Handle demo teacher differently
+      if (teacher.isOfflineDemo || teacher.email === 'demo@offline.local') {
+        // Create a mock assignment for demo
+        const mockAssignment = {
+          id: Date.now(),
+          assignment_token: 'demo-token-' + Date.now(),
+          teacher_id: teacher.id,
+          parent_email: studentInfo.parent_email.trim(),
+          child_name: studentInfo.child_name.trim()
+        }
+        
+        const link = generateAssessmentLink(mockAssignment.assignment_token, typeof window !== 'undefined' ? window.location.origin : '')
+        setAssignmentLink(link)
+        setStep('link')
+      } else {
+        const assignment = await createProfileAssignment({
+          teacher_id: teacher.id,
+          parent_email: studentInfo.parent_email.trim(),
+          child_name: studentInfo.child_name.trim()
+        })
 
-      const link = generateAssessmentLink(assignment.assignment_token, typeof window !== 'undefined' ? window.location.origin : '')
-      setAssignmentLink(link)
-      setStep('link')
+        const link = generateAssessmentLink(assignment.assignment_token, typeof window !== 'undefined' ? window.location.origin : '')
+        setAssignmentLink(link)
+        setStep('link')
+      }
     } catch (err: any) {
       setError(err.message || 'Something went wrong')
     } finally {

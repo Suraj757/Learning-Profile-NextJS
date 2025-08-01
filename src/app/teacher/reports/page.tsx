@@ -15,25 +15,21 @@ import {
 import { useTeacherAuth } from '@/lib/teacher-auth'
 import { getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
 import type { Classroom, ProfileAssignment } from '@/lib/supabase'
+import AuthRequired from '@/components/teacher/AuthRequired'
+import { getDemoReportsData } from '@/lib/demo-data'
 
 export default function TeacherReportsPage() {
-  const { teacher, loading: authLoading, isAuthenticated } = useTeacherAuth()
+  const { teacher } = useTeacherAuth()
   const [classrooms, setClassrooms] = useState<Classroom[]>([])
   const [assignments, setAssignments] = useState<ProfileAssignment[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedClassroom, setSelectedClassroom] = useState<string>('all')
-  const router = useRouter()
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push('/teacher/register')
-      return
-    }
-
     if (teacher) {
       loadData()
     }
-  }, [teacher, authLoading, isAuthenticated, router])
+  }, [teacher])
 
   const loadData = async () => {
     if (!teacher) return
@@ -44,10 +40,25 @@ export default function TeacherReportsPage() {
         getTeacherAssignments(teacher.id)
       ])
       
-      setClassrooms(classroomsData || [])
-      setAssignments(assignmentsData || [])
+      // If no data found and this is a demo teacher, use fallback demo data
+      if ((!classroomsData || classroomsData.length === 0) && 
+          (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo)) {
+        const demoData = getDemoReportsData(teacher.id)
+        setClassrooms(demoData.classrooms as any)
+        setAssignments(demoData.assignments as any)
+      } else {
+        setClassrooms(classroomsData || [])
+        setAssignments(assignmentsData || [])
+      }
     } catch (error) {
       console.error('Error loading data:', error)
+      
+      // If error and demo teacher, fall back to demo data
+      if (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo) {
+        const demoData = getDemoReportsData(teacher.id)
+        setClassrooms(demoData.classrooms as any)
+        setAssignments(demoData.assignments as any)
+      }
     } finally {
       setLoading(false)
     }
@@ -83,14 +94,16 @@ export default function TeacherReportsPage() {
     window.print()
   }
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-begin-cream flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-begin-teal mx-auto mb-4"></div>
-          <p className="text-begin-blue">Loading reports...</p>
+      <AuthRequired>
+        <div className="min-h-screen bg-begin-cream flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-begin-teal mx-auto mb-4"></div>
+            <p className="text-begin-blue">Loading reports...</p>
+          </div>
         </div>
-      </div>
+      </AuthRequired>
     )
   }
 
@@ -105,7 +118,8 @@ export default function TeacherReportsPage() {
     : 0
 
   return (
-    <div className="min-h-screen bg-begin-cream">
+    <AuthRequired>
+      <div className="min-h-screen bg-begin-cream">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-begin-gray">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -279,5 +293,6 @@ export default function TeacherReportsPage() {
         </div>
       </div>
     </div>
+    </AuthRequired>
   )
 }

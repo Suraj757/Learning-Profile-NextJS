@@ -19,6 +19,7 @@ import { useTeacherAuth } from '@/lib/teacher-auth'
 import { getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
 import type { Classroom, ProfileAssignment } from '@/lib/supabase'
 import DelightfulLoading from '@/components/loading/DelightfulLoading'
+import { createDemoDataForTeacher, getDemoReportsData } from '@/lib/demo-data'
 
 function TeacherDashboardContent() {
   const { teacher, loading: authLoading, isAuthenticated } = useTeacherAuth()
@@ -54,15 +55,38 @@ function TeacherDashboardContent() {
     if (!teacher) return
 
     try {
+      // Check if this is a demo teacher and create demo data if needed
+      if (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo) {
+        if (!teacher.isOfflineDemo) {
+          // Only create demo data if we have a real database connection
+          await createDemoDataForTeacher(teacher.id)
+        }
+      }
+
       const [classroomsData, assignmentsData] = await Promise.all([
         getTeacherClassrooms(teacher.id),
         getTeacherAssignments(teacher.id)
       ])
       
-      setClassrooms(classroomsData || [])
-      setAssignments(assignmentsData || [])
+      // If no data found and this is a demo teacher, use fallback demo data
+      if ((!classroomsData || classroomsData.length === 0) && 
+          (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo)) {
+        const demoData = getDemoReportsData(teacher.id)
+        setClassrooms(demoData.classrooms as any)
+        setAssignments(demoData.assignments as any)
+      } else {
+        setClassrooms(classroomsData || [])
+        setAssignments(assignmentsData || [])
+      }
     } catch (error) {
       console.error('Error loading dashboard data:', error)
+      
+      // If error and demo teacher, fall back to demo data
+      if (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo) {
+        const demoData = getDemoReportsData(teacher.id)
+        setClassrooms(demoData.classrooms as any)
+        setAssignments(demoData.assignments as any)
+      }
     } finally {
       setLoading(false)
     }
