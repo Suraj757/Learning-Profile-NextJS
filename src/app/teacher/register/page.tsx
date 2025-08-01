@@ -235,9 +235,27 @@ export default function TeacherRegisterPage() {
           </form>
 
           <div className="text-center mt-8 pt-6 border-t border-begin-gray">
-            <p className="text-sm text-begin-blue/70">
+            <p className="text-sm text-begin-blue/70 mb-4">
               Already have an account? Just enter your email above to sign in.
             </p>
+            <button
+              onClick={() => {
+                const demoTeacher = {
+                  id: 999,
+                  name: 'Demo Teacher',
+                  email: 'demo@school.edu',
+                  school: 'Demo Elementary School',
+                  grade_level: '3rd Grade',
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString()
+                }
+                login(demoTeacher)
+                router.push('/teacher/dashboard?welcome=true')
+              }}
+              className="btn-begin-secondary text-sm px-6 py-2"
+            >
+              Try Demo Teacher Account
+            </button>
           </div>
         </div>
       </div>
