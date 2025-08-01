@@ -15,6 +15,7 @@ export default function TeacherRegisterPage() {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [isLogin, setIsLogin] = useState(false)
   const router = useRouter()
   const { login } = useTeacherAuth()
@@ -35,14 +36,19 @@ export default function TeacherRegisterPage() {
         throw new Error('Please enter a valid email address')
       }
 
+      console.log('Checking for existing teacher:', formData.email)
+      
       // Check if teacher already exists
       const existingTeacher = await getTeacherByEmail(formData.email)
       
       if (existingTeacher) {
+        console.log('Found existing teacher:', existingTeacher)
+        setSuccess(`Welcome back, ${existingTeacher.name}! Logging you in...`)
         // Login existing teacher
         login(existingTeacher)
-        router.push('/teacher/dashboard')
+        setTimeout(() => router.push('/teacher/dashboard'), 1000)
       } else {
+        console.log('Creating new teacher')
         // Create new teacher
         if (!formData.name.trim()) {
           throw new Error('Please enter your full name')
@@ -55,11 +61,18 @@ export default function TeacherRegisterPage() {
           grade_level: formData.grade_level || undefined
         })
         
+        console.log('Created new teacher:', newTeacher)
+        setSuccess(`Account created successfully! Welcome, ${newTeacher.name}!`)
         login(newTeacher)
-        router.push('/teacher/dashboard?welcome=true')
+        setTimeout(() => router.push('/teacher/dashboard?welcome=true'), 1000)
       }
     } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.')
+      console.error('Teacher registration error:', err)
+      if (err.message?.includes('Supabase not configured')) {
+        setError('Database connection issue. Please try the demo account for now.')
+      } else {
+        setError(err.message || 'Something went wrong. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
@@ -70,6 +83,9 @@ export default function TeacherRegisterPage() {
       ...prev,
       [e.target.name]: e.target.value
     }))
+    // Clear messages when user starts typing
+    if (error) setError('')
+    if (success) setSuccess('')
   }
 
   return (
@@ -130,6 +146,28 @@ export default function TeacherRegisterPage() {
                 🎯 Launch Demo Dashboard
               </button>
             </div>
+            
+            {/* Real Account Section */}
+            <div className="bg-begin-blue/5 p-6 rounded-card mb-8 border border-begin-blue/20">
+              <h3 className="font-bold text-lg text-begin-blue mb-2">📚 Create Your Real Teacher Account</h3>
+              <p className="text-sm text-begin-blue/80 mb-4">
+                Save your data permanently, create real classrooms, and manage your students year after year.
+              </p>
+              <div className="grid md:grid-cols-3 gap-4 text-xs text-begin-blue/70">
+                <div className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span>Permanent data storage</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span>Real classroom management</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span>Multi-year tracking</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Features Preview */}
@@ -154,6 +192,12 @@ export default function TeacherRegisterPage() {
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-card">
               <p className="text-red-800 text-sm">{error}</p>
+            </div>
+          )}
+
+          {success && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-card">
+              <p className="text-green-800 text-sm font-medium">{success}</p>
             </div>
           )}
 
