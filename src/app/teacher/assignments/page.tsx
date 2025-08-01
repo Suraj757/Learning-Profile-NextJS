@@ -18,9 +18,10 @@ import {
 import { useTeacherAuth } from '@/lib/teacher-auth'
 import { getTeacherAssignments } from '@/lib/supabase'
 import type { ProfileAssignment } from '@/lib/supabase'
+import AuthRequired from '@/components/teacher/AuthRequired'
 
 export default function AssignmentsPage() {
-  const { teacher, isAuthenticated } = useTeacherAuth()
+  const { teacher } = useTeacherAuth()
   const [assignments, setAssignments] = useState<ProfileAssignment[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'sent' | 'completed'>('all')
@@ -29,16 +30,11 @@ export default function AssignmentsPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/teacher/register')
-      return
-    }
-
     if (teacher) {
       loadAssignments()
       generateShareUrl()
     }
-  }, [teacher, isAuthenticated, router])
+  }, [teacher])
 
   const loadAssignments = async () => {
     if (!teacher) return

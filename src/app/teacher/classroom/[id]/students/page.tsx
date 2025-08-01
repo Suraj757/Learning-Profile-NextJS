@@ -16,6 +16,7 @@ import {
   Download
 } from 'lucide-react'
 import { useTeacherAuth } from '@/lib/teacher-auth'
+import AuthRequired from '@/components/teacher/AuthRequired'
 import { 
   getClassroomStudents, 
   addStudentToClassroom, 
@@ -25,7 +26,7 @@ import {
 import type { Student, ProfileAssignment, Classroom } from '@/lib/supabase'
 
 export default function ClassroomStudentsPage() {
-  const { teacher, isAuthenticated } = useTeacherAuth()
+  const { teacher } = useTeacherAuth()
   const [students, setStudents] = useState<Student[]>([])
   const [assignments, setAssignments] = useState<ProfileAssignment[]>([])
   const [classroom, setClassroom] = useState<Classroom | null>(null)
@@ -53,15 +54,10 @@ export default function ClassroomStudentsPage() {
   }, [searchParams])
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/teacher/register')
-      return
-    }
-
     if (teacher && classroomId) {
       loadClassroomData()
     }
-  }, [teacher, classroomId, isAuthenticated, router])
+  }, [teacher, classroomId])
 
   const loadClassroomData = async () => {
     try {
@@ -137,23 +133,22 @@ export default function ClassroomStudentsPage() {
     )
   }
 
-  if (!isAuthenticated) {
-    return null
-  }
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-begin-cream flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-begin-teal mx-auto mb-4"></div>
-          <p className="text-begin-blue">Loading classroom...</p>
+      <AuthRequired>
+        <div className="min-h-screen bg-begin-cream flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-begin-teal mx-auto mb-4"></div>
+            <p className="text-begin-blue">Loading classroom...</p>
+          </div>
         </div>
-      </div>
+      </AuthRequired>
     )
   }
 
   return (
-    <div className="min-h-screen bg-begin-cream">
+    <AuthRequired>
+      <div className="min-h-screen bg-begin-cream">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-begin-gray">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -423,5 +418,6 @@ export default function ClassroomStudentsPage() {
         </div>
       </div>
     </div>
+    </AuthRequired>
   )
 }
