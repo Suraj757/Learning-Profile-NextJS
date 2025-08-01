@@ -13,10 +13,14 @@ export function useTeacherAuth() {
     if (storedTeacher) {
       try {
         const teacherData = JSON.parse(storedTeacher)
+        console.log('Found stored teacher:', teacherData)
         setTeacher(teacherData)
       } catch (error) {
+        console.error('Error parsing stored teacher:', error)
         localStorage.removeItem('teacher_session')
       }
+    } else {
+      console.log('No stored teacher session found')
     }
     setLoading(false)
   }, [])

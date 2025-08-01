@@ -101,9 +101,35 @@ export default function TeacherRegisterPage() {
             <h1 className="text-hero font-bold text-begin-blue mb-4">
               Teacher Dashboard Access
             </h1>
-            <p className="text-body-lg text-begin-blue/80 max-w-2xl mx-auto">
+            <p className="text-body-lg text-begin-blue/80 max-w-2xl mx-auto mb-6">
               Manage your classroom learning profiles, assign assessments to parents, and track student progress all in one place.
             </p>
+            
+            {/* Quick Demo Access */}
+            <div className="bg-gradient-to-r from-begin-cyan to-begin-teal text-white p-6 rounded-card mb-8">
+              <h3 className="font-bold text-lg mb-2">🚀 Try It Now!</h3>
+              <p className="text-sm mb-4 opacity-90">
+                Want to see the teacher dashboard immediately? No signup required.
+              </p>
+              <button
+                onClick={() => {
+                  const demoTeacher = {
+                    id: 999,
+                    name: 'Demo Teacher',
+                    email: 'demo@school.edu',
+                    school: 'Demo Elementary School',
+                    grade_level: '3rd Grade',
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                  }
+                  login(demoTeacher)
+                  router.push('/teacher/dashboard?welcome=true')
+                }}
+                className="bg-white text-begin-teal px-6 py-3 rounded-card font-bold hover:bg-begin-cream transition-colors"
+              >
+                🎯 Launch Demo Dashboard
+              </button>
+            </div>
           </div>
 
           {/* Features Preview */}
@@ -235,27 +261,9 @@ export default function TeacherRegisterPage() {
           </form>
 
           <div className="text-center mt-8 pt-6 border-t border-begin-gray">
-            <p className="text-sm text-begin-blue/70 mb-4">
+            <p className="text-sm text-begin-blue/70">
               Already have an account? Just enter your email above to sign in.
             </p>
-            <button
-              onClick={() => {
-                const demoTeacher = {
-                  id: 999,
-                  name: 'Demo Teacher',
-                  email: 'demo@school.edu',
-                  school: 'Demo Elementary School',
-                  grade_level: '3rd Grade',
-                  created_at: new Date().toISOString(),
-                  updated_at: new Date().toISOString()
-                }
-                login(demoTeacher)
-                router.push('/teacher/dashboard?welcome=true')
-              }}
-              className="btn-begin-secondary text-sm px-6 py-2"
-            >
-              Try Demo Teacher Account
-            </button>
           </div>
         </div>
       </div>

@@ -36,12 +36,16 @@ function TeacherDashboardContent() {
   }, [searchParams])
 
   useEffect(() => {
+    console.log('Dashboard auth check:', { authLoading, isAuthenticated, teacher: !!teacher })
+    
     if (!authLoading && !isAuthenticated) {
+      console.log('Redirecting to teacher register - not authenticated')
       router.push('/teacher/register')
       return
     }
 
     if (teacher) {
+      console.log('Loading dashboard data for teacher:', teacher.name)
       loadDashboardData()
     }
   }, [teacher, authLoading, isAuthenticated, router])

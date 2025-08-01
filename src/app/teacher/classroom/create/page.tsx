@@ -32,7 +32,14 @@ export default function CreateClassroomPage() {
 
   if (!isAuthenticated) {
     router.push('/teacher/register')
-    return null
+    return (
+      <div className="min-h-screen bg-begin-cream flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-begin-blue mb-4">Redirecting to teacher login...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-begin-teal mx-auto"></div>
+        </div>
+      </div>
+    )
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
