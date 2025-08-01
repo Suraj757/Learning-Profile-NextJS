@@ -112,12 +112,14 @@ CREATE POLICY "Anyone can insert results" ON results
 
 -- Teachers table for teacher functionality
 CREATE TABLE IF NOT EXISTS teachers (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     school TEXT,
+    grade_level TEXT,
     classroom_name TEXT,
     invite_code TEXT UNIQUE NOT NULL,
+    ambassador_status BOOLEAN DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -190,5 +192,67 @@ CREATE TRIGGER update_teachers_updated_at
 
 CREATE TRIGGER update_assessment_progress_updated_at 
     BEFORE UPDATE ON assessment_progress 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- Additional tables for teacher functionality
+CREATE TABLE IF NOT EXISTS classrooms (
+    id SERIAL PRIMARY KEY,
+    teacher_id INTEGER REFERENCES teachers(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    grade_level TEXT NOT NULL,
+    school_year TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_classrooms_teacher_id ON classrooms(teacher_id);
+
+ALTER TABLE classrooms ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Teachers can manage their classrooms" ON classrooms FOR ALL USING (true);
+
+CREATE TABLE IF NOT EXISTS students (
+    id SERIAL PRIMARY KEY,
+    classroom_id INTEGER REFERENCES classrooms(id) ON DELETE CASCADE,
+    child_name TEXT NOT NULL,
+    parent_email TEXT NOT NULL,
+    grade_level TEXT NOT NULL,
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_students_classroom_id ON students(classroom_id);
+CREATE INDEX IF NOT EXISTS idx_students_parent_email ON students(parent_email);
+
+ALTER TABLE students ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Students are viewable by teachers" ON students FOR ALL USING (true);
+
+CREATE TABLE IF NOT EXISTS profile_assignments (
+    id SERIAL PRIMARY KEY,
+    teacher_id INTEGER REFERENCES teachers(id) ON DELETE CASCADE,
+    parent_email TEXT NOT NULL,
+    child_name TEXT NOT NULL,
+    assignment_token TEXT UNIQUE NOT NULL,
+    status TEXT DEFAULT 'sent' CHECK (status IN ('sent', 'completed')),
+    assessment_id INTEGER,
+    assigned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    completed_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE INDEX IF NOT EXISTS idx_profile_assignments_teacher_id ON profile_assignments(teacher_id);
+CREATE INDEX IF NOT EXISTS idx_profile_assignments_token ON profile_assignments(assignment_token);
+
+ALTER TABLE profile_assignments ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Teachers can manage their assignments" ON profile_assignments FOR ALL USING (true);
+
+-- Update triggers for new tables
+CREATE TRIGGER update_classrooms_updated_at 
+    BEFORE UPDATE ON classrooms 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_students_updated_at 
+    BEFORE UPDATE ON students 
     FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
