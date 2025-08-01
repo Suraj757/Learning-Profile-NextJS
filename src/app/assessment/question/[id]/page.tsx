@@ -12,6 +12,7 @@ export default function QuestionPage() {
   const [childName, setChildName] = useState('')
   const [selectedValue, setSelectedValue] = useState<number | null>(null)
   const [responses, setResponses] = useState<Record<number, number>>({})
+  const [showDebugPanel, setShowDebugPanel] = useState(false)
 
   const question = QUESTIONS.find(q => q.id === questionId)
   const totalQuestions = QUESTIONS.length
@@ -74,6 +75,21 @@ export default function QuestionPage() {
     }
   }
 
+  // Debug function to auto-complete the quiz
+  const autoCompleteQuiz = (profileType: 'creative' | 'analytical' | 'collaborative' | 'confident') => {
+    const testResponses = {
+      creative: { 1: 5, 2: 4, 3: 5, 4: 3, 5: 5, 6: 4, 7: 3, 8: 4, 9: 5, 10: 4, 11: 3, 12: 5, 13: 4, 14: 3, 15: 4, 16: 5, 17: 4, 18: 3, 19: 4, 20: 5, 21: 4, 22: 3, 23: 4, 24: 5 },
+      analytical: { 1: 3, 2: 5, 3: 2, 4: 5, 5: 3, 6: 5, 7: 4, 8: 5, 9: 3, 10: 4, 11: 5, 12: 3, 13: 5, 14: 4, 15: 5, 16: 3, 17: 5, 18: 4, 19: 5, 20: 3, 21: 5, 22: 4, 23: 5, 24: 3 },
+      collaborative: { 1: 4, 2: 3, 3: 5, 4: 4, 5: 4, 6: 3, 7: 5, 8: 3, 9: 4, 10: 5, 11: 3, 12: 4, 13: 3, 14: 5, 15: 3, 16: 4, 17: 3, 18: 5, 19: 3, 20: 4, 21: 3, 22: 5, 23: 3, 24: 4 },
+      confident: { 1: 4, 2: 4, 3: 4, 4: 4, 5: 4, 6: 4, 7: 4, 8: 4, 9: 4, 10: 4, 11: 4, 12: 4, 13: 4, 14: 4, 15: 4, 16: 4, 17: 4, 18: 4, 19: 4, 20: 4, 21: 4, 22: 4, 23: 4, 24: 4 }
+    }
+
+    const selectedResponses = testResponses[profileType]
+    setResponses(selectedResponses)
+    sessionStorage.setItem('assessmentResponses', JSON.stringify(selectedResponses))
+    router.push('/assessment/complete')
+  }
+
   if (!question) {
     return <div>Question not found</div>
   }
@@ -92,8 +108,16 @@ export default function QuestionPage() {
               <BookOpen className="h-8 w-8 text-begin-blue" />
               <span className="text-2xl font-bold text-begin-blue">Begin Learning Profile</span>
             </Link>
-            <div className="text-sm text-gray-600">
-              Question {questionId} of {totalQuestions}
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-600">
+                Question {questionId} of {totalQuestions}
+              </div>
+              <button
+                onClick={() => setShowDebugPanel(!showDebugPanel)}
+                className="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-gray-600"
+              >
+                🐛 Debug
+              </button>
             </div>
           </div>
         </div>
@@ -144,6 +168,46 @@ export default function QuestionPage() {
           </div>
         </div>
       </div>
+
+      {/* Debug Panel */}
+      {showDebugPanel && (
+        <div className="bg-yellow-50 border-b border-yellow-200">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <h3 className="text-sm font-bold text-yellow-800 mb-3">🧪 Auto-Complete Quiz</h3>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <button
+                onClick={() => autoCompleteQuiz('creative')}
+                className="px-4 py-2 bg-blue-100 hover:bg-blue-200 rounded text-sm font-medium text-blue-800"
+              >
+                🎨 Creative Profile
+              </button>
+              <button
+                onClick={() => autoCompleteQuiz('analytical')}
+                className="px-4 py-2 bg-green-100 hover:bg-green-200 rounded text-sm font-medium text-green-800"
+              >
+                🧠 Analytical Profile
+              </button>
+              <button
+                onClick={() => autoCompleteQuiz('collaborative')}
+                className="px-4 py-2 bg-purple-100 hover:bg-purple-200 rounded text-sm font-medium text-purple-800"
+              >
+                🤝 Collaborative Profile
+              </button>
+              <button
+                onClick={() => autoCompleteQuiz('confident')}
+                className="px-4 py-2 bg-orange-100 hover:bg-orange-200 rounded text-sm font-medium text-orange-800"
+              >
+                💪 Confident Profile
+              </button>
+            </div>
+            
+            <div className="mt-3 text-xs text-yellow-700">
+              💡 <strong>Click any button above to instantly complete the quiz</strong> and see different learning profile results
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="card-begin p-6 lg:p-8 transform hover:shadow-lg transition-shadow duration-300">

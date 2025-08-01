@@ -10,6 +10,7 @@ function AssessmentStartContent() {
   const [assignmentToken, setAssignmentToken] = useState('')
   const [isTeacherReferred, setIsTeacherReferred] = useState(false)
   const [teacherMessage, setTeacherMessage] = useState('')
+  const [showDebugPanel, setShowDebugPanel] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -42,6 +43,40 @@ function AssessmentStartContent() {
     }
   }
 
+  // Debug functions for testing
+  const createTestProfile = async (childName: string, profileType: 'creative' | 'analytical' | 'collaborative' | 'confident') => {
+    const testResponses = {
+      creative: { 1: 5, 2: 4, 3: 5, 4: 3, 5: 5, 6: 4, 7: 3, 8: 4, 9: 5, 10: 4, 11: 3, 12: 5, 13: 4, 14: 3, 15: 4, 16: 5, 17: 4, 18: 3, 19: 4, 20: 5, 21: 4, 22: 3, 23: 4, 24: 5 },
+      analytical: { 1: 3, 2: 5, 3: 2, 4: 5, 5: 3, 6: 5, 7: 4, 8: 5, 9: 3, 10: 4, 11: 5, 12: 3, 13: 5, 14: 4, 15: 5, 16: 3, 17: 5, 18: 4, 19: 5, 20: 3, 21: 5, 22: 4, 23: 5, 24: 3 },
+      collaborative: { 1: 4, 2: 3, 3: 5, 4: 4, 5: 4, 6: 3, 7: 5, 8: 3, 9: 4, 10: 5, 11: 3, 12: 4, 13: 3, 14: 5, 15: 3, 16: 4, 17: 3, 18: 5, 19: 3, 20: 4, 21: 3, 22: 5, 23: 3, 24: 4 },
+      confident: { 1: 4, 2: 4, 3: 4, 4: 4, 5: 4, 6: 4, 7: 4, 8: 4, 9: 4, 10: 4, 11: 4, 12: 4, 13: 4, 14: 4, 15: 4, 16: 4, 17: 4, 18: 4, 19: 4, 20: 4, 21: 4, 22: 4, 23: 4, 24: 4 }
+    }
+
+    try {
+      const response = await fetch('/api/profiles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          child_name: childName,
+          grade: '3rd Grade',
+          responses: testResponses[profileType]
+        })
+      })
+
+      if (response.ok) {
+        const { profile } = await response.json()
+        router.push(`/results/${profile.id}`)
+      }
+    } catch (error) {
+      console.error('Error creating test profile:', error)
+    }
+  }
+
+  const quickFillForm = (childName: string, grade: string) => {
+    setChildName(childName)
+    setGrade(grade)
+  }
+
   const grades = [
     'Pre-K', 'Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', 
     '4th Grade', '5th Grade', '6th Grade', '7th Grade', '8th Grade'
@@ -57,9 +92,119 @@ function AssessmentStartContent() {
               <BookOpen className="h-8 w-8 text-begin-blue" />
               <span className="text-2xl font-bold text-begin-blue">Begin Learning Profile</span>
             </Link>
+            {/* Debug Toggle */}
+            <button
+              onClick={() => setShowDebugPanel(!showDebugPanel)}
+              className="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-gray-600"
+            >
+              🐛 Debug
+            </button>
           </div>
         </div>
       </header>
+
+      {/* Debug Panel */}
+      {showDebugPanel && (
+        <div className="bg-yellow-50 border-b border-yellow-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <h3 className="text-sm font-bold text-yellow-800 mb-3">🧪 Debug Testing Panel</h3>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Quick Form Fill */}
+              <div className="bg-white p-4 rounded-lg border border-yellow-200">
+                <h4 className="font-semibold text-yellow-800 mb-2">Quick Form Fill</h4>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => quickFillForm('Emma', '3rd Grade')}
+                    className="w-full text-left px-3 py-2 bg-yellow-100 hover:bg-yellow-200 rounded text-sm"
+                  >
+                    👧 Emma (3rd Grade)
+                  </button>
+                  <button
+                    onClick={() => quickFillForm('Alex', '5th Grade')}
+                    className="w-full text-left px-3 py-2 bg-yellow-100 hover:bg-yellow-200 rounded text-sm"
+                  >
+                    👦 Alex (5th Grade)
+                  </button>
+                  <button
+                    onClick={() => quickFillForm('Maya', 'Kindergarten')}
+                    className="w-full text-left px-3 py-2 bg-yellow-100 hover:bg-yellow-200 rounded text-sm"
+                  >
+                    👶 Maya (Kindergarten)
+                  </button>
+                </div>
+              </div>
+
+              {/* Instant Test Profiles */}
+              <div className="bg-white p-4 rounded-lg border border-yellow-200">
+                <h4 className="font-semibold text-yellow-800 mb-2">Instant Test Profiles</h4>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => createTestProfile('Creative Clara', 'creative')}
+                    className="w-full text-left px-3 py-2 bg-blue-100 hover:bg-blue-200 rounded text-sm"
+                  >
+                    🎨 Creative Clara
+                  </button>
+                  <button
+                    onClick={() => createTestProfile('Analytical Andy', 'analytical')}
+                    className="w-full text-left px-3 py-2 bg-green-100 hover:bg-green-200 rounded text-sm"
+                  >
+                    🧠 Analytical Andy
+                  </button>
+                  <button
+                    onClick={() => createTestProfile('Social Sam', 'collaborative')}
+                    className="w-full text-left px-3 py-2 bg-purple-100 hover:bg-purple-200 rounded text-sm"
+                  >
+                    🤝 Social Sam
+                  </button>
+                  <button
+                    onClick={() => createTestProfile('Confident Chris', 'confident')}
+                    className="w-full text-left px-3 py-2 bg-orange-100 hover:bg-orange-200 rounded text-sm"
+                  >
+                    💪 Confident Chris
+                  </button>
+                </div>
+              </div>
+
+              {/* Test Teacher Flow */}
+              <div className="bg-white p-4 rounded-lg border border-yellow-200">
+                <h4 className="font-semibold text-yellow-800 mb-2">Teacher Flow Testing</h4>
+                <div className="space-y-2">
+                  <Link
+                    href="/teacher/register"
+                    className="block w-full text-left px-3 py-2 bg-teal-100 hover:bg-teal-200 rounded text-sm"
+                  >
+                    🎓 Teacher Registration
+                  </Link>
+                  <Link
+                    href="/teacher/dashboard"
+                    className="block w-full text-left px-3 py-2 bg-teal-100 hover:bg-teal-200 rounded text-sm"
+                  >
+                    📊 Teacher Dashboard
+                  </Link>
+                  <Link
+                    href="/teacher/send-assessment"
+                    className="block w-full text-left px-3 py-2 bg-teal-100 hover:bg-teal-200 rounded text-sm"
+                  >
+                    📧 Send Assessment
+                  </Link>
+                  <Link
+                    href="/teacher/profiles"
+                    className="block w-full text-left px-3 py-2 bg-teal-100 hover:bg-teal-200 rounded text-sm"
+                  >
+                    👥 Student Profiles
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 text-xs text-yellow-700">
+              💡 <strong>Tip:</strong> Instant Test Profiles skip the assessment and create results immediately. 
+              Quick Form Fill just populates the form fields above.
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="card-begin p-8 lg:p-12">
