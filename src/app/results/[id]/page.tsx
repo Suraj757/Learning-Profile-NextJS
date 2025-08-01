@@ -24,9 +24,29 @@ export default function ResultsPage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`/api/profiles/${params.id}`)
+        let response = await fetch(`/api/profiles/${params.id}`)
         
         if (!response.ok) {
+          // Try sample profiles as fallback
+          response = await fetch(`/api/sample-profiles/${params.id}`)
+          
+          if (response.ok) {
+            const { profile } = await response.json()
+            // Transform sample profile to match interface
+            const transformedProfile: ProfileData = {
+              id: profile.id,
+              childName: profile.child_name,
+              grade: profile.grade || profile.grade_level || '3rd Grade',
+              scores: profile.scores,
+              personalityLabel: profile.personality_label,
+              description: profile.description || 'A unique learner with special strengths and talents.',
+              createdAt: profile.created_at || new Date().toISOString()
+            }
+            setProfileData(transformedProfile)
+            setLoading(false)
+            return
+          }
+          
           if (response.status === 404) {
             // Profile not found, try sessionStorage as fallback
             const latestProfile = sessionStorage.getItem('latestProfile')

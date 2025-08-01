@@ -63,7 +63,7 @@ export default function HomePage() {
               <ArrowRight className="h-5 w-5" />
             </Link>
             <Link 
-              href="#preview"
+              href="/demo"
               className="btn-begin-secondary min-w-64 text-lg py-5"
             >
               See Real Results First
@@ -118,56 +118,65 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Dashboard Preview */}
+      {/* Real Examples Preview */}
       <section id="preview" className="section-begin bg-begin-gray/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-hero font-bold text-begin-blue mb-6 text-balance">See What You&apos;ll Get</h2>
             <p className="text-body-lg text-begin-blue/80 max-w-3xl mx-auto">
-              Interactive learning profiles that help both teachers and parents understand your child
+              Browse real learning profiles from diverse families and see the depth of insights you'll receive
             </p>
           </div>
           
-          <div className="bg-white rounded-card shadow-lg p-8 lg:p-12 max-w-5xl mx-auto">
-            <div className="text-center">
-              <div className="bg-gradient-to-r from-begin-teal to-begin-cyan text-white rounded-card p-8 mb-8">
-                <h3 className="text-heading-lg font-bold mb-3">Emma&apos;s Learning Profile</h3>
-                <p className="text-body-lg opacity-90">Creative Collaborator</p>
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <div className="bg-white rounded-card shadow-lg p-6 hover:shadow-xl transition-shadow">
+              <div className="bg-gradient-to-br from-pink-500 to-purple-500 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                <span className="text-white text-2xl">🎨</span>
               </div>
-              
-              <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-begin-light-blue/20 p-6 rounded-card border border-begin-light-blue/30">
-                  <div className="text-heading font-bold text-begin-teal mb-2">Communication</div>
-                  <div className="text-body text-begin-blue/70">High Strength</div>
-                </div>
-                <div className="bg-begin-cyan/10 p-6 rounded-card border border-begin-cyan/30">
-                  <div className="text-heading font-bold text-begin-teal mb-2">Creative Innovation</div>
-                  <div className="text-body text-begin-blue/70">High Strength</div>
-                </div>
-                <div className="bg-begin-gray/50 p-6 rounded-card border border-begin-gray">
-                  <div className="text-heading font-bold text-begin-blue mb-2">Collaboration</div>
-                  <div className="text-body text-begin-blue/70">Developing</div>
-                </div>
-              </div>
-              
-              <div className="text-left bg-begin-cream p-6 rounded-card border border-begin-gray">
-                <h4 className="text-heading font-bold text-begin-blue mb-4">Recommended for Emma:</h4>
-                <ul className="space-y-3 text-body text-begin-blue/80">
-                  <li className="flex items-center gap-3">
-                    <span className="text-begin-teal font-medium">•</span>
-                    Begin Creative App - Art & Storytelling
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="text-begin-teal font-medium">•</span>
-                    Creative Arts Learning Kit
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="text-begin-teal font-medium">•</span>
-                    Creative Writing Workshop (Live Class)
-                  </li>
-                </ul>
-              </div>
+              <h3 className="text-heading font-bold text-begin-blue mb-2">Emma, 8 years old</h3>
+              <p className="text-body text-begin-teal font-medium mb-3">Creative Collaborator</p>
+              <p className="text-body text-begin-blue/70 mb-4">Thrives in group art projects and loves helping other students feel included.</p>
+              <Link href="/demo/emma-creative-collaborator" className="text-begin-teal hover:text-begin-blue font-medium text-sm">
+                View Full Profile →
+              </Link>
             </div>
+            
+            <div className="bg-white rounded-card shadow-lg p-6 hover:shadow-xl transition-shadow">
+              <div className="bg-gradient-to-br from-blue-500 to-indigo-500 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                <span className="text-white text-2xl">🧠</span>
+              </div>
+              <h3 className="text-heading font-bold text-begin-blue mb-2">Marcus, 10 years old</h3>
+              <p className="text-body text-begin-teal font-medium mb-3">Analytical Scholar</p>
+              <p className="text-body text-begin-blue/70 mb-4">Loves deep research projects and asks questions that make everyone think.</p>
+              <Link href="/demo/marcus-analytical-scholar" className="text-begin-teal hover:text-begin-blue font-medium text-sm">
+                View Full Profile →
+              </Link>
+            </div>
+            
+            <div className="bg-white rounded-card shadow-lg p-6 hover:shadow-xl transition-shadow">
+              <div className="bg-gradient-to-br from-green-500 to-emerald-500 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                <span className="text-white text-2xl">🤝</span>
+              </div>
+              <h3 className="text-heading font-bold text-begin-blue mb-2">Sofia, 6 years old</h3>
+              <p className="text-body text-begin-teal font-medium mb-3">Social Connector</p>
+              <p className="text-body text-begin-blue/70 mb-4">Natural classroom helper who makes sure everyone feels welcome and understood.</p>
+              <Link href="/demo/sofia-social-connector" className="text-begin-teal hover:text-begin-blue font-medium text-sm">
+                View Full Profile →
+              </Link>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <Link 
+              href="/demo"
+              className="btn-begin-primary inline-flex items-center gap-3"
+            >
+              Browse All Sample Profiles
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+            <p className="text-sm text-begin-blue/60 mt-4">
+              See profiles from Kindergarten through 8th grade • All learning types included
+            </p>
           </div>
         </div>
       </section>

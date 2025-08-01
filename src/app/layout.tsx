@@ -1,21 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import dynamic from 'next/dynamic';
 import "./globals.css";
 
-// Dynamically import performance monitor to avoid affecting initial bundle
-const PerformanceMonitor = dynamic(
-  () => import('../components/optimized/PerformanceMonitor'),
-  { ssr: false }
-);
-
-// Optimized font loading with display swap and preload
 const inter = Inter({
-  variable: "--font-inter",
   subsets: ["latin"],
-  display: "swap",
-  preload: true,
-  fallback: ['system-ui', '-apple-system', 'sans-serif'],
 });
 
 export const metadata: Metadata = {
@@ -89,19 +77,8 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#007A72" />
         <meta name="msapplication-tap-highlight" content="no" />
       </head>
-      <body
-        className={`${inter.variable} antialiased font-sans`}
-        suppressHydrationWarning={true}
-      >
+      <body className={`${inter.className} antialiased`}>
         {children}
-        {/* Performance monitoring in development */}
-        {process.env.NODE_ENV === 'development' && (
-          <PerformanceMonitor enabled={true} showDebugInfo={true} />
-        )}
-        {/* Performance monitoring in production (analytics only) */}
-        {process.env.NODE_ENV === 'production' && (
-          <PerformanceMonitor enabled={true} showDebugInfo={false} />
-        )}
       </body>
     </html>
   );
