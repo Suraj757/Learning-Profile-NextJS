@@ -1,79 +1,127 @@
+import Link from 'next/link'
+import { BookOpen } from 'lucide-react'
+
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* Header Skeleton */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8 animate-pulse">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-4">
-              <div className="w-14 h-14 bg-gray-200 rounded-full"></div>
-              <div>
-                <div className="h-8 bg-gray-200 rounded w-64 mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-32"></div>
+    <div className="min-h-screen bg-begin-cream">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <Link href="/" className="flex items-center space-x-2">
+              <BookOpen className="h-8 w-8 text-begin-blue" />
+              <span className="text-2xl font-bold text-begin-blue">Begin Learning Profile</span>
+            </Link>
+            <div className="flex items-center gap-3">
+              <div className="w-20 h-10 bg-gray-200 rounded-2xl animate-pulse"></div>
+              <div className="w-20 h-10 bg-gray-200 rounded-2xl animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Profile Header Skeleton */}
+        <div className="card-begin p-8 mb-8 animate-pulse">
+          <div className="text-center mb-8">
+            <div className="bg-gray-200 rounded-2xl p-6 mb-6 max-w-2xl mx-auto h-32"></div>
+            
+            <div className="grid md:grid-cols-3 gap-4 max-w-2xl mx-auto mb-6">
+              <div className="text-center">
+                <div className="h-8 bg-gray-200 rounded w-16 mx-auto mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-20 mx-auto"></div>
+              </div>
+              <div className="text-center">
+                <div className="h-8 bg-gray-200 rounded w-8 mx-auto mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-16 mx-auto"></div>
+              </div>
+              <div className="text-center">
+                <div className="h-8 bg-gray-200 rounded w-8 mx-auto mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-16 mx-auto"></div>
               </div>
             </div>
-            <div className="w-32 h-10 bg-gray-200 rounded-full"></div>
           </div>
-          <div className="h-20 bg-gray-200 rounded-lg"></div>
+
+          <div className="bg-begin-cyan/5 p-6 rounded-2xl">
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-full"></div>
+              <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+              <div className="h-4 bg-gray-200 rounded w-5/6 mx-auto"></div>
+            </div>
+          </div>
         </div>
 
-        {/* Main Content Grid Skeleton */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Chart Skeleton */}
-          <div className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
-            <div className="h-6 bg-gray-200 rounded w-48 mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-64 mb-6"></div>
-            <div className="h-80 bg-gray-200 rounded-lg"></div>
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Radar Chart Skeleton */}
+          <div className="card-begin p-6 animate-pulse">
+            <div className="h-6 bg-gray-200 rounded w-48 mx-auto mb-6"></div>
+            <div className="h-80 bg-gray-200 rounded-2xl mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-64 mx-auto"></div>
           </div>
 
-          {/* Breakdown Skeleton */}
-          <div className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
-            <div className="h-6 bg-gray-200 rounded w-48 mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-64 mb-6"></div>
+          {/* Detailed Breakdown Skeleton */}
+          <div className="card-begin p-6 animate-pulse">
+            <div className="h-6 bg-gray-200 rounded w-48 mb-6"></div>
             <div className="space-y-4">
               {Array.from({ length: 6 }, (_, i) => (
-                <div key={i} className="border rounded-lg p-4 bg-gray-50">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-9 h-9 bg-gray-200 rounded-lg"></div>
-                      <div>
-                        <div className="h-4 bg-gray-200 rounded w-24 mb-1"></div>
-                        <div className="h-3 bg-gray-200 rounded w-16"></div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="h-6 bg-gray-200 rounded w-12 mb-1"></div>
-                      <div className="h-3 bg-gray-200 rounded w-16"></div>
+                <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <div className="flex-1">
+                    <div className="h-5 bg-gray-200 rounded w-32 mb-2"></div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 bg-gray-200 rounded-full h-2"></div>
+                      <div className="h-4 bg-gray-200 rounded w-12"></div>
                     </div>
                   </div>
-                  <div className="h-2 bg-gray-200 rounded-full mb-3"></div>
-                  <div className="space-y-2">
-                    <div className="h-3 bg-gray-200 rounded w-full"></div>
-                    <div className="h-3 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-3 bg-gray-200 rounded w-5/6"></div>
-                  </div>
+                  <div className="w-20 h-6 bg-gray-200 rounded-full"></div>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Action Items Skeleton */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 3 }, (_, i) => (
-            <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
-                <div className="h-6 bg-gray-200 rounded w-48"></div>
+        {/* Recommendations Skeleton */}
+        <div className="card-begin p-8 mt-8 animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-64 mx-auto mb-6"></div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 3 }, (_, i) => (
+              <div key={i} className="bg-gradient-to-br from-begin-teal/5 to-begin-cyan/5 p-6 rounded-2xl border border-begin-teal/10">
+                <div className="w-12 h-12 bg-gray-200 rounded mb-3"></div>
+                <div className="h-5 bg-gray-200 rounded w-32 mb-2"></div>
+                <div className="space-y-2 mb-4">
+                  <div className="h-3 bg-gray-200 rounded w-full"></div>
+                  <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                </div>
+                <div className="w-20 h-8 bg-gray-200 rounded"></div>
               </div>
-              <div className="h-4 bg-gray-200 rounded w-full mb-4"></div>
-              <div className="space-y-3">
-                <div className="h-16 bg-gray-200 rounded-lg"></div>
-                <div className="h-16 bg-gray-200 rounded-lg"></div>
-                <div className="h-16 bg-gray-200 rounded-lg"></div>
+            ))}
+          </div>
+        </div>
+
+        {/* Action Items Skeleton */}
+        <div className="card-begin p-8 mt-8 animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-48 mx-auto mb-6"></div>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div>
+              <div className="h-5 bg-gray-200 rounded w-32 mb-4"></div>
+              <div className="space-y-2">
+                {Array.from({ length: 4 }, (_, i) => (
+                  <div key={i} className="h-4 bg-gray-200 rounded w-full"></div>
+                ))}
               </div>
             </div>
-          ))}
+            <div>
+              <div className="h-5 bg-gray-200 rounded w-32 mb-4"></div>
+              <div className="space-y-2">
+                {Array.from({ length: 4 }, (_, i) => (
+                  <div key={i} className="h-4 bg-gray-200 rounded w-full"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex justify-center mt-8">
+            <div className="w-40 h-12 bg-gray-200 rounded-2xl"></div>
+          </div>
         </div>
       </div>
     </div>

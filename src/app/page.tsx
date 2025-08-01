@@ -25,31 +25,55 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="section-begin px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center">
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 max-w-3xl mx-auto">
+            <p className="text-red-700 text-body font-medium">
+              😰 <strong>Back-to-School Anxiety?</strong> Will your child&apos;s teacher really &quot;get&quot; them this year?
+            </p>
+          </div>
+          
           <h1 className="text-display md:text-display font-bold text-begin-blue mb-8 text-balance">
-            Help Your Child&apos;s Teacher Understand Their{' '}
-            <span className="text-begin-teal">Unique Learning Style</span>{' '}
-            from Day 1
+            Get Your Child&apos;s{' '}
+            <span className="text-begin-teal">Learning Superpowers</span>{' '}
+            Into Their Teacher&apos;s Hands by Day 1
           </h1>
           
-          <p className="text-body-lg text-begin-blue/80 mb-10 max-w-4xl mx-auto leading-relaxed">
-            Join 50,000+ families using Begin Learning Profiles to strengthen school-home connections. 
-            Get personalized insights and Begin product recommendations tailored to your child&apos;s learning strengths.
+          <p className="text-body-lg text-begin-blue/80 mb-6 max-w-4xl mx-auto leading-relaxed">
+            <strong>Join 50,000+ families</strong> who&apos;ve eliminated back-to-school guesswork with personalized learning profiles. 
+            Get specific strategies, Begin product recommendations, and teacher conversation starters.
           </p>
+          
+          <div className="flex items-center justify-center gap-4 text-sm text-begin-blue/70 mb-10">
+            <span className="flex items-center gap-1">
+              ⏱️ <strong>5 minutes</strong> to complete
+            </span>
+            <span className="flex items-center gap-1">
+              🎯 <strong>24 questions</strong> based on classroom research
+            </span>
+            <span className="flex items-center gap-1">
+              📊 <strong>Instant results</strong> with action plan
+            </span>
+          </div>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Link 
               href="/assessment/start"
-              className="btn-begin-primary flex items-center justify-center gap-3 min-w-64"
+              className="btn-begin-primary flex items-center justify-center gap-3 min-w-64 text-lg py-5"
             >
-              Start Learning Profile
+              🚀 Get My Child&apos;s Profile Now
               <ArrowRight className="h-5 w-5" />
             </Link>
             <Link 
               href="#preview"
-              className="btn-begin-secondary min-w-64"
+              className="btn-begin-secondary min-w-64 text-lg py-5"
             >
-              See Example Results
+              See Real Results First
             </Link>
+          </div>
+          
+          <div className="mt-8 text-center">
+            <p className="text-sm text-begin-blue/60">
+              ✅ <strong>Free forever</strong> • ✅ <strong>No email required</strong> • ✅ <strong>Instant results</strong>
+            </p>
           </div>
         </div>
       </section>
@@ -153,10 +177,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-hero font-bold text-begin-blue mb-6 text-balance">
-              Trusted by Teachers & Parents
+              Why 50,000+ Families Love This
             </h2>
             <p className="text-body-lg text-begin-blue/80 max-w-3xl mx-auto">
-              Real stories from families and educators using Begin Learning Profiles
+              <strong>&quot;Finally, a way to help my child&apos;s teacher understand them from Day 1!&quot;</strong>
             </p>
           </div>
           
@@ -189,11 +213,17 @@ export default function HomePage() {
       {/* CTA Section */}
       <section className="section-begin bg-begin-teal text-white">
         <div className="max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <div className="bg-yellow-100 border border-yellow-300 rounded-2xl p-4 mb-8 max-w-3xl mx-auto">
+            <p className="text-yellow-800 text-body font-medium">
+              ⏰ <strong>School starts soon!</strong> Get your child&apos;s profile ready before teacher meetings.
+            </p>
+          </div>
+          
           <h2 className="text-hero font-bold mb-6 text-balance">
-            Ready to Discover Your Child&apos;s Learning Language?
+            Don&apos;t Let Your Child Get Lost in the Classroom
           </h2>
           <p className="text-body-lg mb-10 opacity-90 max-w-4xl mx-auto leading-relaxed">
-            Join thousands of families strengthening the school-home connection with personalized learning insights.
+            <strong>Take 5 minutes now</strong> to give your child&apos;s teacher the roadmap they need to help your child thrive from Day 1.
           </p>
           <Link 
             href="/assessment/start"

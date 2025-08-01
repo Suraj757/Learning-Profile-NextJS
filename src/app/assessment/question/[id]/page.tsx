@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
-import { BookOpen, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react'
-import { QUESTIONS } from '@/lib/questions'
+import { BookOpen, ArrowLeft, ArrowRight, CheckCircle, Sparkles, Star, Heart } from 'lucide-react'
+import { QUESTIONS, PARENT_SCALE, PROGRESS_MESSAGES, CATEGORY_METADATA } from '@/lib/questions'
 
 export default function QuestionPage() {
   const params = useParams()
@@ -16,6 +16,19 @@ export default function QuestionPage() {
   const question = QUESTIONS.find(q => q.id === questionId)
   const totalQuestions = QUESTIONS.length
   const progress = (questionId / totalQuestions) * 100
+  const categoryInfo = question ? CATEGORY_METADATA[question.category] : null
+  const progressMessage = PROGRESS_MESSAGES.find(p => p.at === questionId)
+  
+  // Celebrate milestones
+  const [showCelebration, setShowCelebration] = useState(false)
+  
+  useEffect(() => {
+    if (progressMessage) {
+      setShowCelebration(true)
+      const timer = setTimeout(() => setShowCelebration(false), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [progressMessage])
 
   useEffect(() => {
     // Load child name and existing responses from sessionStorage
@@ -66,15 +79,8 @@ export default function QuestionPage() {
   }
 
   const questionText = question.text.replace('[name]', childName)
-
-  // Updated scale for parent context
-  const parentScale = [
-    { value: 1, label: 'Never' },
-    { value: 2, label: 'Rarely' }, 
-    { value: 3, label: 'Sometimes' },
-    { value: 4, label: 'Often' },
-    { value: 5, label: 'Always' }
-  ]
+  const encouragingIntro = question.encouragingIntro?.replace('[name]', childName)
+  const questionExample = question.example?.replace('[name]', childName)
 
   return (
     <div className="min-h-screen bg-begin-cream">
@@ -93,100 +99,184 @@ export default function QuestionPage() {
         </div>
       </header>
 
-      {/* Progress Bar */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Enhanced Progress Bar with Celebration */}
+      <div className="bg-white border-b relative overflow-hidden">
+        {showCelebration && (
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-yellow-500/10 animate-pulse" />
+        )}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="py-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-begin-blue">
-                {childName}&apos;s Learning Profile
-              </span>
-              <span className="text-sm text-gray-600">
-                {Math.round(progress)}% Complete
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-begin-blue">
+                  {childName}&apos;s Learning Journey
+                </span>
+                {categoryInfo && (
+                  <span className="text-lg">{categoryInfo.emoji}</span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {Math.round(progress)}% Complete
+                </span>
+                {progress > 50 && <Star className="h-4 w-4 text-yellow-500" />}
+              </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-200 rounded-full h-3 relative overflow-hidden">
               <div 
-                className="bg-begin-teal h-2 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-begin-teal to-begin-cyan h-3 rounded-full transition-all duration-500 ease-out relative"
                 style={{ width: `${progress}%` }}
-              />
+              >
+                {progress > 10 && (
+                  <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse" />
+                )}
+              </div>
             </div>
+            {progressMessage && showCelebration && (
+              <div className="mt-3 text-center animate-bounce">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
+                  <Sparkles className="h-4 w-4" />
+                  {progressMessage.message}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">{progressMessage.subtext}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="card-begin p-6 lg:p-8">
-          {/* Category Badge */}
+        <div className="card-begin p-6 lg:p-8 transform hover:shadow-lg transition-shadow duration-300">
+          {/* Enhanced Category Badge */}
           <div className="flex justify-center mb-6">
-            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-begin-blue/10 text-begin-blue">
-              {question.category}
-            </span>
+            <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium ${categoryInfo?.lightColor} ${categoryInfo?.color.replace('bg-', 'text-')} shadow-sm`}>
+              <span className="text-lg">{categoryInfo?.emoji}</span>
+              <span>{question.category}</span>
+              <span className="text-xs opacity-75">({questionId}/24)</span>
+            </div>
           </div>
 
-          {/* Question */}
-          <div className="text-center mb-8">
-            <h1 className="text-begin-hero font-bold text-begin-blue mb-4">
-              Question {questionId}
-            </h1>
-            <p className="text-begin-body text-gray-700 max-w-3xl mx-auto leading-relaxed">
-              {questionText}
-            </p>
+          {/* Encouraging Introduction */}
+          {encouragingIntro && (
+            <div className="text-center mb-4">
+              <p className="text-lg font-medium text-begin-blue animate-fade-in">
+                {encouragingIntro}
+              </p>
+            </div>
+          )}
+
+          {/* Main Question */}
+          <div className="text-center mb-6">
+            <div className="bg-gradient-to-br from-begin-blue/5 to-begin-teal/5 p-6 rounded-2xl border border-begin-blue/10">
+              <p className="text-begin-body text-gray-700 max-w-3xl mx-auto leading-relaxed font-medium">
+                {questionText}
+              </p>
+              {questionExample && (
+                <p className="text-sm text-gray-500 mt-3 italic">
+                  {questionExample}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Response Options */}
+          {/* Enhanced Response Options */}
           <div className="space-y-3 mb-8">
-            {parentScale.map((option) => (
+            {PARENT_SCALE.map((option) => (
               <button
                 key={option.value}
                 onClick={() => setSelectedValue(option.value)}
-                className={`w-full p-4 rounded-2xl border-2 transition-all duration-200 text-left ${
+                className={`w-full p-4 rounded-2xl border-2 transition-all duration-300 text-left transform hover:scale-[1.02] hover:shadow-md ${
                   selectedValue === option.value
-                    ? 'border-begin-teal bg-begin-teal/5 text-begin-teal'
-                    : 'border-gray-200 hover:border-begin-teal/30 hover:bg-begin-teal/5'
+                    ? 'border-begin-teal bg-gradient-to-r from-begin-teal/10 to-begin-cyan/10 text-begin-teal shadow-lg scale-[1.02]'
+                    : 'border-gray-200 hover:border-begin-teal/50 hover:bg-begin-teal/5'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">{option.label}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">{option.emoji}</span>
+                    <div>
+                      <span className="font-semibold">{option.label}</span>
+                      <p className="text-xs text-gray-500 mt-0.5">{option.description}</p>
+                    </div>
+                  </div>
                   {selectedValue === option.value && (
-                    <CheckCircle className="h-5 w-5 text-begin-teal" />
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-begin-teal rounded-full flex items-center justify-center animate-pulse">
+                        <CheckCircle className="h-4 w-4 text-white" />
+                      </div>
+                    </div>
                   )}
                 </div>
               </button>
             ))}
           </div>
 
-          {/* Navigation */}
+          {/* Enhanced Navigation */}
           <div className="flex justify-between items-center">
             <button
               onClick={handlePrevious}
               disabled={questionId === 1}
-              className="btn-begin-secondary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="btn-begin-secondary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transform hover:scale-105 transition-transform duration-200"
             >
               <ArrowLeft className="h-4 w-4" />
               Previous
             </button>
 
-            <div className="text-sm text-gray-500">
-              {questionId} of {totalQuestions}
+            <div className="flex flex-col items-center">
+              <div className="text-sm text-gray-500 mb-1">
+                Question {questionId} of {totalQuestions}
+              </div>
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(totalQuestions, 10) }, (_, i) => {
+                  const dotIndex = Math.floor((i * totalQuestions) / 10)
+                  return (
+                    <div
+                      key={i}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        questionId > dotIndex ? 'bg-begin-teal' : 'bg-gray-200'
+                      }`}
+                    />
+                  )
+                })}
+              </div>
             </div>
 
             <button
               onClick={handleNext}
               disabled={selectedValue === null}
-              className="btn-begin-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className={`btn-begin-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transform transition-all duration-200 ${
+                selectedValue !== null ? 'hover:scale-105 shadow-lg hover:shadow-xl' : ''
+              } ${
+                questionId === totalQuestions ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600' : ''
+              }`}
             >
-              {questionId === totalQuestions ? 'Complete' : 'Next'}
-              <ArrowRight className="h-4 w-4" />
+              {questionId === totalQuestions ? (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  Complete Profile! 🎉
+                </>
+              ) : (
+                <>
+                  Next
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
             </button>
           </div>
         </div>
 
-        {/* Help Text */}
+        {/* Enhanced Help Text */}
         <div className="text-center mt-6">
-          <p className="text-sm text-gray-500">
-            Think about how often you observe this behavior in your child at home, school, or other settings.
-          </p>
+          <div className="bg-begin-cream/50 p-4 rounded-2xl border border-begin-cyan/20">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Heart className="h-4 w-4 text-begin-teal" />
+              <span className="text-sm font-medium text-begin-blue">Helpful Tip</span>
+            </div>
+            <p className="text-sm text-gray-600">
+              Think about how often you see this at home, school, or during activities. 
+              There are no wrong answers - every child is unique! ✨
+            </p>
+          </div>
         </div>
       </div>
     </div>

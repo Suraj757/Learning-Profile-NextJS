@@ -35,6 +35,24 @@ body {
 /* Begin Learning Button Styles */
 .btn-begin-primary {
   @apply bg-begin-teal text-white px-8 py-4 rounded-begin text-body-lg font-semibold hover:bg-begin-teal-hover transition-all duration-200 shadow-sm hover:shadow-md;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Enhanced primary button with shimmer effect */
+.btn-begin-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-begin-primary:hover::before {
+  left: 100%;
 }
 
 .btn-begin-secondary {
@@ -59,4 +77,115 @@ h1, h2, h3, h4, h5, h6 {
 
 .text-balance {
   text-wrap: balance;
+}
+
+/* Delightful Animations for Assessment */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes confetti {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes celebration-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes wiggle {
+  0%, 7%, 14%, 21%, 28%, 35%, 42%, 49%, 56%, 63%, 70%, 77%, 84%, 91%, 98%, 100% {
+    transform: rotate(0deg);
+  }
+  1%, 8%, 15%, 22%, 29%, 36%, 43%, 50%, 57%, 64%, 71%, 78%, 85%, 92%, 99% {
+    transform: rotate(-1deg);
+  }
+  3%, 10%, 17%, 24%, 31%, 38%, 45%, 52%, 59%, 66%, 73%, 80%, 87%, 94% {
+    transform: rotate(1deg);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-celebration-pulse {
+  animation: celebration-pulse 2s ease-in-out infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+/* Enhanced hover effects for buttons */
+.btn-begin-primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-begin-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-begin-primary:hover::before {
+  left: 100%;
+}
+
+/* Progress bar animations */
+@keyframes progressFill {
+  from { width: 0%; }
+  to { width: var(--progress-width); }
+}
+
+.progress-animated {
+  animation: progressFill 0.8s ease-out forwards;
+}
+
+/* Micro-interaction for option selection */
+.option-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.option-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.option-card.selected {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(0, 122, 114, 0.2);
+}
+
+/* Confetti animation for celebrations */
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #007A72;
+  animation: confetti 3s linear infinite;
+}
+
+.confetti:nth-child(odd) {
+  background: #00D1FF;
+  animation-delay: 0.5s;
+}
+
+.confetti:nth-child(even) {
+  background: #B1E2FE;
+  animation-delay: 1s;
 }
