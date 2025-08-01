@@ -149,36 +149,59 @@ export default function TeacherRegisterPage() {
                 Want to see the teacher dashboard immediately? No signup required.
               </p>
               <button
-                onClick={() => {
+                onClick={async () => {
                   console.log('Demo button clicked')
                   setLoading(true)
                   
-                  // Simple offline demo that always works
-                  const offlineDemoTeacher = {
-                    id: 999999,
-                    name: 'Demo Teacher',
-                    email: 'demo@offline.local',
-                    school: 'Demo Elementary School',
-                    grade_level: '3rd Grade',
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                    isOfflineDemo: true
-                  }
-                  
                   try {
-                    login(offlineDemoTeacher)
-                    console.log('Demo teacher logged in:', offlineDemoTeacher)
-                    router.push('/teacher/dashboard?welcome=true&demo=offline')
+                    // Try to create or get demo teacher from database
+                    let demoTeacher
+                    const existingDemo = await getTeacherByEmail('demo@school.edu')
+                    
+                    if (existingDemo) {
+                      demoTeacher = existingDemo
+                    } else {
+                      // Create demo teacher in database
+                      demoTeacher = await createTeacher({
+                        email: 'demo@school.edu',
+                        name: 'Demo Teacher',
+                        school: 'Demo Elementary School',
+                        grade_level: '3rd Grade'
+                      })
+                    }
+                    
+                    login(demoTeacher)
+                    router.push('/teacher/dashboard?welcome=true')
                   } catch (error) {
-                    console.error('Demo login failed:', error)
-                    setError('Demo login failed. Please try again.')
+                    console.error('Demo teacher creation failed:', error)
+                    // Fallback to offline demo
+                    const offlineDemoTeacher = {
+                      id: 999999,
+                      name: 'Demo Teacher (Offline)',
+                      email: 'demo@offline.local',
+                      school: 'Demo Elementary School',
+                      grade_level: '3rd Grade',
+                      ambassador_status: false,
+                      created_at: new Date().toISOString(),
+                      isOfflineDemo: true
+                    }
+                    login(offlineDemoTeacher)
+                    router.push('/teacher/dashboard?welcome=true&demo=offline')
                   } finally {
                     setLoading(false)
                   }
                 }}
-                className="bg-white text-begin-teal px-6 py-3 rounded-card font-bold hover:bg-begin-cream transition-colors"
+                disabled={loading}
+                className="bg-white text-begin-teal px-6 py-3 rounded-card font-bold hover:bg-begin-cream transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                🎯 Launch Demo Dashboard
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-begin-teal mr-2"></div>
+                    Loading Demo...
+                  </>
+                ) : (
+                  '🎯 Launch Demo Dashboard'
+                )}
               </button>
             </div>
             
