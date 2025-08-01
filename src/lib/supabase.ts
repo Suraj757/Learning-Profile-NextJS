@@ -137,6 +137,8 @@ export interface Teacher {
   grade_level?: string
   ambassador_status: boolean
   created_at: string
+  isOfflineDemo?: boolean
+  isOfflineAccount?: boolean
 }
 
 export interface AssessmentResult {

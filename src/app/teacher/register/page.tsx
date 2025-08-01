@@ -36,24 +36,30 @@ export default function TeacherRegisterPage() {
         throw new Error('Please enter a valid email address')
       }
 
-      console.log('Checking for existing teacher:', formData.email)
+      if (!formData.name.trim()) {
+        throw new Error('Please enter your full name')
+      }
+
+      console.log('Processing teacher registration:', formData.email)
       
-      // Check if teacher already exists
-      const existingTeacher = await getTeacherByEmail(formData.email)
-      
-      if (existingTeacher) {
-        console.log('Found existing teacher:', existingTeacher)
-        setSuccess(`Welcome back, ${existingTeacher.name}! Logging you in...`)
-        // Login existing teacher
-        login(existingTeacher)
-        setTimeout(() => router.push('/teacher/dashboard'), 1000)
-      } else {
-        console.log('Creating new teacher')
-        // Create new teacher
-        if (!formData.name.trim()) {
-          throw new Error('Please enter your full name')
-        }
+      try {
+        // Try to check if teacher already exists
+        const existingTeacher = await getTeacherByEmail(formData.email)
         
+        if (existingTeacher) {
+          console.log('Found existing teacher:', existingTeacher)
+          setSuccess(`Welcome back, ${existingTeacher.name}! Logging you in...`)
+          login(existingTeacher)
+          setTimeout(() => router.push('/teacher/dashboard'), 1000)
+          return
+        }
+      } catch (dbError: any) {
+        console.log('Database check failed, will create offline account:', dbError.message)
+      }
+
+      try {
+        // Try to create new teacher in database
+        console.log('Creating new teacher in database')
         const newTeacher = await createTeacher({
           email: formData.email,
           name: formData.name,
@@ -65,14 +71,29 @@ export default function TeacherRegisterPage() {
         setSuccess(`Account created successfully! Welcome, ${newTeacher.name}!`)
         login(newTeacher)
         setTimeout(() => router.push('/teacher/dashboard?welcome=true'), 1000)
+      } catch (dbError: any) {
+        console.log('Database creation failed, creating offline account:', dbError.message)
+        
+        // Create offline teacher account if database is unavailable
+        const offlineTeacher = {
+          id: Date.now(), // Use timestamp as unique ID
+          email: formData.email,
+          name: formData.name,
+          school: formData.school || undefined,
+          grade_level: formData.grade_level || undefined,
+          ambassador_status: false,
+          created_at: new Date().toISOString(),
+          isOfflineAccount: true
+        }
+        
+        console.log('Created offline teacher account:', offlineTeacher)
+        setSuccess(`Account created successfully! Welcome, ${offlineTeacher.name}! (Offline mode)`)
+        login(offlineTeacher)
+        setTimeout(() => router.push('/teacher/dashboard?welcome=true&offline=true'), 1000)
       }
     } catch (err: any) {
       console.error('Teacher registration error:', err)
-      if (err.message?.includes('Supabase not configured')) {
-        setError('Database connection issue. Please try the demo account for now.')
-      } else {
-        setError(err.message || 'Something went wrong. Please try again.')
-      }
+      setError(err.message || 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }

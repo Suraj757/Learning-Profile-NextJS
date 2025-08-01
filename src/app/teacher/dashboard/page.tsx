@@ -55,9 +55,9 @@ function TeacherDashboardContent() {
     if (!teacher) return
 
     try {
-      // Check if this is a demo teacher and create demo data if needed
-      if (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo) {
-        if (!teacher.isOfflineDemo) {
+      // Check if this is a demo teacher or offline account and create demo data if needed
+      if (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo || teacher.isOfflineAccount) {
+        if (!teacher.isOfflineDemo && !teacher.isOfflineAccount) {
           // Only create demo data if we have a real database connection
           await createDemoDataForTeacher(teacher.id)
         }
@@ -68,9 +68,9 @@ function TeacherDashboardContent() {
         getTeacherAssignments(teacher.id)
       ])
       
-      // If no data found and this is a demo teacher, use fallback demo data
+      // If no data found and this is a demo teacher or offline account, use fallback demo data
       if ((!classroomsData || classroomsData.length === 0) && 
-          (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo)) {
+          (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo || teacher.isOfflineAccount)) {
         const demoData = getDemoReportsData(teacher.id)
         setClassrooms(demoData.classrooms as any)
         setAssignments(demoData.assignments as any)
@@ -81,8 +81,8 @@ function TeacherDashboardContent() {
     } catch (error) {
       console.error('Error loading dashboard data:', error)
       
-      // If error and demo teacher, fall back to demo data
-      if (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo) {
+      // If error and demo teacher or offline account, fall back to demo data
+      if (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo || teacher.isOfflineAccount) {
         const demoData = getDemoReportsData(teacher.id)
         setClassrooms(demoData.classrooms as any)
         setAssignments(demoData.assignments as any)
