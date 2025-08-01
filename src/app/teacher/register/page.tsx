@@ -128,41 +128,31 @@ export default function TeacherRegisterPage() {
                 Want to see the teacher dashboard immediately? No signup required.
               </p>
               <button
-                onClick={async () => {
+                onClick={() => {
+                  console.log('Demo button clicked')
+                  setLoading(true)
+                  
+                  // Simple offline demo that always works
+                  const offlineDemoTeacher = {
+                    id: 999999,
+                    name: 'Demo Teacher',
+                    email: 'demo@offline.local',
+                    school: 'Demo Elementary School',
+                    grade_level: '3rd Grade',
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    isOfflineDemo: true
+                  }
+                  
                   try {
-                    // Try to create or get demo teacher from database
-                    let demoTeacher
-                    const existingDemo = await getTeacherByEmail('demo@school.edu')
-                    
-                    if (existingDemo) {
-                      demoTeacher = existingDemo
-                    } else {
-                      // Create demo teacher in database
-                      demoTeacher = await createTeacher({
-                        email: 'demo@school.edu',
-                        name: 'Demo Teacher',
-                        school: 'Demo Elementary School',
-                        grade_level: '3rd Grade'
-                      })
-                    }
-                    
-                    login(demoTeacher)
-                    router.push('/teacher/dashboard?welcome=true')
-                  } catch (error) {
-                    console.error('Demo teacher creation failed:', error)
-                    // Fallback to offline demo
-                    const offlineDemoTeacher = {
-                      id: 999999, // Use a very high ID that won't conflict
-                      name: 'Demo Teacher (Offline)',
-                      email: 'demo@offline.local',
-                      school: 'Demo Elementary School',
-                      grade_level: '3rd Grade',
-                      created_at: new Date().toISOString(),
-                      updated_at: new Date().toISOString(),
-                      isOfflineDemo: true
-                    }
                     login(offlineDemoTeacher)
+                    console.log('Demo teacher logged in:', offlineDemoTeacher)
                     router.push('/teacher/dashboard?welcome=true&demo=offline')
+                  } catch (error) {
+                    console.error('Demo login failed:', error)
+                    setError('Demo login failed. Please try again.')
+                  } finally {
+                    setLoading(false)
                   }
                 }}
                 className="bg-white text-begin-teal px-6 py-3 rounded-card font-bold hover:bg-begin-cream transition-colors"
