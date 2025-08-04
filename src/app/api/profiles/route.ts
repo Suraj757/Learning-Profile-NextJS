@@ -22,6 +22,11 @@ export async function POST(request: NextRequest) {
     
     // Check if Supabase is configured
     if (!supabase) {
+      console.log('Supabase not configured, using fallback mode')
+      console.log('Environment check:', {
+        url: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'set' : 'not set',
+        key: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'set' : 'not set'
+      })
       // Fallback for local development - create mock profile data
       profile = {
         id: Math.random().toString(36).substring(2, 15),
@@ -37,6 +42,7 @@ export async function POST(request: NextRequest) {
         created_at: new Date().toISOString()
       }
     } else {
+      console.log('Supabase configured, attempting to save to database')
       // Save assessment result to Supabase
       const { data: profileData, error: profileError } = await supabase
         .from('assessment_results')
@@ -55,9 +61,15 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (profileError) {
-        console.error('Error saving profile:', profileError)
+        console.error('Error saving profile:', {
+          error: profileError,
+          message: profileError.message,
+          details: profileError.details,
+          hint: profileError.hint,
+          code: profileError.code
+        })
         return NextResponse.json(
-          { error: 'Failed to save profile' },
+          { error: `Failed to save profile: ${profileError.message || 'Unknown error'}` },
           { status: 500 }
         )
       }

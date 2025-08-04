@@ -235,7 +235,7 @@ CREATE TABLE IF NOT EXISTS profile_assignments (
     child_name TEXT NOT NULL,
     assignment_token TEXT UNIQUE NOT NULL,
     status TEXT DEFAULT 'sent' CHECK (status IN ('sent', 'completed')),
-    assessment_id INTEGER,
+    assessment_id INTEGER REFERENCES assessment_results(id) ON DELETE SET NULL,
     assigned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     completed_at TIMESTAMP WITH TIME ZONE
 );
@@ -245,6 +245,33 @@ CREATE INDEX IF NOT EXISTS idx_profile_assignments_token ON profile_assignments(
 
 ALTER TABLE profile_assignments ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Teachers can manage their assignments" ON profile_assignments FOR ALL USING (true);
+
+-- Assessment Results table (for teacher assignments)
+CREATE TABLE IF NOT EXISTS assessment_results (
+    id SERIAL PRIMARY KEY,
+    child_name TEXT NOT NULL,
+    age INTEGER DEFAULT 0,
+    scores JSONB NOT NULL,
+    personality_label TEXT NOT NULL,
+    raw_responses JSONB NOT NULL,
+    email TEXT DEFAULT '',
+    birth_month INTEGER DEFAULT 1,
+    birth_year INTEGER DEFAULT EXTRACT(YEAR FROM NOW()),
+    grade_level TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_assessment_results_created_at ON assessment_results(created_at);
+CREATE INDEX IF NOT EXISTS idx_assessment_results_child_name ON assessment_results(child_name);
+
+-- RLS for assessment_results table
+ALTER TABLE assessment_results ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can create assessment results" ON assessment_results
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Anyone can view assessment results" ON assessment_results
+    FOR SELECT USING (true);
 
 -- Update triggers for new tables
 CREATE TRIGGER update_classrooms_updated_at 

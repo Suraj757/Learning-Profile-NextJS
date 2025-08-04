@@ -33,9 +33,31 @@ export async function GET(
       return NextResponse.json({ profile: mockProfile })
     }
 
-    const { data: profile, error } = await getProfile(params.id)
+    // Try to fetch from assessment_results table first (for teacher assignments)
+    let profile = null
+    let error = null
 
-    if (error) {
+    try {
+      const { data: assessmentProfile, error: assessmentError } = await supabase
+        .from('assessment_results')
+        .select('*')
+        .eq('id', params.id)
+        .single()
+
+      if (assessmentProfile && !assessmentError) {
+        profile = assessmentProfile
+      } else {
+        // Fallback to profiles table (for direct public profiles)
+        const { data: publicProfile, error: publicError } = await getProfile(params.id)
+        profile = publicProfile
+        error = publicError
+      }
+    } catch (e) {
+      console.error('Database error:', e)
+      error = e
+    }
+
+    if (error && !profile) {
       console.error('Database error:', error)
       return NextResponse.json(
         { error: 'Failed to fetch profile' },

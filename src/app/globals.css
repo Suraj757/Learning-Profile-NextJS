@@ -340,3 +340,147 @@ h1, h2, h3, h4, h5, h6 {
 .animate-confetti {
   animation: confetti 2s ease-out forwards;
 }
+
+/* Student Card specific styles */
+.student-card {
+  transition: all 0.3s ease;
+}
+
+.student-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Learning style color coding */
+.style-creative {
+  border-left: 4px solid #3b82f6;
+}
+
+.style-analytical {
+  border-left: 4px solid #10b981;
+}
+
+.style-collaborative {
+  border-left: 4px solid #8b5cf6;
+}
+
+.style-confident {
+  border-left: 4px solid #f59e0b;
+}
+
+/* Print Styles for Day 1 Kit and Student Cards */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .print\:hidden {
+    display: none !important;
+  }
+  
+  .print\:bg-white {
+    background: white !important;
+  }
+  
+  .print\:shadow-none {
+    box-shadow: none !important;
+  }
+  
+  .print\:break-after-page {
+    page-break-after: always;
+  }
+  
+  .print\:break-before-page {
+    page-break-before: always;
+  }
+  
+  .print\:mb-8 {
+    margin-bottom: 2rem !important;
+  }
+  
+  .print\:break-inside-avoid {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  .print\:border {
+    border: 1px solid #374151 !important;
+  }
+  
+  /* Ensure cards print nicely */
+  .card-begin {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+  
+  /* Student Card specific print styles */
+  .student-card {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    border: 2px solid #374151 !important;
+    margin-bottom: 2rem;
+  }
+  
+  /* Adjust colors for print */
+  .text-begin-blue {
+    color: #1f2937 !important;
+  }
+  
+  .text-begin-teal {
+    color: #374151 !important;
+  }
+  
+  .text-blue-700,
+  .text-green-700,
+  .text-purple-700,
+  .text-orange-700 {
+    color: #1f2937 !important;
+  }
+  
+  .text-green-800,
+  .text-red-800 {
+    color: #1f2937 !important;
+  }
+  
+  /* Ensure gradients are readable in print */
+  .bg-gradient-to-br,
+  .bg-gradient-to-r {
+    background: #f3f4f6 !important;
+    color: #1f2937 !important;
+    border: 1px solid #d1d5db !important;
+  }
+  
+  /* Print-friendly background colors */
+  .bg-green-50,
+  .bg-red-50,
+  .bg-green-100,
+  .bg-red-100 {
+    background: #f9fafb !important;
+    border: 1px solid #d1d5db !important;
+  }
+  
+  /* Ensure borders are visible */
+  .border-green-200,
+  .border-red-200,
+  .border-begin-teal\/20 {
+    border-color: #9ca3af !important;
+  }
+  
+  /* Print typography adjustments */
+  h2, h3 {
+    font-weight: bold !important;
+  }
+  
+  /* Dot indicators */
+  .bg-blue-500,
+  .bg-green-500,
+  .bg-purple-500,
+  .bg-orange-500,
+  .bg-amber-400,
+  .bg-green-600 {
+    background: #4b5563 !important;
+  }
+}

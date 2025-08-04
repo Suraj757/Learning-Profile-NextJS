@@ -7,13 +7,16 @@ import {
   Users, 
   Mail, 
   BarChart3, 
-  Settings, 
+  Settings,
+  Heart,
+  Zap, 
   Plus,
   CheckCircle,
   Clock,
   AlertCircle,
   Download,
-  Send
+  Send,
+  CreditCard
 } from 'lucide-react'
 import { useTeacherAuth } from '@/lib/teacher-auth'
 import { getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
@@ -387,6 +390,67 @@ function TeacherDashboardContent() {
                 >
                   <BarChart3 className="h-5 w-5 text-begin-teal" />
                   View Student Profiles
+                </Link>
+                
+                {/* NEW TIER 1 FEATURES */}
+                <div className="border-t border-gray-200 pt-3 mt-3">
+                  <div className="text-xs font-medium text-begin-teal mb-2">🚀 NEW: Back-to-School Ready</div>
+                  
+                  <Link 
+                    href="/teacher/day1-kit"
+                    className="flex items-center gap-3 p-3 text-begin-blue hover:bg-yellow-50 rounded-card transition-colors relative"
+                  >
+                    <Zap className="h-5 w-5 text-yellow-600" />
+                    <div>
+                      <div className="font-medium">Day 1 Success Kit</div>
+                      <div className="text-xs text-gray-600">Know your class by Day 1</div>
+                    </div>
+                    <div className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs px-1.5 py-0.5 rounded-full">NEW</div>
+                  </Link>
+                  
+                  <Link 
+                    href="/teacher/student-cards"
+                    className="flex items-center gap-3 p-3 text-begin-blue hover:bg-purple-50 rounded-card transition-colors relative"
+                  >
+                    <BookOpen className="h-5 w-5 text-purple-600" />
+                    <div>
+                      <div className="font-medium">Student Reference Cards</div>
+                      <div className="text-xs text-gray-600">Instant intervention guides</div>
+                    </div>
+                    <div className="absolute -top-1 -right-1 bg-purple-500 text-white text-xs px-1.5 py-0.5 rounded-full">NEW</div>
+                  </Link>
+                  
+                  <Link 
+                    href="/teacher/parent-updates"
+                    className="flex items-center gap-3 p-3 text-begin-blue hover:bg-green-50 rounded-card transition-colors relative"
+                  >
+                    <Heart className="h-5 w-5 text-green-600" />
+                    <div>
+                      <div className="font-medium">Parent Connection System</div>
+                      <div className="text-xs text-gray-600">First week trust building</div>
+                    </div>
+                    <div className="absolute -top-1 -right-1 bg-green-500 text-white text-xs px-1.5 py-0.5 rounded-full">NEW</div>
+                  </Link>
+                </div>
+                <Link 
+                  href="/teacher/student-cards"
+                  className="flex items-center gap-3 p-3 text-begin-blue hover:bg-begin-cream/50 rounded-card transition-colors border-2 border-begin-cyan/20 bg-begin-cyan/5"
+                >
+                  <CreditCard className="h-5 w-5 text-begin-cyan" />
+                  <div>
+                    <div className="font-semibold">Student Reference Cards</div>
+                    <div className="text-xs text-begin-cyan">Instant teaching insights!</div>
+                  </div>
+                </Link>
+                <Link 
+                  href="/teacher/day1-kit"
+                  className="flex items-center gap-3 p-3 text-begin-blue hover:bg-begin-cream/50 rounded-card transition-colors border-2 border-begin-teal/20 bg-begin-teal/5"
+                >
+                  <Zap className="h-5 w-5 text-begin-teal" />
+                  <div>
+                    <div className="font-semibold">Day 1 Success Kit</div>
+                    <div className="text-xs text-begin-teal">48 hours to success!</div>
+                  </div>
                 </Link>
               </div>
             </div>
