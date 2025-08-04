@@ -342,9 +342,13 @@ function AssessmentStartContent() {
               <button
                 onClick={handleStart}
                 disabled={!childName.trim() || !grade}
-                className="btn-begin-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 transform hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className={`btn-begin-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 transform transition-all duration-200 shadow-lg text-lg px-8 py-4 ${
+                  childName.trim() && grade 
+                    ? 'hover:scale-105 active:scale-95 hover:shadow-xl animate-pulse ring-2 ring-begin-blue/20' 
+                    : ''
+                }`}
               >
-                <span className="text-lg">{isTeacherReferred ? '🎓' : '🚀'}</span>
+                <span className="text-xl">{isTeacherReferred ? '🎓' : '🚀'}</span>
                 {isTeacherReferred 
                   ? `Create ${childName ? `${childName}'s` : 'Learning'} Profile`
                   : `Let's Discover ${childName ? `${childName}'s` : 'Their'} Superpowers!`
@@ -352,6 +356,24 @@ function AssessmentStartContent() {
                 <ArrowRight className="h-5 w-5" />
               </button>
             </div>
+
+            {/* Visual Progress Indicator */}
+            {(childName.trim() || grade) && (
+              <div className="flex justify-center mt-4">
+                <div className="flex items-center gap-2 text-sm text-begin-blue/70">
+                  <div className={`w-3 h-3 rounded-full ${childName.trim() ? 'bg-begin-teal' : 'bg-gray-200'}`} />
+                  <span>Name</span>
+                  <div className={`w-3 h-3 rounded-full ${grade ? 'bg-begin-teal' : 'bg-gray-200'}`} />
+                  <span>Grade</span>
+                  {childName.trim() && grade && (
+                    <>
+                      <ArrowRight className="h-3 w-3 text-begin-teal ml-2" />
+                      <span className="text-begin-teal font-medium">Ready to start! ✨</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
