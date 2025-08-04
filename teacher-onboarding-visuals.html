@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Begin Learning - Teacher Onboarding Visual Assets</title>
+    <style>
+        :root {
+            --primary-blue: #0B3064;
+            --primary-teal: #007A72;
+            --cream: #FFF9EF;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --dark-gray: #333333;
+            --accent-orange: #FF6B35;
+            --success-green: #4CAF50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            background-color: var(--cream);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .visual-section {
+            margin-bottom: 4rem;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(11, 48, 100, 0.1);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--primary-teal);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* Feature Explanation Graphics */
+        .feature-card {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--white) 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary-teal);
+        }
+
+        .feature-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .before, .after {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .before {
+            background: linear-gradient(135deg, #FFE5E5 0%, #FFCCCC 100%);
+            border: 2px solid #FF6B6B;
+        }
+
+        .after {
+            background: linear-gradient(135deg, #E8F5E8 0%, #D4EDDA 100%);
+            border: 2px solid var(--success-green);
+        }
+
+        .arrow {
+            font-size: 2rem;
+            color: var(--primary-teal);
+            font-weight: bold;
+        }
+
+        .confidence-meter {
+            margin: 1rem 0;
+        }
+
+        .meter-bar {
+            width: 100%;
+            height: 12px;
+            background: #E0E0E0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .meter-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+
+        .low-confidence { width: 25%; background: #FF6B6B; }
+        .high-confidence { width: 90%; background: var(--success-green); }
+
+        /* Learning Style Cards */
+        .learning-styles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .style-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 2px solid var(--light-gray);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .style-card:hover {
+            border-color: var(--primary-teal);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 122, 114, 0.15);
+        }
+
+        .style-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            background: var(--primary-teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.8rem;
+        }
+
+        .style-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .style-description {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            line-height: 1.4;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--primary-teal);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 0 2rem;
+            box-shadow: 0 4px 15px rgba(11, 48, 100, 0.1);
+        }
+
+        .timeline-marker {
+            width: 20px;
+            height: 20px;
+            background: var(--primary-teal);
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .day-label {
+            font-weight: 600;
+            color: var(--primary-blue);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Infographic Elements */
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .framework-item {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 2px solid var(--cream);
+            position: relative;
+        }
+
+        .framework-item::before {
+            content: attr(data-number);
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-teal);
+            color: var(--white);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .framework-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Checklist */
+        .checklist {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--primary-teal);
+            border-radius: 4px;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-teal);
+            font-weight: bold;
+        }
+
+        .checklist-text {
+            flex: 1;
+            font-size: 1.1rem;
+        }
+
+        /* Social Media Formats */
+        .social-carousel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .carousel-slide {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .slide-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .slide-content {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Print Styles */
+        @media print {
+            .visual-section {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid var(--light-gray);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .before-after {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .arrow {
+                transform: rotate(90deg);
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item {
+                flex-direction: row !important;
+                padding-left: 3rem;
+            }
+
+            .timeline-marker {
+                left: 20px;
+            }
+
+            .timeline-content {
+                margin: 0;
+                margin-left: 1rem;
+            }
+
+            .framework-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="visual-section">
+            <h1 class="section-title">Begin Learning</h1>
+            <p class="section-subtitle">Teacher Onboarding Visual Storytelling Assets</p>
+        </div>
+
+        <!-- 1. Feature Explanation Graphics -->
+        <div class="visual-section">
+            <h2 class="section-title">Feature Explanation Graphics</h2>
+            
+            <!-- Day 1 Success Kit -->
+            <div class="feature-card">
+                <div class="feature-title">
+                    <div class="feature-icon">🎯</div>
+                    Day 1 Success Kit
+                </div>
+                <div class="before-after">
+                    <div class="before">
+                        <h3>Before: First Day Anxiety</h3>
+                        <div class="confidence-meter">
+                            <div class="meter-bar">
+                                <div class="meter-fill low-confidence"></div>
+                            </div>
+                            <p>25% Confidence</p>
+                        </div>
+                        <p>😰 "Will I connect with my students?"<br>
+                        😟 "How do I handle different learning needs?"<br>
+                        😓 "What if parents have concerns?"</p>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="after">
+                        <h3>After: Confident & Prepared</h3>
+                        <div class="confidence-meter">
+                            <div class="meter-bar">
+                                <div class="meter-fill high-confidence"></div>
+                            </div>
+                            <p>90% Confidence</p>
+                        </div>
+                        <p>😊 "I know exactly how each student learns!"<br>
+                        💪 "I have targeted strategies ready!"<br>
+                        🤝 "Parents are excited to partner with me!"</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Style Cards -->
+            <div class="feature-card">
+                <div class="feature-title">
+                    <div class="feature-icon">🧠</div>
+                    Learning Style Cards - Decision Tree
+                </div>
+                <div class="learning-styles">
+                    <div class="style-card">
+                        <div class="style-icon">👁️</div>
+                        <div class="style-title">Visual Learner</div>
+                        <div class="style-description">Needs charts, diagrams, and visual organizers. Responds well to color-coding and mind maps.</div>
+                    </div>
+                    <div class="style-card">
+                        <div class="style-icon">👂</div>
+                        <div class="style-title">Auditory Learner</div>
+                        <div class="style-description">Benefits from discussions, verbal instructions, and audio recordings. Learns through talking and listening.</div>
+                    </div>
+                    <div class="style-card">
+                        <div class="style-icon">✋</div>
+                        <div class="style-title">Kinesthetic Learner</div>
+                        <div class="style-description">Needs hands-on activities, movement, and manipulatives. Learns by doing and touching.</div>
+                    </div>
+                    <div class="style-card">
+                        <div class="style-icon">📖</div>
+                        <div class="style-title">Reading/Writing</div>
+                        <div class="style-description">Prefers text-based learning, note-taking, and written instructions. Learns through reading and writing.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parent Connection Timeline -->
+            <div class="feature-card">
+                <div class="feature-title">
+                    <div class="feature-icon">👨‍👩‍👧‍👦</div>
+                    Parent Connection - First Week Timeline
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="day-label">Day 1: Welcome Introduction</div>
+                            <p>Personalized welcome message with student's learning profile highlights and your teaching approach alignment.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="day-label">Day 3: Learning Style Insights</div>
+                            <p>Share specific observations about how their child learns best, with examples from classroom activities.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="day-label">Day 5: Success Story</div>
+                            <p>Celebrate an early win with their child, showing how understanding their learning style led to engagement.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="day-label">Day 7: Partnership Invitation</div>
+                            <p>Invite parents to continue the learning conversation at home with tailored suggestions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Teacher Journey Visualizations -->
+        <div class="visual-section">
+            <h2 class="section-title">Teacher Journey Visualizations</h2>
+            
+            <div class="before-after">
+                <div class="before">
+                    <h3>Traditional Approach</h3>
+                    <p>📚 One-size-fits-all lesson plans<br>
+                    🤷‍♀️ Guessing at student needs<br>
+                    📞 Reactive parent communication<br>
+                    😤 Frustration with struggling students<br>
+                    ⏰ Hours of trial-and-error planning</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="after">
+                    <h3>Data-Driven Success</h3>
+                    <p>🎯 Targeted interventions for each student<br>
+                    📊 Clear insights into learning preferences<br>
+                    💌 Proactive, personalized parent updates<br>
+                    🌟 Every student finding their path to success<br>
+                    ⚡ Efficient, evidence-based planning</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Infographic Series -->
+        <div class="visual-section">
+            <h2 class="section-title">6C Learning Framework Explained</h2>
+            <div class="framework-grid">
+                <div class="framework-item" data-number="1">
+                    <div class="framework-title">Connect</div>
+                    <p>Build relationships and understand student backgrounds</p>
+                </div>
+                <div class="framework-item" data-number="2">
+                    <div class="framework-title">Collect</div>
+                    <p>Gather data on learning preferences and strengths</p>
+                </div>
+                <div class="framework-item" data-number="3">
+                    <div class="framework-title">Comprehend</div>
+                    <p>Analyze patterns to understand each learner</p>
+                </div>
+                <div class="framework-item" data-number="4">
+                    <div class="framework-title">Create</div>
+                    <p>Design targeted learning experiences</p>
+                </div>
+                <div class="framework-item" data-number="5">
+                    <div class="framework-title">Communicate</div>
+                    <p>Share insights with students, parents, and colleagues</p>
+                </div>
+                <div class="framework-item" data-number="6">
+                    <div class="framework-title">Celebrate</div>
+                    <p>Recognize growth and success at every level</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- First Week Success Checklist -->
+        <div class="visual-section">
+            <h2 class="section-title">First Week Success Checklist</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <div class="checkbox">✓</div>
+                    <div class="checklist-text">Set up your Begin Learning classroom profile</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox">✓</div>
+                    <div class="checklist-text">Complete initial student learning assessments</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox">✓</div>
+                    <div class="checklist-text">Review and print Learning Style Cards for your students</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox">✓</div>
+                    <div class="checklist-text">Send welcome messages to parents using provided templates</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox">✓</div>
+                    <div class="checklist-text">Plan first differentiated lesson using student insights</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox">✓</div>
+                    <div class="checklist-text">Schedule 15-minute reflection time to note early observations</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox">✓</div>
+                    <div class="checklist-text">Join the Begin Learning teacher community for ongoing support</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Social Media Visuals - Instagram Carousel -->
+        <div class="visual-section">
+            <h2 class="section-title">Instagram Carousel Series</h2>
+            <div class="social-carousel">
+                <div class="carousel-slide">
+                    <div class="slide-number">1/10</div>
+                    <div class="slide-title">Every Student is Unique</div>
+                    <div class="slide-content">But are you teaching to their individual learning style? Discover how Begin Learning helps you unlock every student's potential.</div>
+                </div>
+                <div class="carousel-slide">
+                    <div class="slide-number">2/10</div>
+                    <div class="slide-title">Meet Sarah</div>
+                    <div class="slide-content">A visual learner who was struggling with traditional math lessons. See how her teacher transformed her experience with targeted visual strategies.</div>
+                </div>
+                <div class="carousel-slide">
+                    <div class="slide-number">3/10</div>
+                    <div class="slide-title">The Day 1 Success Kit</div>
+                    <div class="slide-content">Walk into your classroom with confidence. Our research-backed toolkit gives you everything you need to connect with students from day one.</div>
+                </div>
+                <div class="carousel-slide">
+                    <div class="slide-number">4/10</div>
+                    <div class="slide-title">Learning Style Cards</div>
+                    <div class="slide-content">Quick reference guides that help you identify and respond to different learning preferences in real-time during your lessons.</div>
+                </div>
+                <div class="carousel-slide">
+                    <div class="slide-number">5/10</div>
+                    <div class="slide-title">Parent Partnership</div>
+                    <div class="slide-content">Transform parent communication from reactive to proactive. Share meaningful insights that help families support learning at home.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Story Template -->
+        <div class="visual-section">
+            <h2 class="section-title">Success Story Template</h2>
+            <div class="feature-card">
+                <div class="feature-title">
+                    <div class="feature-icon">⭐</div>
+                    Teacher Success Story Framework
+                </div>
+                <div style="background: var(--cream); padding: 2rem; border-radius: 12px; margin: 1rem 0;">
+                    <h4 style="color: var(--primary-blue); margin-bottom: 1rem;">Template Structure:</h4>
+                    <p><strong>Challenge:</strong> "I had a student who seemed disengaged during math lessons..."</p>
+                    <p><strong>Insight:</strong> "Using Begin Learning's assessment, I discovered they were a kinesthetic learner..."</p>
+                    <p><strong>Action:</strong> "I incorporated hands-on manipulatives and movement-based activities..."</p>
+                    <p><strong>Result:</strong> "Within two weeks, their engagement increased 80% and test scores improved by 25%..."</p>
+                    <p><strong>Impact:</strong> "This approach not only helped this student but informed how I teach the entire class."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add interactive elements for demonstration
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate confidence meters
+            const meters = document.querySelectorAll('.meter-fill');
+            setTimeout(() => {
+                meters.forEach(meter => {
+                    meter.style.transition = 'width 2s ease-in-out';
+                });
+            }, 1000);
+
+            // Add hover effects to style cards
+            const styleCards = document.querySelectorAll('.style-card');
+            styleCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Toggle selection
+                    card.style.borderColor = card.style.borderColor === 'rgb(0, 122, 114)' ? '#F5F5F5' : 'var(--primary-teal)';
+                });
+            });
+
+            // Add completion animation to checklist
+            const checkboxes = document.querySelectorAll('.checkbox');
+            checkboxes.forEach((checkbox, index) => {
+                setTimeout(() => {
+                    if (Math.random() > 0.3) { // Randomly show some as completed
+                        checkbox.textContent = '✓';
+                        checkbox.style.background = 'var(--success-green)';
+                        checkbox.style.color = 'white';
+                    }
+                }, index * 500);
+            });
+        });
+    </script>
+</body>
+</html>

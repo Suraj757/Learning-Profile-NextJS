@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Begin Learning - Social Media Templates</title>
+    <style>
+        :root {
+            --primary-blue: #0B3064;
+            --primary-teal: #007A72;
+            --cream: #FFF9EF;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --dark-gray: #333333;
+            --accent-orange: #FF6B35;
+            --success-green: #4CAF50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--light-gray);
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .social-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .section-description {
+            font-size: 1.2rem;
+            color: var(--primary-teal);
+        }
+
+        /* Facebook Cover Templates */
+        .facebook-covers {
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .facebook-cover {
+            width: 851px;
+            height: 315px;
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .cover-1 {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 50%, var(--cream) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 2rem 4rem;
+        }
+
+        .cover-content {
+            color: var(--white);
+            flex: 1;
+        }
+
+        .cover-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .cover-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .cover-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .cover-stat {
+            text-align: center;
+        }
+
+        .cover-stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .cover-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .cover-visual {
+            width: 250px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--white);
+        }
+
+        .cover-2 {
+            background: var(--cream);
+            display: flex;
+            align-items: center;
+            padding: 2rem 4rem;
+            position: relative;
+        }
+
+        .cover-2::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-teal) 100%);
+        }
+
+        .cover-2 .cover-content {
+            color: var(--primary-blue);
+            margin-right: 2rem;
+        }
+
+        .framework-circles {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .framework-circle {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-teal);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Instagram Templates */
+        .instagram-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .instagram-post {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .instagram-post:hover {
+            transform: scale(1.02);
+        }
+
+        .post-1 {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%);
+            color: var(--white);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .post-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .post-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .post-cta {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            margin: 0 auto;
+        }
+
+        .post-2 {
+            background: var(--cream);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .post-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2rem;
+            margin: 0 auto 1rem;
+        }
+
+        .post-content {
+            text-align: center;
+            color: var(--primary-blue);
+        }
+
+        .post-stat {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+        }
+
+        .post-3 {
+            background: var(--white);
+            padding: 2rem;
+            border: 4px solid var(--primary-teal);
+        }
+
+        .learning-types-mini {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .learning-type-mini {
+            background: var(--cream);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .type-emoji-mini {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .type-name-mini {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        /* Twitter Templates */
+        .twitter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .twitter-post {
+            aspect-ratio: 16/9;
+            background: var(--white);
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .twitter-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .twitter-content {
+            flex: 1;
+        }
+
+        .twitter-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .twitter-text {
+            color: var(--dark-gray);
+            line-height: 1.4;
+        }
+
+        /* LinkedIn Templates */
+        .linkedin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .linkedin-post {
+            background: var(--white);
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .linkedin-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%);
+            color: var(--white);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .linkedin-body {
+            padding: 1.5rem;
+        }
+
+        .linkedin-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .insight-card {
+            background: var(--cream);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary-teal);
+        }
+
+        .insight-title {
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-text {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Story Templates */
+        .story-templates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 4rem;
+        }
+
+        .story-slide {
+            aspect-ratio: 9/16;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .story-1 {
+            background: linear-gradient(180deg, var(--primary-blue) 0%, var(--primary-teal) 100%);
+            color: var(--white);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .story-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .story-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .story-2 {
+            background: var(--cream);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .poll-option {
+            background: var(--white);
+            padding: 1rem;
+            border-radius: 25px;
+            margin: 0.5rem 0;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-teal);
+        }
+
+        .brand-watermark {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .facebook-cover {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 851/315;
+            }
+            
+            .cover-1, .cover-2 {
+                padding: 1rem 2rem;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .cover-visual {
+                width: 200px;
+                height: 150px;
+                margin-top: 1rem;
+            }
+            
+            .framework-circles {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="social-container">
+        
+        <!-- Facebook Cover Templates -->
+        <section class="facebook-covers">
+            <div class="section-header">
+                <h2 class="section-title">Facebook Cover Templates</h2>
+                <p class="section-description">Professional covers for teacher groups and education pages</p>
+            </div>
+            
+            <div class="facebook-cover cover-1">
+                <div class="cover-content">
+                    <div class="cover-title">Transform Your Teaching</div>
+                    <div class="cover-subtitle">Data-driven insights for every student's success</div>
+                    <div class="cover-stats">
+                        <div class="cover-stat">
+                            <div class="cover-stat-number">10K+</div>
+                            <div class="cover-stat-label">Teachers</div>
+                        </div>
+                        <div class="cover-stat">
+                            <div class="cover-stat-number">95%</div>
+                            <div class="cover-stat-label">Satisfaction</div>
+                        </div>
+                        <div class="cover-stat">
+                            <div class="cover-stat-number">3x</div>
+                            <div class="cover-stat-label">Faster Progress</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cover-visual">📚</div>
+            </div>
+            
+            <div class="facebook-cover cover-2">
+                <div class="cover-content">
+                    <div class="cover-title">6C Teaching Framework</div>
+                    <div class="cover-subtitle">Research-backed method for student success</div>
+                </div>
+                <div class="framework-circles">
+                    <div class="framework-circle">Connect</div>
+                    <div class="framework-circle">Collect</div>
+                    <div class="framework-circle">Comprehend</div>
+                    <div class="framework-circle">Create</div>
+                    <div class="framework-circle">Communicate</div>
+                    <div class="framework-circle">Celebrate</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Instagram Post Templates -->
+        <section class="instagram-grid">
+            <div class="section-header" style="grid-column: 1 / -1;">
+                <h2 class="section-title">Instagram Templates</h2>
+                <p class="section-description">Square posts optimized for teacher engagement</p>
+            </div>
+            
+            <div class="instagram-post post-1">
+                <div class="post-title">Every Student Learns Differently</div>
+                <div class="post-subtitle">Are you teaching to their unique style?</div>
+                <div class="post-cta">Discover How →</div>
+            </div>
+            
+            <div class="instagram-post post-2">
+                <div class="post-icon">📊</div>
+                <div class="post-content">
+                    <div class="post-stat">87%</div>
+                    <div>of teachers see immediate improvement when they adapt to learning styles</div>
+                </div>
+            </div>
+            
+            <div class="instagram-post post-3">
+                <h3 style="text-align: center; color: var(--primary-blue); margin-bottom: 1rem;">4 Learning Styles</h3>
+                <div class="learning-types-mini">
+                    <div class="learning-type-mini">
+                        <div class="type-emoji-mini">👁️</div>
+                        <div class="type-name-mini">Visual</div>
+                    </div>
+                    <div class="learning-type-mini">
+                        <div class="type-emoji-mini">👂</div>
+                        <div class="type-name-mini">Auditory</div>
+                    </div>
+                    <div class="learning-type-mini">
+                        <div class="type-emoji-mini">✋</div>
+                        <div class="type-name-mini">Kinesthetic</div>
+                    </div>
+                    <div class="learning-type-mini">
+                        <div class="type-emoji-mini">📖</div>
+                        <div class="type-name-mini">Reading/Writing</div>
+                    </div>
+                </div>
+                <p style="text-align: center; color: var(--primary-blue); font-weight: 600;">Which one is your student?</p>
+            </div>
+            
+            <div class="instagram-post post-1" style="background: linear-gradient(135deg, var(--success-green) 0%, var(--primary-teal) 100%);">
+                <div class="post-title">Teacher Success Story</div>
+                <div class="post-subtitle">"My struggling student became my star when I discovered his learning style"</div>
+                <div class="post-cta">Read More →</div>
+            </div>
+            
+            <div class="instagram-post post-2">
+                <div class="post-icon">🎯</div>
+                <div class="post-content">
+                    <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary-blue); margin-bottom: 1rem;">Day 1 Success Kit</div>
+                    <div>Everything you need to start strong: assessments, templates, and quick guides</div>
+                </div>
+            </div>
+            
+            <div class="instagram-post post-1" style="background: linear-gradient(135deg, var(--accent-orange) 0%, var(--primary-blue) 100%);">
+                <div class="post-title">Join 10,000+ Teachers</div>
+                <div class="post-subtitle">Who've transformed their classrooms with data-driven insights</div>
+                <div class="post-cta">Get Started Free →</div>
+            </div>
+        </section>
+
+        <!-- Twitter Templates -->
+        <section class="twitter-grid">
+            <div class="section-header" style="grid-column: 1 / -1;">
+                <h2 class="section-title">Twitter Templates</h2>
+                <p class="section-description">Engaging tweets for education discussions</p>
+            </div>
+            
+            <div class="twitter-post">
+                <div class="twitter-icon">💡</div>
+                <div class="twitter-content">
+                    <div class="twitter-title">Quick Teaching Tip</div>
+                    <div class="twitter-text">Visual learners? Try color-coding your worksheets. Auditory learners? Read instructions aloud. Small changes, big impact! #TeachingTips #EducationMatters</div>
+                </div>
+            </div>
+            
+            <div class="twitter-post">
+                <div class="twitter-icon">📈</div>
+                <div class="twitter-content">
+                    <div class="twitter-title">Data Point</div>
+                    <div class="twitter-text">Teachers using learning style data see 3x faster student progress. When we teach to how students learn, magic happens. #DataDrivenTeaching #StudentSuccess</div>
+                </div>
+            </div>
+            
+            <div class="twitter-post">
+                <div class="twitter-icon">🤝</div>
+                <div class="twitter-content">
+                    <div class="twitter-title">Parent Partnership</div>
+                    <div class="twitter-text">Strong parent communication builds stronger students. Share what you've learned about their child's learning style - they'll thank you! #ParentEngagement #Education</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LinkedIn Templates -->
+        <section class="linkedin-grid">
+            <div class="section-header" style="grid-column: 1 / -1;">
+                <h2 class="section-title">LinkedIn Templates</h2>
+                <p class="section-description">Professional content for education networks</p>
+            </div>
+            
+            <div class="linkedin-post">
+                <div class="linkedin-header">
+                    <h3>Research Spotlight</h3>
+                </div>
+                <div class="linkedin-body">
+                    <div class="linkedin-title">The Impact of Learning Style Awareness</div>
+                    <div class="insight-card">
+                        <div class="insight-title">Key Finding:</div>
+                        <div class="insight-text">Students whose teachers adapt instruction to their learning preferences show 65% higher engagement rates and 40% better retention.</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-title">Why This Matters:</div>
+                        <div class="insight-text">When educators understand how their students learn best, they can create more effective, inclusive learning environments that benefit everyone.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="linkedin-post">
+                <div class="linkedin-header">
+                    <h3>Professional Development</h3>
+                </div>
+                <div class="linkedin-body">
+                    <div class="linkedin-title">5 Skills Every Modern Teacher Needs</div>
+                    <div style="color: var(--dark-gray); line-height: 1.6;">
+                        1. Data analysis and interpretation<br>
+                        2. Differentiated instruction strategies<br>
+                        3. Digital communication with parents<br>
+                        4. Learning style assessment<br>
+                        5. Adaptive lesson planning<br><br>
+                        These skills transform good teachers into great ones. Which are you working on?
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Story Templates -->
+        <section class="story-templates">
+            <div class="section-header" style="grid-column: 1 / -1;">
+                <h2 class="section-title">Instagram Stories Templates</h2>
+                <p class="section-description">Vertical content for daily engagement</p>
+            </div>
+            
+            <div class="story-slide story-1">
+                <div class="story-title">Quick Poll</div>
+                <div class="story-subtitle">What's your biggest classroom challenge?</div>
+                <div class="brand-watermark">Begin Learning</div>
+            </div>
+            
+            <div class="story-slide story-2">
+                <h3 style="text-align: center; color: var(--primary-blue); margin-bottom: 2rem;">Which describes your struggling student?</h3>
+                <div class="poll-option">Distracted during lessons</div>
+                <div class="poll-option">Difficulty following instructions</div>
+                <div class="poll-option">Hands-on learner in lecture setting</div>
+                <div class="poll-option">All of the above</div>
+                <div class="brand-watermark">Begin Learning</div>
+            </div>
+            
+            <div class="story-slide story-1">
+                <div class="story-title">Teacher Tip</div>
+                <div class="story-subtitle">Kinesthetic learners need movement breaks every 15-20 minutes</div>
+                <div class="brand-watermark">Begin Learning</div>
+            </div>
+            
+            <div class="story-slide story-2">
+                <div style="text-align: center; color: var(--primary-blue);">
+                    <h3 style="margin-bottom: 1rem;">Success Story</h3>
+                    <div style="font-size: 3rem; margin: 1rem 0;">📈</div>
+                    <div style="font-size: 1.2rem; line-height: 1.4;">
+                        "My visual learner went from failing to A's when I started using graphic organizers"
+                    </div>
+                    <div style="margin-top: 2rem; font-weight: 600;">- Sarah, 4th Grade</div>
+                </div>
+                <div class="brand-watermark">Begin Learning</div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // Add interactive hover effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const socialPosts = document.querySelectorAll('.instagram-post, .twitter-post, .linkedin-post, .story-slide');
+            
+            socialPosts.forEach(post => {
+                post.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.02)';
+                    this.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.15)';
+                });
+                
+                post.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.1)';
+                });
+            });
+
+            // Add click animation
+            socialPosts.forEach(post => {
+                post.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1.02)';
+                    }, 100);
+                });
+            });
+
+            // Animate stats on Facebook covers
+            const stats = document.querySelectorAll('.cover-stat-number');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const element = entry.target;
+                        const targetText = element.textContent;
+                        element.textContent = '0';
+                        
+                        // Simple animation for numbers
+                        let current = 0;
+                        const increment = targetText.includes('K') ? 100 : 
+                                        targetText.includes('x') ? 0.1 : 1;
+                        const target = parseFloat(targetText.replace(/[^\d.]/g, ''));
+                        
+                        const timer = setInterval(() => {
+                            current += increment;
+                            if (current >= target) {
+                                element.textContent = targetText;
+                                clearInterval(timer);
+                            } else {
+                                element.textContent = Math.floor(current) + (targetText.includes('K') ? 'K+' : targetText.includes('x') ? 'x' : '%');
+                            }
+                        }, 50);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            stats.forEach(stat => observer.observe(stat));
+        });
+    </script>
+</body>
+</html>

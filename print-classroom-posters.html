@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Begin Learning - Print-Ready Classroom Posters</title>
+    <style>
+        :root {
+            --primary-blue: #0B3064;
+            --primary-teal: #007A72;
+            --cream: #FFF9EF;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --dark-gray: #333333;
+            --accent-orange: #FF6B35;
+            --success-green: #4CAF50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--light-gray);
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .poster-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .poster {
+            width: 8.5in;
+            height: 11in;
+            background: var(--white);
+            margin: 2rem auto;
+            padding: 1in;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            page-break-after: always;
+            position: relative;
+        }
+
+        .poster-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 4px solid var(--primary-teal);
+        }
+
+        .poster-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .poster-subtitle {
+            font-size: 1.2rem;
+            color: var(--primary-teal);
+            font-weight: 500;
+        }
+
+        .learning-styles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .style-card-poster {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--white) 100%);
+            border: 3px solid var(--primary-teal);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .style-icon-large {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .style-title-large {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .style-description-large {
+            font-size: 1rem;
+            color: var(--dark-gray);
+            line-height: 1.5;
+        }
+
+        .style-tips {
+            background: var(--cream);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .tips-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-teal);
+            margin-bottom: 0.5rem;
+        }
+
+        .tips-list {
+            font-size: 0.9rem;
+            list-style-type: none;
+        }
+
+        .tips-list li {
+            margin-bottom: 0.25rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .tips-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary-teal);
+            font-weight: bold;
+        }
+
+        .framework-poster {
+            text-align: center;
+        }
+
+        .framework-circles-large {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .framework-circle-large {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .framework-number {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .framework-title-large {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .framework-description {
+            text-align: center;
+            font-size: 1rem;
+            color: var(--dark-gray);
+            margin-top: 1rem;
+            padding: 0 2rem;
+        }
+
+        .checklist-poster {
+            background: var(--cream);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .checklist-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .checklist-items {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .checklist-item-poster {
+            background: var(--white);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            border-left: 4px solid var(--primary-teal);
+        }
+
+        .checkbox-large {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid var(--primary-teal);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-teal);
+            flex-shrink: 0;
+        }
+
+        .checklist-text-large {
+            font-size: 1rem;
+            line-height: 1.4;
+            color: var(--dark-gray);
+        }
+
+        .footer-branding {
+            position: absolute;
+            bottom: 0.5in;
+            right: 1in;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        .qr-placeholder {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-teal);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .communication-timeline {
+            margin: 2rem 0;
+        }
+
+        .timeline-day {
+            background: var(--white);
+            border: 3px solid var(--primary-teal);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .day-number {
+            position: absolute;
+            top: -15px;
+            left: 2rem;
+            background: var(--primary-teal);
+            color: var(--white);
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .day-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+        }
+
+        .day-description {
+            font-size: 1rem;
+            color: var(--dark-gray);
+            line-height: 1.5;
+        }
+
+        .stats-highlight {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .stat-large {
+            font-size: 4rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label-large {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .poster {
+                width: 8.5in;
+                height: 11in;
+                margin: 0;
+                box-shadow: none;
+                border-radius: 0;
+                page-break-after: always;
+            }
+            
+            .poster:last-child {
+                page-break-after: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="poster-container">
+        
+        <!-- Poster 1: Learning Styles Reference -->
+        <div class="poster">
+            <div class="poster-header">
+                <div class="poster-title">Learning Styles</div>
+                <div class="poster-subtitle">Quick Reference Guide</div>
+            </div>
+            
+            <div class="learning-styles-grid">
+                <div class="style-card-poster">
+                    <div class="style-icon-large">👁️</div>
+                    <div class="style-title-large">Visual Learners</div>
+                    <div class="style-description-large">Learn best through seeing and visualizing information</div>
+                    <div class="style-tips">
+                        <div class="tips-title">Classroom Strategies:</div>
+                        <ul class="tips-list">
+                            <li>Use charts and diagrams</li>
+                            <li>Color-code materials</li>
+                            <li>Create mind maps</li>
+                            <li>Use graphic organizers</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="style-card-poster">
+                    <div class="style-icon-large">👂</div>
+                    <div class="style-title-large">Auditory Learners</div>
+                    <div class="style-description-large">Learn best through hearing and speaking</div>
+                    <div class="style-tips">
+                        <div class="tips-title">Classroom Strategies:</div>
+                        <ul class="tips-list">
+                            <li>Use verbal instructions</li>
+                            <li>Encourage discussions</li>
+                            <li>Read aloud together</li>
+                            <li>Use rhymes and songs</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="style-card-poster">
+                    <div class="style-icon-large">✋</div>
+                    <div class="style-title-large">Kinesthetic Learners</div>
+                    <div class="style-description-large">Learn best through movement and hands-on activities</div>
+                    <div class="style-tips">
+                        <div class="tips-title">Classroom Strategies:</div>
+                        <ul class="tips-list">
+                            <li>Use manipulatives</li>
+                            <li>Allow movement breaks</li>
+                            <li>Hands-on experiments</li>
+                            <li>Role-playing activities</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="style-card-poster">
+                    <div class="style-icon-large">📖</div>
+                    <div class="style-title-large">Reading/Writing Learners</div>
+                    <div class="style-description-large">Learn best through written words and text</div>
+                    <div class="style-tips">
+                        <div class="tips-title">Classroom Strategies:</div>
+                        <ul class="tips-list">
+                            <li>Provide written instructions</li>
+                            <li>Encourage note-taking</li>
+                            <li>Use lists and outlines</li>
+                            <li>Text-based activities</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-branding">
+                <div class="qr-placeholder">QR<br>Code</div>
+                <div>
+                    <div style="font-size: 1.2rem;">Begin Learning</div>
+                    <div style="font-size: 0.9rem; color: var(--primary-teal);">beginlearning.com</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Poster 2: 6C Framework -->
+        <div class="poster">
+            <div class="poster-header">
+                <div class="poster-title">6C Framework</div>
+                <div class="poster-subtitle">Research-Based Teaching Method</div>
+            </div>
+            
+            <div class="framework-poster">
+                <div class="framework-circles-large">
+                    <div class="framework-circle-large">
+                        <div class="framework-number">1</div>
+                        <div class="framework-title-large">Connect</div>
+                    </div>
+                    <div class="framework-circle-large">
+                        <div class="framework-number">2</div>
+                        <div class="framework-title-large">Collect</div>
+                    </div>
+                    <div class="framework-circle-large">
+                        <div class="framework-number">3</div>
+                        <div class="framework-title-large">Comprehend</div>
+                    </div>
+                    <div class="framework-circle-large">
+                        <div class="framework-number">4</div>
+                        <div class="framework-title-large">Create</div>
+                    </div>
+                    <div class="framework-circle-large">
+                        <div class="framework-number">5</div>
+                        <div class="framework-title-large">Communicate</div>
+                    </div>
+                    <div class="framework-circle-large">
+                        <div class="framework-number">6</div>
+                        <div class="framework-title-large">Celebrate</div>
+                    </div>
+                </div>
+                
+                <div class="framework-description">
+                    <strong>Connect</strong> with students • <strong>Collect</strong> learning data • <strong>Comprehend</strong> patterns • 
+                    <strong>Create</strong> targeted lessons • <strong>Communicate</strong> insights • <strong>Celebrate</strong> growth
+                </div>
+                
+                <div class="stats-highlight">
+                    <span class="stat-large">95%</span>
+                    <span class="stat-label-large">of teachers report increased confidence using this framework</span>
+                </div>
+            </div>
+            
+            <div class="footer-branding">
+                <div class="qr-placeholder">QR<br>Code</div>
+                <div>
+                    <div style="font-size: 1.2rem;">Begin Learning</div>
+                    <div style="font-size: 0.9rem; color: var(--primary-teal);">beginlearning.com</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Poster 3: First Week Checklist -->
+        <div class="poster">
+            <div class="poster-header">
+                <div class="poster-title">First Week Success</div>
+                <div class="poster-subtitle">New Teacher Checklist</div>
+            </div>
+            
+            <div class="checklist-poster">
+                <div class="checklist-title">Complete These Steps for a Strong Start</div>
+                <div class="checklist-items">
+                    <div class="checklist-item-poster">
+                        <div class="checkbox-large">✓</div>
+                        <div>
+                            <div class="checklist-text-large"><strong>Set up learning profiles</strong><br>
+                            Create individual student profiles in your Begin Learning dashboard</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item-poster">
+                        <div class="checkbox-large">✓</div>
+                        <div>
+                            <div class="checklist-text-large"><strong>Complete assessments</strong><br>
+                            Use quick learning style assessments for each student</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item-poster">
+                        <div class="checkbox-large">✓</div>
+                        <div>
+                            <div class="checklist-text-large"><strong>Print Learning Style Cards</strong><br>
+                            Have quick reference cards ready for each student</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item-poster">
+                        <div class="checkbox-large">✓</div>
+                        <div>
+                            <div class="checklist-text-large"><strong>Send parent messages</strong><br>
+                            Use templates to introduce yourself and share insights</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item-poster">
+                        <div class="checkbox-large">✓</div>
+                        <div>
+                            <div class="checklist-text-large"><strong>Plan differentiated lesson</strong><br>
+                            Create your first lesson using student learning data</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item-poster">
+                        <div class="checkbox-large">✓</div>
+                        <div>
+                            <div class="checklist-text-large"><strong>Schedule reflection time</strong><br>
+                            Block 15 minutes daily to note observations</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item-poster">
+                        <div class="checkbox-large">✓</div>
+                        <div>
+                            <div class="checklist-text-large"><strong>Join teacher community</strong><br>
+                            Connect with other Begin Learning educators</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item-poster">
+                        <div class="checkbox-large">✓</div>
+                        <div>
+                            <div class="checklist-text-large"><strong>Bookmark resources</strong><br>
+                            Save important links and tutorials for quick access</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-branding">
+                <div class="qr-placeholder">QR<br>Code</div>
+                <div>
+                    <div style="font-size: 1.2rem;">Begin Learning</div>
+                    <div style="font-size: 0.9rem; color: var(--primary-teal);">beginlearning.com</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Poster 4: Parent Communication Timeline -->
+        <div class="poster">
+            <div class="poster-header">
+                <div class="poster-title">Parent Partnership</div>
+                <div class="poster-subtitle">First Week Communication Timeline</div>
+            </div>
+            
+            <div class="communication-timeline">
+                <div class="timeline-day">
+                    <div class="day-number">1</div>
+                    <div class="day-title">Welcome Introduction</div>
+                    <div class="day-description">
+                        Send a personalized welcome message highlighting how you plan to support their child's unique learning style. 
+                        Include your teaching philosophy and excitement about the school year.
+                    </div>
+                </div>
+                
+                <div class="timeline-day">
+                    <div class="day-number">3</div>
+                    <div class="day-title">Learning Style Insights</div>
+                    <div class="day-description">
+                        Share specific observations about how their child learns best. Include examples from your first few days 
+                        and explain how this knowledge will guide your instruction.
+                    </div>
+                </div>
+                
+                <div class="timeline-day">
+                    <div class="day-number">5</div>
+                    <div class="day-title">Success Story</div>
+                    <div class="day-description">
+                        Celebrate an early win! Share a specific moment when their child showed engagement or understanding, 
+                        connecting it back to their learning style.
+                    </div>
+                </div>
+                
+                <div class="timeline-day">
+                    <div class="day-number">7</div>
+                    <div class="day-title">Partnership Invitation</div>
+                    <div class="day-description">
+                        Invite parents to continue the learning conversation at home. Provide specific, actionable suggestions 
+                        tailored to their child's learning preferences.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-highlight">
+                <div style="display: flex; justify-content: space-around; align-items: center;">
+                    <div>
+                        <span class="stat-large">85%</span>
+                        <span class="stat-label-large">Parent Satisfaction Rate</span>
+                    </div>
+                    <div>
+                        <span class="stat-large">90%</span>
+                        <span class="stat-label-large">Student Engagement Increase</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-branding">
+                <div class="qr-placeholder">QR<br>Code</div>
+                <div>
+                    <div style="font-size: 1.2rem;">Begin Learning</div>
+                    <div style="font-size: 0.9rem; color: var(--primary-teal);">beginlearning.com</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

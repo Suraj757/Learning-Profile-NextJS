@@ -355,37 +355,117 @@ function Day1KitContent() {
               </h2>
               
               <div className="grid md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  {Object.entries(mockDay1Data.learningStyleDistribution).map(([style, count]) => (
-                    <div key={style} className="flex items-center justify-between p-4 bg-begin-cream/50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-4 h-4 rounded-full ${
-                          style === 'creative' ? 'bg-purple-500' :
-                          style === 'analytical' ? 'bg-blue-500' :
-                          style === 'collaborative' ? 'bg-green-500' :
-                          style === 'confident' ? 'bg-orange-500' :
-                          'bg-gray-500'
-                        }`} />
-                        <span className="font-medium text-begin-blue capitalize">{style} Learners</span>
+                {/* Interactive Bar Chart */}
+                <div className="space-y-6">
+                  {Object.entries(mockDay1Data.learningStyleDistribution).map(([style, count]) => {
+                    const percentage = Math.round((count / mockDay1Data.classroom.studentCount) * 100)
+                    const maxCount = Math.max(...Object.values(mockDay1Data.learningStyleDistribution))
+                    const barWidth = (count / maxCount) * 100
+                    
+                    return (
+                      <div key={style} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-4 h-4 rounded-full ${
+                              style === 'creative' ? 'bg-purple-500' :
+                              style === 'analytical' ? 'bg-blue-500' :
+                              style === 'collaborative' ? 'bg-green-500' :
+                              style === 'confident' ? 'bg-orange-500' :
+                              'bg-gray-500'
+                            }`} />
+                            <span className="font-medium text-begin-blue capitalize">{style} Learners</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl font-bold text-begin-blue">{count}</span>
+                            <span className="text-sm text-begin-blue/70 bg-begin-cream px-2 py-1 rounded-full">
+                              {percentage}%
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {/* Animated Progress Bar */}
+                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full transition-all duration-1000 ease-out ${
+                              style === 'creative' ? 'bg-gradient-to-r from-purple-400 to-purple-600' :
+                              style === 'analytical' ? 'bg-gradient-to-r from-blue-400 to-blue-600' :
+                              style === 'collaborative' ? 'bg-gradient-to-r from-green-400 to-green-600' :
+                              style === 'confident' ? 'bg-gradient-to-r from-orange-400 to-orange-600' :
+                              'bg-gray-500'
+                            }`}
+                            style={{ width: `${barWidth}%` }}
+                          />
+                        </div>
+                        
+                        {/* Student Count Dots */}
+                        <div className="flex gap-1 flex-wrap">
+                          {Array.from({ length: count }, (_, i) => (
+                            <div 
+                              key={i}
+                              className={`w-2 h-2 rounded-full ${
+                                style === 'creative' ? 'bg-purple-400' :
+                                style === 'analytical' ? 'bg-blue-400' :
+                                style === 'collaborative' ? 'bg-green-400' :
+                                style === 'confident' ? 'bg-orange-400' :
+                                'bg-gray-400'
+                              }`}
+                              style={{ 
+                                animationDelay: `${i * 100}ms`,
+                                animation: 'fadeIn 0.5s ease-in-out forwards'
+                              }}
+                            />
+                          ))}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-begin-blue">{count}</span>
-                        <span className="text-sm text-begin-blue/70">students</span>
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
                 
                 <div className="bg-begin-cream/30 rounded-lg p-6">
                   <h3 className="font-bold text-begin-blue mb-4 flex items-center gap-2">
                     <Lightbulb className="h-5 w-5 text-begin-teal" />
-                    Key Insights
+                    Key Insights & Action Items
                   </h3>
-                  <div className="space-y-3 text-sm text-begin-blue/80">
-                    <p>• Your class leans heavily collaborative (29%) - plan for lots of group work</p>
-                    <p>• Strong creative contingent (25%) - incorporate arts and hands-on projects</p>
-                    <p>• Analytical learners (17%) will need independent challenges</p>
-                    <p>• Balance whole-class and small-group instruction</p>
+                  <div className="space-y-4">
+                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 font-bold">✓</span>
+                        <div>
+                          <p className="text-sm font-medium text-green-800">Collaborative Focus (29%)</p>
+                          <p className="text-xs text-green-700">Plan for group projects, peer partnerships, and discussion circles</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <span className="text-purple-600 font-bold">✓</span>
+                        <div>
+                          <p className="text-sm font-medium text-purple-800">Creative Contingent (25%)</p>
+                          <p className="text-xs text-purple-700">Incorporate arts, hands-on projects, and creative expression</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <span className="text-blue-600 font-bold">✓</span>
+                        <div>
+                          <p className="text-sm font-medium text-blue-800">Analytical Learners (17%)</p>
+                          <p className="text-xs text-blue-700">Provide independent challenges and step-by-step processes</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <span className="text-orange-600 font-bold">✓</span>
+                        <div>
+                          <p className="text-sm font-medium text-orange-800">Confident Students (29%)</p>
+                          <p className="text-xs text-orange-700">Offer leadership roles and presentation opportunities</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

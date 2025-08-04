@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Begin Learning - Email Campaign Graphics</title>
+    <style>
+        :root {
+            --primary-blue: #0B3064;
+            --primary-teal: #007A72;
+            --cream: #FFF9EF;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --dark-gray: #333333;
+            --accent-orange: #FF6B35;
+            --success-green: #4CAF50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--light-gray);
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .email-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .email-template {
+            width: 600px;
+            background: var(--white);
+            margin: 2rem auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%);
+            color: var(--white);
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .email-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .email-body {
+            padding: 2rem;
+        }
+
+        .step-counter {
+            background: var(--cream);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary-teal);
+        }
+
+        .step-number {
+            background: var(--primary-teal);
+            color: var(--white);
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 1rem;
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .step-description {
+            color: var(--dark-gray);
+            line-height: 1.5;
+        }
+
+        .cta-section {
+            background: var(--cream);
+            padding: 2rem;
+            text-align: center;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .cta-button {
+            background: var(--primary-teal);
+            color: var(--white);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            background: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .feature-highlight {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--white);
+            border: 2px solid var(--cream);
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .feature-content {
+            flex: 1;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-description {
+            color: var(--dark-gray);
+            font-size: 0.95rem;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            margin: 2rem 0;
+            background: var(--cream);
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            margin-top: 0.25rem;
+        }
+
+        .testimonial {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--white) 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-teal);
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .testimonial::before {
+            content: '"';
+            font-size: 4rem;
+            color: var(--primary-teal);
+            position: absolute;
+            top: 0.5rem;
+            left: 1rem;
+            opacity: 0.3;
+        }
+
+        .testimonial-text {
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--dark-gray);
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--primary-blue);
+            text-align: right;
+        }
+
+        .progress-tracker {
+            background: var(--white);
+            border: 2px solid var(--cream);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .progress-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .progress-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 1rem 0;
+        }
+
+        .progress-step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .progress-step.completed {
+            background: var(--success-green);
+            color: var(--white);
+        }
+
+        .progress-step.current {
+            background: var(--primary-teal);
+            color: var(--white);
+        }
+
+        .progress-step.upcoming {
+            background: var(--light-gray);
+            color: var(--dark-gray);
+        }
+
+        .progress-line {
+            flex: 1;
+            height: 2px;
+            background: var(--light-gray);
+            margin: 0 0.5rem;
+            position: relative;
+        }
+
+        .progress-line.completed {
+            background: var(--success-green);
+        }
+
+        .email-footer {
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-link {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .tutorial-preview {
+            background: var(--cream);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .video-thumbnail:hover {
+            transform: scale(1.02);
+        }
+
+        .tutorial-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .tutorial-duration {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        .quick-tips {
+            background: var(--white);
+            border: 2px solid var(--cream);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .tips-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--cream);
+            border-radius: 8px;
+        }
+
+        .tip-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--primary-teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .tip-text {
+            color: var(--dark-gray);
+            line-height: 1.4;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 640px) {
+            .email-template {
+                width: 100%;
+                margin: 1rem 0;
+            }
+            
+            .stats-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        
+        <!-- Email 1: Welcome Sequence -->
+        <div class="email-template">
+            <div class="email-header">
+                <div class="email-logo">Begin Learning</div>
+                <div class="welcome-title">Welcome to Your Teaching Journey!</div>
+                <div class="welcome-subtitle">Your Day 1 Success Kit is ready</div>
+            </div>
+            
+            <div class="email-body">
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--dark-gray);">
+                    Hi [Teacher Name],
+                </p>
+                <p style="margin-bottom: 2rem; color: var(--dark-gray);">
+                    Congratulations on starting your journey with Begin Learning! We know that the first day of school can feel overwhelming, but you're about to discover how data-driven insights can transform your confidence and your students' success.
+                </p>
+                
+                <div class="feature-highlight">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-content">
+                        <div class="feature-title">Day 1 Success Kit</div>
+                        <div class="feature-description">Everything you need to start strong: student assessments, parent communication templates, and quick reference guides.</div>
+                    </div>
+                </div>
+                
+                <div class="cta-section">
+                    <h3 style="color: var(--primary-blue); margin-bottom: 1rem;">Ready to get started?</h3>
+                    <a href="#" class="cta-button">Access Your Success Kit</a>
+                </div>
+                
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-number">95%</span>
+                        <span class="stat-label">Teacher Confidence Increase</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">3x</span>
+                        <span class="stat-label">Faster Student Progress</span>
+                    </div>
+                </div>
+                
+                <p style="color: var(--dark-gray); margin-top: 2rem;">
+                    Over the next week, we'll guide you through setting up your classroom for success. You've got this!
+                </p>
+                <p style="color: var(--dark-gray); margin-top: 1rem;">
+                    <strong>The Begin Learning Team</strong>
+                </p>
+            </div>
+            
+            <div class="email-footer">
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Teacher Community</a>
+                    <a href="#" class="footer-link">Contact Support</a>
+                </div>
+                <div class="social-icons">
+                    <a href="#" class="social-icon">f</a>
+                    <a href="#" class="social-icon">t</a>
+                    <a href="#" class="social-icon">in</a>
+                </div>
+                <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 1rem;">
+                    © 2024 Begin Learning. All rights reserved.
+                </p>
+            </div>
+        </div>
+
+        <!-- Email 2: Progress Tracking -->
+        <div class="email-template">
+            <div class="email-header">
+                <div class="email-logo">Begin Learning</div>
+                <div class="welcome-title">You're Making Great Progress!</div>
+                <div class="welcome-subtitle">Day 3 Check-in & Next Steps</div>
+            </div>
+            
+            <div class="email-body">
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--dark-gray);">
+                    Hi [Teacher Name],
+                </p>
+                
+                <div class="progress-tracker">
+                    <div class="progress-title">Your Onboarding Progress</div>
+                    <div class="progress-steps">
+                        <div class="progress-step completed">✓</div>
+                        <div class="progress-line completed"></div>
+                        <div class="progress-step completed">✓</div>
+                        <div class="progress-line completed"></div>
+                        <div class="progress-step current">3</div>
+                        <div class="progress-line upcoming"></div>
+                        <div class="progress-step upcoming">4</div>
+                        <div class="progress-line upcoming"></div>
+                        <div class="progress-step upcoming">5</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--dark-gray); margin-top: 0.5rem;">
+                        <span>Setup</span>
+                        <span>Assess</span>
+                        <span>Connect</span>
+                        <span>Teach</span>
+                        <span>Reflect</span>
+                    </div>
+                </div>
+                
+                <p style="margin-bottom: 2rem; color: var(--dark-gray);">
+                    You've completed your initial setup and student assessments. Now it's time to connect with parents and share the exciting insights you've discovered about their children's learning styles.
+                </p>
+                
+                <div class="step-counter">
+                    <div style="display: flex; align-items: flex-start;">
+                        <span class="step-number">3</span>
+                        <div>
+                            <div class="step-title">Parent Connection Time</div>
+                            <div class="step-description">
+                                Send personalized messages to parents sharing what you've learned about their child's learning style. We've created templates to make this easy and meaningful.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tutorial-preview">
+                    <div class="video-thumbnail">▶</div>
+                    <div class="tutorial-title">How to Send Effective Parent Messages</div>
+                    <div class="tutorial-duration">Watch • 3 minutes</div>
+                </div>
+                
+                <div class="cta-section">
+                    <h3 style="color: var(--primary-blue); margin-bottom: 1rem;">Ready for step 3?</h3>
+                    <a href="#" class="cta-button">Access Parent Templates</a>
+                </div>
+                
+                <div class="testimonial">
+                    <div class="testimonial-text">
+                        The parent communication templates saved me hours and helped me build stronger relationships from day one. Parents love getting personalized insights about their children!
+                    </div>
+                    <div class="testimonial-author">- Sarah M., 3rd Grade Teacher</div>
+                </div>
+            </div>
+            
+            <div class="email-footer">
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Teacher Community</a>
+                    <a href="#" class="footer-link">Contact Support</a>
+                </div>
+                <div class="social-icons">
+                    <a href="#" class="social-icon">f</a>
+                    <a href="#" class="social-icon">t</a>
+                    <a href="#" class="social-icon">in</a>
+                </div>
+                <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 1rem;">
+                    © 2024 Begin Learning. All rights reserved.
+                </p>
+            </div>
+        </div>
+
+        <!-- Email 3: Feature Deep Dive -->
+        <div class="email-template">
+            <div class="email-header">
+                <div class="email-logo">Begin Learning</div>
+                <div class="welcome-title">Master Your Learning Style Cards</div>
+                <div class="welcome-subtitle">Quick reference for instant differentiation</div>
+            </div>
+            
+            <div class="email-body">
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--dark-gray);">
+                    Hi [Teacher Name],
+                </p>
+                <p style="margin-bottom: 2rem; color: var(--dark-gray);">
+                    Today we're diving deep into one of our most popular features: Learning Style Cards. These quick-reference tools help you adapt your teaching in real-time based on each student's needs.
+                </p>
+                
+                <div class="feature-highlight">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-content">
+                        <div class="feature-title">Learning Style Cards</div>
+                        <div class="feature-description">Instant access to each student's learning preferences, successful strategies, and intervention suggestions.</div>
+                    </div>
+                </div>
+                
+                <div class="quick-tips">
+                    <div class="tips-title">Pro Tips for Using Learning Style Cards</div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">1</div>
+                        <div class="tip-text">
+                            <strong>Keep them visible:</strong> Place cards on your desk or clipboard for quick reference during lessons.
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">2</div>
+                        <div class="tip-text">
+                            <strong>Use during planning:</strong> Review cards when creating lesson plans to ensure you're including strategies for all learning styles.
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">3</div>
+                        <div class="tip-text">
+                            <strong>Share with substitutes:</strong> Leave cards with substitute teachers so they can maintain your differentiated approach.
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">4</div>
+                        <div class="tip-text">
+                            <strong>Update regularly:</strong> Add notes about what works and update as you learn more about each student.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cta-section">
+                    <h3 style="color: var(--primary-blue); margin-bottom: 1rem;">Print your personalized cards</h3>
+                    <a href="#" class="cta-button">Download & Print Cards</a>
+                </div>
+                
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-number">87%</span>
+                        <span class="stat-label">Teachers use cards daily</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">2x</span>
+                        <span class="stat-label">Faster lesson adaptation</span>
+                    </div>
+                </div>
+                
+                <p style="color: var(--dark-gray); margin-top: 2rem;">
+                    Tomorrow we'll explore how to create your first differentiated lesson using these insights. You're building something amazing!
+                </p>
+            </div>
+            
+            <div class="email-footer">
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Teacher Community</a>
+                    <a href="#" class="footer-link">Contact Support</a>
+                </div>
+                <div class="social-icons">
+                    <a href="#" class="social-icon">f</a>
+                    <a href="#" class="social-icon">t</a>
+                    <a href="#" class="social-icon">in</a>
+                </div>
+                <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 1rem;">
+                    © 2024 Begin Learning. All rights reserved.
+                </p>
+            </div>
+        </div>
+
+        <!-- Email 4: Success Story & Community -->
+        <div class="email-template">
+            <div class="email-header">
+                <div class="email-logo">Begin Learning</div>
+                <div class="welcome-title">You're Part of Something Special</div>
+                <div class="welcome-subtitle">Success stories from teachers like you</div>
+            </div>
+            
+            <div class="email-body">
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--dark-gray);">
+                    Hi [Teacher Name],
+                </p>
+                <p style="margin-bottom: 2rem; color: var(--dark-gray);">
+                    We wanted to share an inspiring story from Maria, a 2nd-grade teacher who started her Begin Learning journey just like you.
+                </p>
+                
+                <div class="testimonial">
+                    <div class="testimonial-text">
+                        I had a student, Alex, who seemed completely disengaged during math. Using Begin Learning's assessment, I discovered he was a kinesthetic learner trapped in a visual curriculum. Within two weeks of incorporating movement-based math activities, his engagement shot up 80% and his test scores improved by 25 points. But the best part? Seeing his confidence bloom as he finally understood that he wasn't 'bad at math' – he just learned differently.
+                    </div>
+                    <div class="testimonial-author">- Maria Rodriguez, 2nd Grade Teacher</div>
+                </div>
+                
+                <p style="margin: 2rem 0; color: var(--dark-gray);">
+                    Stories like Maria's happen every day in our teacher community. You're now part of a network of educators who believe every student can succeed when we teach to their strengths.
+                </p>
+                
+                <div class="feature-highlight">
+                    <div class="feature-icon">👥</div>
+                    <div class="feature-content">
+                        <div class="feature-title">Join Our Teacher Community</div>
+                        <div class="feature-description">Connect with 10,000+ educators sharing strategies, celebrating wins, and supporting each other's growth.</div>
+                    </div>
+                </div>
+                
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-number">10K+</span>
+                        <span class="stat-label">Active Teachers</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Daily Discussions</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Peer Support</span>
+                    </div>
+                </div>
+                
+                <div class="cta-section">
+                    <h3 style="color: var(--primary-blue); margin-bottom: 1rem;">Ready to connect?</h3>
+                    <a href="#" class="cta-button" style="margin-right: 1rem;">Join Community</a>
+                    <a href="#" class="cta-button" style="background: var(--accent-orange);">Share Your Story</a>
+                </div>
+                
+                <p style="color: var(--dark-gray); margin-top: 2rem;">
+                    We can't wait to celebrate your first success story. Remember, you're not just changing how you teach – you're changing lives.
+                </p>
+                <p style="color: var(--dark-gray); margin-top: 1rem;">
+                    <strong>Cheering you on,<br>The Begin Learning Team</strong>
+                </p>
+            </div>
+            
+            <div class="email-footer">
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Teacher Community</a>
+                    <a href="#" class="footer-link">Contact Support</a>
+                </div>
+                <div class="social-icons">
+                    <a href="#" class="social-icon">f</a>
+                    <a href="#" class="social-icon">t</a>
+                    <a href="#" class="social-icon">in</a>
+                </div>
+                <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 1rem;">
+                    © 2024 Begin Learning. All rights reserved.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Add interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate progress tracker
+            const progressSteps = document.querySelectorAll('.progress-step');
+            progressSteps.forEach((step, index) => {
+                if (step.classList.contains('completed')) {
+                    setTimeout(() => {
+                        step.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            step.style.transform = 'scale(1)';
+                        }, 200);
+                    }, index * 300);
+                }
+            });
+
+            // Add hover effects to CTA buttons
+            const ctaButtons = document.querySelectorAll('.cta-button');
+            ctaButtons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Add click animation to video thumbnails
+            const videoThumbnails = document.querySelectorAll('.video-thumbnail');
+            videoThumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 100);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
