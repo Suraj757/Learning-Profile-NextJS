@@ -36,10 +36,10 @@ import {
   Zap
 } from 'lucide-react'
 import { useTeacherAuth } from '@/lib/teacher-auth'
-import { getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
+import { getTeacherClassrooms, getTeacherAssignments, supabase, getTeacherByEmail } from '@/lib/supabase'
 import type { Classroom, ProfileAssignment } from '@/lib/supabase'
 import DelightfulLoading from '@/components/loading/DelightfulLoading'
-import { getDemoReportsData } from '@/lib/demo-data'
+import { getDemoReportsData, createDemoDataForTeacher } from '@/lib/demo-data'
 
 // Helper function to analyze learning style distribution from actual student data
 function analyzeLearningStyleDistribution(assignments: any[]) {
@@ -251,19 +251,109 @@ function Day1KitContent() {
     if (!teacher) return
 
     try {
+      console.log('=== Day 1 Kit Data Loading Debug ===')
+      console.log('Teacher from localStorage:', teacher.email, 'ID:', teacher.id)
+      console.log('Supabase connection status:', !!supabase)
+      console.log('Environment check:')
+      console.log('  - SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) + '...')
+      console.log('  - SUPABASE_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 30) + '...')
+      
+      // Check if Supabase is configured
+      if (!supabase) {
+        console.log('❌ Supabase not configured, using demo data')
+        throw new Error('Supabase not configured')
+      }
+      
+      // Verify teacher exists in database
+      try {
+        console.log('🔍 Looking up teacher in database by email:', teacher.email)
+        const dbTeacher = await getTeacherByEmail(teacher.email)
+        console.log('📋 Database teacher lookup result:', dbTeacher ? `Found ID: ${dbTeacher.id}` : 'Not found')
+        
+        if (!dbTeacher) {
+          console.log('❌ Teacher not found in database, using demo data')
+          throw new Error('Teacher not found in database')
+        }
+        
+        // Use the database teacher ID instead of localStorage ID
+        const teacherId = dbTeacher.id
+        console.log('Using teacher ID from database:', teacherId)
+        
+        const [classroomsData, assignmentsData] = await Promise.all([
+          getTeacherClassrooms(teacherId),
+          getTeacherAssignments(teacherId)
+        ])
+        
+        console.log('📊 Live data check:')
+        console.log('  - Classrooms:', classroomsData?.length || 0, classroomsData?.map(c => c.name))
+        console.log('  - Assignments:', assignmentsData?.length || 0, 'completed:', assignmentsData?.filter(a => a.status === 'completed').length || 0)
+        
+        // If teacher exists but has no data, create some demo data
+        if ((!classroomsData || classroomsData.length === 0) && (!assignmentsData || assignmentsData.length === 0)) {
+          console.log('Teacher exists but has no data, creating demo data')
+          await createDemoDataForTeacher(teacherId)
+          
+          // Refetch data after creating demo data
+          const [newClassroomsData, newAssignmentsData] = await Promise.all([
+            getTeacherClassrooms(teacherId),
+            getTeacherAssignments(teacherId)
+          ])
+          
+          console.log('After creating demo data - Classrooms:', newClassroomsData?.length, 'Assignments:', newAssignmentsData?.length)
+          
+          setClassrooms(newClassroomsData || [])
+          setAssignments(newAssignmentsData || [])
+          
+          // Use the new data for analysis
+          const completedAssignments = (newAssignmentsData || []).filter(a => a.status === 'completed')
+          const primaryClassroom = (newClassroomsData || [])[0] || { name: 'Your Classroom', grade_level: '3rd Grade' }
+          
+          const generatedDay1Data = {
+            classroom: {
+              name: primaryClassroom.name,
+              grade: primaryClassroom.grade_level,
+              studentCount: (newAssignmentsData || []).length,
+              profilesCompleted: completedAssignments.length,
+              schoolStartDate: "2024-08-26",
+              daysUntilStart: Math.max(0, Math.ceil((new Date('2024-08-26').getTime() - new Date().getTime()) / (1000 * 3600 * 24)))
+            },
+            learningStyleDistribution: analyzeLearningStyleDistribution(completedAssignments),
+            atRiskStudents: identifyAtRiskStudents(completedAssignments),
+            seatingRecommendations: generateSeatingRecommendations(completedAssignments),
+            emailTemplates: generateEmailTemplates(completedAssignments)
+          }
+          
+          setDay1Data(generatedDay1Data)
+          return
+        }
+        
+      } catch (dbError) {
+        console.log('❌ Database teacher lookup failed:', dbError.message)
+        console.log('⚠️  Will use demo data due to database error')
+        const demoData = getDemoDay1KitData()
+        setDay1Data(demoData)
+        return
+      }
+      
+      // Try to get data with original teacher ID as fallback
       const [classroomsData, assignmentsData] = await Promise.all([
         getTeacherClassrooms(teacher.id),
         getTeacherAssignments(teacher.id)
       ])
+      
+      console.log('Final data fetch - Classrooms:', classroomsData?.length, 'Assignments:', assignmentsData?.length)
       
       let finalClassrooms = classroomsData || []
       let finalAssignments = assignmentsData || []
       
       // If no live data available, fall back to demo data
       if (finalClassrooms.length === 0 || finalAssignments.length === 0) {
+        console.log('No live data found, using demo data. Classrooms:', finalClassrooms.length, 'Assignments:', finalAssignments.length)
         const demoData = getDemoReportsData(teacher.id)
         finalClassrooms = finalClassrooms.length > 0 ? finalClassrooms : demoData.classrooms as any
         finalAssignments = finalAssignments.length > 0 ? finalAssignments : demoData.assignments as any
+      } else {
+        console.log('Using live data. Classrooms:', finalClassrooms.length, 'Assignments:', finalAssignments.length)
       }
       
       setClassrooms(finalClassrooms)
@@ -291,9 +381,11 @@ function Day1KitContent() {
       setDay1Data(generatedDay1Data)
       
     } catch (error) {
-      console.error('Error loading Day 1 Kit data:', error)
+      console.error('❌ Error loading Day 1 Kit data:', error)
+      console.error('❌ Error details:', error.message, error.stack)
       
       // Fall back to demo data on error
+      console.log('⚠️  Falling back to demo data due to error')
       const demoData = getDemoReportsData(teacher.id)
       setClassrooms(demoData.classrooms as any)
       setAssignments(demoData.assignments as any)
