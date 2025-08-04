@@ -23,9 +23,12 @@ import {
   Heart
 } from 'lucide-react'
 import { useTeacherAuth } from '@/lib/teacher-auth'
+import { getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
+import type { Classroom, ProfileAssignment } from '@/lib/supabase'
 import AuthRequired from '@/components/teacher/AuthRequired'
 import StudentCard from '@/components/teacher/StudentCard'
 import { generateStudentCardData } from '@/lib/student-card-data'
+import { getDemoReportsData } from '@/lib/demo-data'
 
 interface StudentCardData {
   id: number
@@ -67,20 +70,133 @@ function StudentCardsContent() {
     if (!teacher) return
 
     try {
-      // For demo purposes, we'll generate realistic sample data
-      // In production, this would fetch from your API/database
-      const sampleCards = generateStudentCardData()
+      const [classroomsData, assignmentsData] = await Promise.all([
+        getTeacherClassrooms(teacher.id),
+        getTeacherAssignments(teacher.id)
+      ])
       
-      // Simulate a brief loading delay for better UX
-      await new Promise(resolve => setTimeout(resolve, 800))
+      let finalAssignments = assignmentsData || []
       
-      setStudentCards(sampleCards)
+      // If no live data available, fall back to demo data
+      if (finalAssignments.length === 0) {
+        const demoData = getDemoReportsData(teacher.id)
+        finalAssignments = demoData.assignments as any
+      }
+      
+      // Convert assignments to student card format
+      const completedAssignments = finalAssignments.filter(a => a.status === 'completed')
+      
+      if (completedAssignments.length > 0) {
+        // Use actual assessment data to create student cards
+        const actualCards = completedAssignments.map((assignment, index) => {
+          const assessmentResults = assignment.assessment_results
+          
+          // Determine learning style from personality label
+          let learningStyle = 'Creative' as const
+          if (assessmentResults?.personality_label) {
+            const label = assessmentResults.personality_label.toLowerCase()
+            if (label.includes('analytical')) learningStyle = 'Analytical'
+            else if (label.includes('collaborative')) learningStyle = 'Collaborative' 
+            else if (label.includes('confident')) learningStyle = 'Confident'
+          }
+          
+          return {
+            id: assignment.id,
+            child_name: assignment.child_name,
+            parent_email: assignment.parent_email,
+            learning_style: learningStyle,
+            strengths: getStrengthsForStyle(learningStyle),
+            challenges: getChallengesForStyle(learningStyle),
+            quick_wins: getQuickWinsForStyle(learningStyle),
+            parent_insight: getParentInsightForStyle(learningStyle),
+            emergency_backup: getEmergencyPlanForStyle(learningStyle),
+            assessment_results: assessmentResults
+          }
+        })
+        
+        setStudentCards(actualCards)
+      } else {
+        // Fall back to generated sample data if no assessments completed
+        const sampleCards = generateStudentCardData()
+        setStudentCards(sampleCards)
+      }
+      
     } catch (error) {
       console.error('Error loading student cards:', error)
-      // You could add error state handling here
+      
+      // Fall back to sample data on error
+      const sampleCards = generateStudentCardData()
+      setStudentCards(sampleCards)
     } finally {
       setLoading(false)
     }
+  }
+  
+  // Helper functions to get content based on learning style
+  const getStrengthsForStyle = (style: string) => {
+    const strengths = {
+      Creative: [
+        "Generates unique solutions to problems",
+        "Expresses ideas through art, stories, and imagination", 
+        "Thinks outside the box during brainstorming"
+      ],
+      Analytical: [
+        "Breaks down complex problems into manageable steps",
+        "Identifies patterns and logical sequences",
+        "Uses data and evidence to support conclusions"
+      ],
+      Collaborative: [
+        "Facilitates group discussions and keeps teams on task",
+        "Listens actively and incorporates others' ideas",
+        "Creates inclusive environments where everyone contributes"
+      ],
+      Confident: [
+        "Volunteers to lead group projects and presentations",
+        "Tries new challenges without fear of making mistakes",
+        "Takes initiative on classroom activities and discussions"
+      ]
+    }
+    return strengths[style] || strengths.Creative
+  }
+  
+  const getChallengesForStyle = (style: string) => {
+    const challenges = {
+      Creative: ["May struggle with rigid timelines and detailed instructions", "Might resist structured activities with only one right answer"],
+      Analytical: ["May become overwhelmed by open-ended creative tasks", "Might struggle when asked to make quick decisions"],
+      Collaborative: ["May feel anxious or less productive during independent work", "Might talk too much during quiet work time"],
+      Confident: ["May appear overconfident or dominate group discussions", "Might take on too much responsibility and become overwhelmed"]
+    }
+    return challenges[style] || challenges.Creative
+  }
+  
+  const getQuickWinsForStyle = (style: string) => {
+    const quickWins = {
+      Creative: ["Let them illustrate their answers or create visual representations", "Offer choice in how they demonstrate their learning", "Use storytelling to introduce new concepts"],
+      Analytical: ["Provide clear, step-by-step instructions and rubrics", "Use graphic organizers and structured note-taking templates", "Explain the 'why' behind rules and procedures"],
+      Collaborative: ["Use think-pair-share and small group activities", "Assign roles that utilize their social leadership skills", "Create opportunities for peer teaching and mentoring"],
+      Confident: ["Give them leadership roles and special responsibilities", "Offer challenging extension activities when they finish early", "Let them present to the class or younger students"]
+    }
+    return quickWins[style] || quickWins.Creative
+  }
+  
+  const getParentInsightForStyle = (style: string) => {
+    const insights = {
+      Creative: "At home, they come up with the most creative games and stories. They need time to think and explore ideas before being asked for the 'right' answer.",
+      Analytical: "They ask 'why' about everything and love to understand how things work. They need clear explanations and time to process new information.",
+      Collaborative: "They are always organizing activities with friends. They learn best when they can talk through ideas with others.",
+      Confident: "They take on leadership roles naturally and aren't afraid to try new things. They need challenges to stay engaged."
+    }
+    return insights[style] || insights.Creative
+  }
+  
+  const getEmergencyPlanForStyle = (style: string) => {
+    const plans = {
+      Creative: "Offer a creative alternative - 'How could you show this in a different way?'",
+      Analytical: "Break the task into smaller, numbered steps",
+      Collaborative: "Move them near a supportive peer or create a quick partnership",
+      Confident: "Give them a special challenge or extension task"
+    }
+    return plans[style] || plans.Creative
   }
 
   const filteredCards = studentCards.filter(card => {
