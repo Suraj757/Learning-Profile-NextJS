@@ -26,23 +26,38 @@ export function getPersonalityLabel(scores: Scores): string {
   
   const [primary, secondary] = sortedScores.map(([category]) => category)
   
-  // Personality label mapping
+  // Personality label mapping (includes all combinations in both directions)
   const labelMap: Record<string, string> = {
     'Communication-Collaboration': 'Social Communicator',
+    'Collaboration-Communication': 'Social Communicator',
     'Communication-Content': 'Knowledge Sharer', 
+    'Content-Communication': 'Knowledge Sharer',
     'Communication-Critical Thinking': 'Thoughtful Speaker',
+    'Critical Thinking-Communication': 'Thoughtful Speaker',
     'Communication-Creative Innovation': 'Creative Storyteller',
+    'Creative Innovation-Communication': 'Creative Storyteller',
     'Communication-Confidence': 'Confident Leader',
+    'Confidence-Communication': 'Confident Leader',
     'Collaboration-Content': 'Team Scholar',
+    'Content-Collaboration': 'Team Scholar',
     'Collaboration-Critical Thinking': 'Strategic Partner',
+    'Critical Thinking-Collaboration': 'Strategic Partner',
     'Collaboration-Creative Innovation': 'Creative Collaborator',
+    'Creative Innovation-Collaboration': 'Creative Collaborator',
     'Collaboration-Confidence': 'Natural Leader',
+    'Confidence-Collaboration': 'Natural Leader',
     'Content-Critical Thinking': 'Analytical Scholar',
+    'Critical Thinking-Content': 'Analytical Scholar',
     'Content-Creative Innovation': 'Innovative Thinker',
+    'Creative Innovation-Content': 'Innovative Thinker',
     'Content-Confidence': 'Confident Learner',
+    'Confidence-Content': 'Confident Learner',
     'Critical Thinking-Creative Innovation': 'Creative Problem Solver',
+    'Creative Innovation-Critical Thinking': 'Creative Problem Solver',
     'Critical Thinking-Confidence': 'Bold Analyst',
-    'Creative Innovation-Confidence': 'Fearless Creator'
+    'Confidence-Critical Thinking': 'Bold Analyst',
+    'Creative Innovation-Confidence': 'Fearless Creator',
+    'Confidence-Creative Innovation': 'Fearless Creator'
   }
   
   const key = `${primary}-${secondary}`
