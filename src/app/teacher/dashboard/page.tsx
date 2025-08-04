@@ -431,6 +431,18 @@ function TeacherDashboardContent() {
                     </div>
                     <div className="absolute -top-1 -right-1 bg-green-500 text-white text-xs px-1.5 py-0.5 rounded-full">NEW</div>
                   </Link>
+                  
+                  <Link 
+                    href="/teacher/alerts"
+                    className="flex items-center gap-3 p-3 text-begin-blue hover:bg-red-50 rounded-card transition-colors relative"
+                  >
+                    <AlertCircle className="h-5 w-5 text-red-600" />
+                    <div>
+                      <div className="font-medium">At-Risk Early Alerts</div>
+                      <div className="text-xs text-gray-600">Identify students needing support</div>
+                    </div>
+                    <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">NEW</div>
+                  </Link>
               </div>
               </div>
             </div>
