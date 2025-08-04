@@ -294,7 +294,7 @@ export default function QuestionPage() {
   const questionExample = question.example?.replace('[name]', childName)
 
   return (
-    <div className="min-h-screen bg-begin-cream pb-24">
+    <div className="min-h-screen bg-begin-cream pb-32">
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -386,7 +386,7 @@ export default function QuestionPage() {
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-24">
         <div className="card-begin p-6 lg:p-8 transform hover:shadow-lg transition-shadow duration-300">
           {/* Enhanced Category Badge */}
           <div className="flex justify-center mb-6">
