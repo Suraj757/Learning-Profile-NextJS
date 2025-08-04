@@ -27,6 +27,47 @@ export default function ResultsPage() {
         let response = await fetch(`/api/profiles/${params.id}`)
         
         if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          
+          // Check if this is our client-side fallback signal
+          if (errorData.useClientFallback) {
+            // Try localStorage first (profile-specific)
+            const localProfile = localStorage.getItem(`profile_${params.id}`)
+            if (localProfile) {
+              const profile = JSON.parse(localProfile)
+              const transformedProfile: ProfileData = {
+                id: profile.id,
+                childName: profile.child_name,
+                grade: profile.grade_level || profile.grade || '3rd Grade',
+                scores: profile.scores,
+                personalityLabel: profile.personality_label,
+                description: profile.description || 'A unique learner with special strengths and talents.',
+                createdAt: profile.created_at || new Date().toISOString()
+              }
+              setProfileData(transformedProfile)
+              setLoading(false)
+              return
+            }
+            
+            // Fall back to sessionStorage (latest profile)
+            const latestProfile = sessionStorage.getItem('latestProfile')
+            if (latestProfile) {
+              const data = JSON.parse(latestProfile)
+              const transformedProfile: ProfileData = {
+                id: data.id,
+                childName: data.childName,
+                grade: data.grade || '3rd Grade',
+                scores: data.scores,
+                personalityLabel: data.personalityLabel,
+                description: data.description,
+                createdAt: data.createdAt || new Date().toISOString()
+              }
+              setProfileData(transformedProfile)
+              setLoading(false)
+              return
+            }
+          }
+          
           // Try sample profiles as fallback
           response = await fetch(`/api/sample-profiles/${params.id}`)
           
@@ -47,14 +88,6 @@ export default function ResultsPage() {
             return
           }
           
-          if (response.status === 404) {
-            // Profile not found, try sessionStorage as fallback
-            const latestProfile = sessionStorage.getItem('latestProfile')
-            if (latestProfile) {
-              const data = JSON.parse(latestProfile)
-              setProfileData(data)
-            }
-          }
           setLoading(false)
           return
         }

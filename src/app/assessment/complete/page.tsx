@@ -64,16 +64,40 @@ export default function AssessmentCompletePage() {
 
             const { profile, shareUrl } = await response.json()
 
-            setProfileData({
+            const finalProfileData = {
               id: profile.id,
               scores,
               personalityLabel,
               description,
               shareUrl
-            })
+            }
+
+            setProfileData(finalProfileData)
             setIsProcessing(false)
 
-            // Clear session storage since we now have persistent data
+            // Store the complete profile data as fallback for retrieval
+            sessionStorage.setItem('latestProfile', JSON.stringify({
+              id: profile.id,
+              childName: name,
+              grade: gradeLevel,
+              scores,
+              personalityLabel,
+              description,
+              createdAt: new Date().toISOString()
+            }))
+
+            // Also store it with the profile ID as key for direct access
+            localStorage.setItem(`profile_${profile.id}`, JSON.stringify({
+              id: profile.id,
+              child_name: name,
+              grade_level: gradeLevel,
+              scores,
+              personality_label: personalityLabel,
+              description,
+              created_at: new Date().toISOString()
+            }))
+
+            // Clear assessment data since we now have persistent data
             sessionStorage.removeItem('childName')
             sessionStorage.removeItem('grade')
             sessionStorage.removeItem('assessmentResponses')
