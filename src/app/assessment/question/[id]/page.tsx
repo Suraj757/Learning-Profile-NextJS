@@ -78,6 +78,21 @@ export default function QuestionPage() {
       setGrade(gradeValue || '')
       setAssignmentToken(token || '')
       
+      // CRITICAL FIX: Load existing responses from sessionStorage first
+      const existingResponses = sessionStorage.getItem('assessmentResponses')
+      if (existingResponses) {
+        const parsedResponses = JSON.parse(existingResponses)
+        console.log('🔍 INIT DEBUG - Loading existing responses from sessionStorage:', parsedResponses)
+        console.log('🔍 INIT DEBUG - Response count:', Object.keys(parsedResponses).length)
+        setResponses(parsedResponses)
+        
+        // Set the current question's response if it exists
+        if (parsedResponses[questionId]) {
+          console.log(`🔍 INIT DEBUG - Setting selectedValue to ${parsedResponses[questionId]} for question ${questionId}`)
+          setSelectedValue(parsedResponses[questionId])
+        }
+      }
+      
       const currentSessionId = getOrCreateSessionId()
       setSessionId(currentSessionId)
       

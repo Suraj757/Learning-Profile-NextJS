@@ -207,3 +207,5 @@ Error: Route "/api/recalculate-profile/[id]" used `params.id`. `params` should b
   recalculated_label: 'Confident Leader'
 }
  GET /api/debug-gary 200 in 653ms
+ ✓ Compiled /api/debug-harry in 190ms
+ GET /api/debug-harry 200 in 522ms
