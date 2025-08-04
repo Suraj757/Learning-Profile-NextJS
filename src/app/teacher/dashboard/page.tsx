@@ -298,9 +298,10 @@ function TeacherDashboardContent() {
                           </Link>
                           <Link 
                             href={`/teacher/classroom/${classroom.id}/analytics`}
-                            className="text-begin-cyan hover:text-begin-cyan/80 font-medium text-sm"
+                            className="text-begin-cyan hover:text-begin-cyan/80 font-medium text-sm flex items-center gap-1"
                           >
-                            View Analytics
+                            <BarChart3 className="h-3 w-3" />
+                            Analytics
                           </Link>
                         </div>
                       </div>

@@ -209,3 +209,111 @@ Error: Route "/api/recalculate-profile/[id]" used `params.id`. `params` should b
  GET /api/debug-gary 200 in 653ms
  ✓ Compiled /api/debug-harry in 190ms
  GET /api/debug-harry 200 in 522ms
+ ○ Compiling / ...
+ ✓ Compiled / in 4.3s
+ GET / 200 in 5070ms
+ ○ Compiling /_not-found/page ...
+ ✓ Compiled /_not-found/page in 760ms
+ GET /favicon-32x32.png 404 in 929ms
+ GET /site.webmanifest 404 in 1025ms
+ GET /favicon-16x16.png 404 in 86ms
+ ✓ Compiled /favicon.ico in 227ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 603ms
+ GET /favicon-32x32.png 404 in 126ms
+ GET /favicon-16x16.png 404 in 293ms
+ ○ Compiling /teacher/register ...
+ ✓ Compiled /teacher/register in 1226ms
+ GET /teacher/register 200 in 1335ms
+ ○ Compiling /teacher/dashboard ...
+ ✓ Compiled /teacher/dashboard in 571ms
+ GET /teacher/dashboard?welcome=true 200 in 697ms
+ ○ Compiling /teacher/send-assessment ...
+ ✓ Compiled /teacher/send-assessment in 715ms
+ GET /teacher/send-assessment 200 in 815ms
+ ○ Compiling /assessment/start ...
+ ✓ Compiled /assessment/start in 528ms
+ GET /assessment/start?ref=h6xnlgny6x8zh9etpi6p7b&source=teacher 200 in 746ms
+ GET /favicon-32x32.png 404 in 89ms
+ GET /favicon-16x16.png 404 in 176ms
+ GET /site.webmanifest 404 in 398ms
+ ○ Compiling /assessment/question/[id] ...
+ ✓ Compiled /assessment/question/[id] in 574ms
+ GET /assessment/question/1 200 in 1458ms
+ ✓ Compiled /api/assessment-progress in 187ms
+ GET /api/assessment-progress?session_id=assessment_1754326653678_lwkeert49xs 200 in 673ms
+ POST /api/assessment-progress 200 in 168ms
+ GET /assessment/question/2 200 in 68ms
+ GET /site.webmanifest 404 in 117ms
+ POST /api/assessment-progress 200 in 182ms
+ POST /api/assessment-progress 200 in 183ms
+ GET /assessment/question/3 200 in 103ms
+ POST /api/assessment-progress 200 in 749ms
+ GET /assessment/question/4 200 in 156ms
+ POST /api/assessment-progress 200 in 383ms
+ GET /assessment/question/4 200 in 73ms
+ POST /api/assessment-progress 200 in 121ms
+ GET /assessment/question/5 200 in 50ms
+ POST /api/assessment-progress 200 in 103ms
+ GET /assessment/question/6 200 in 56ms
+ POST /api/assessment-progress 200 in 152ms
+ GET /assessment/question/7 200 in 75ms
+ POST /api/assessment-progress 200 in 122ms
+ GET /assessment/question/8 200 in 49ms
+ POST /api/assessment-progress 200 in 126ms
+ GET /assessment/question/9 200 in 61ms
+ POST /api/assessment-progress 200 in 118ms
+ GET /assessment/question/10 200 in 49ms
+ POST /api/assessment-progress 200 in 137ms
+ GET /assessment/question/11 200 in 42ms
+ POST /api/assessment-progress 200 in 80ms
+ GET /assessment/question/12 200 in 43ms
+ POST /api/assessment-progress 200 in 117ms
+ GET /assessment/question/13 200 in 40ms
+ POST /api/assessment-progress 200 in 288ms
+ GET /assessment/question/14 200 in 46ms
+ POST /api/assessment-progress 200 in 104ms
+ GET /assessment/question/15 200 in 41ms
+ POST /api/assessment-progress 200 in 130ms
+ GET /assessment/question/16 200 in 38ms
+ POST /api/assessment-progress 200 in 85ms
+ GET /assessment/question/17 200 in 67ms
+ POST /api/assessment-progress 200 in 130ms
+ GET /assessment/question/18 200 in 62ms
+ POST /api/assessment-progress 200 in 85ms
+ GET /assessment/question/19 200 in 38ms
+ POST /api/assessment-progress 200 in 87ms
+ GET /assessment/question/20 200 in 38ms
+ POST /api/assessment-progress 200 in 75ms
+ GET /assessment/question/21 200 in 70ms
+ POST /api/assessment-progress 200 in 110ms
+ GET /assessment/question/22 200 in 52ms
+ POST /api/assessment-progress 200 in 97ms
+ GET /assessment/question/23 200 in 51ms
+ POST /api/assessment-progress 200 in 109ms
+ GET /assessment/question/24 200 in 40ms
+ POST /api/assessment-progress 200 in 130ms
+ ○ Compiling /assessment/complete ...
+ ✓ Compiled /assessment/complete in 510ms
+ GET /assessment/complete 200 in 561ms
+ ✓ Compiled /api/profiles in 148ms
+Supabase configured, attempting to save to database
+Supabase configured, attempting to save to database
+ POST /api/profiles 200 in 383ms
+ POST /api/profiles 200 in 423ms
+ ○ Compiling /results/[id] ...
+ ✓ Compiled /results/[id] in 1655ms
+ GET /results/14 200 in 2500ms
+ GET /results/15 200 in 2616ms
+ GET /results/15 200 in 321ms
+ GET /results/15 200 in 85ms
+ ✓ Compiled /api/profiles/[id] in 197ms
+Error: Route "/api/profiles/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at GET (src/app/api/profiles/[id]/route.ts:27:25)
+  25 |         .from('assessment_results')
+  26 |         .select('*')
+> 27 |         .eq('id', params.id)
+     |                         ^
+  28 |         .single()
+  29 |
+  30 |       if (assessmentProfile && !assessmentError) {
+ GET /api/profiles/15 200 in 1084ms
