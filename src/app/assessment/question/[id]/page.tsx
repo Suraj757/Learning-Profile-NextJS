@@ -54,6 +54,11 @@ export default function QuestionPage() {
     }
   }, [progressMessage])
 
+  // Auto-scroll to top when question changes for better mobile UX
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [questionId])
+
   useEffect(() => {
     // Initialize auto-saver
     autoSaver.current = new ProgressAutoSaver()
@@ -184,6 +189,25 @@ export default function QuestionPage() {
       })
     }
   }, [selectedValue, sessionId, childName, grade, responses, questionId, assignmentToken])
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft' && questionId > 1) {
+        handlePrevious()
+      } else if (event.key === 'ArrowRight' && selectedValue !== null) {
+        handleNext()
+      } else if (event.key >= '1' && event.key <= '5') {
+        const value = parseInt(event.key)
+        if (value >= 1 && value <= 5) {
+          setSelectedValue(value)
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [questionId, selectedValue])
   
   // Save progress immediately (for navigation)
   const saveProgressNow = async (updatedResponses: Record<number, number>, nextQuestion: number) => {
@@ -270,7 +294,7 @@ export default function QuestionPage() {
   const questionExample = question.example?.replace('[name]', childName)
 
   return (
-    <div className="min-h-screen bg-begin-cream">
+    <div className="min-h-screen bg-begin-cream pb-24">
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -396,9 +420,9 @@ export default function QuestionPage() {
             </div>
           </div>
 
-          {/* Enhanced Response Options */}
+          {/* Enhanced Response Options with Keyboard Shortcuts */}
           <div className="space-y-3 mb-8">
-            {PARENT_SCALE.map((option) => (
+            {PARENT_SCALE.map((option, index) => (
               <button
                 key={option.value}
                 onClick={() => setSelectedValue(option.value)}
@@ -411,8 +435,13 @@ export default function QuestionPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="text-xl">{option.emoji}</span>
-                    <div>
-                      <span className="font-semibold">{option.label}</span>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">{option.label}</span>
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-mono">
+                          {option.value}
+                        </span>
+                      </div>
                       <p className="text-xs text-gray-500 mt-0.5">{option.description}</p>
                     </div>
                   </div>
@@ -428,58 +457,14 @@ export default function QuestionPage() {
             ))}
           </div>
 
-          {/* Enhanced Navigation */}
-          <div className="flex justify-between items-center">
-            <button
-              onClick={handlePrevious}
-              disabled={questionId === 1}
-              className="btn-begin-secondary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transform hover:scale-105 transition-transform duration-200"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Previous
-            </button>
-
-            <div className="flex flex-col items-center">
-              <div className="text-sm text-gray-500 mb-1">
-                Question {questionId} of {totalQuestions}
-              </div>
-              <div className="flex gap-1">
-                {Array.from({ length: Math.min(totalQuestions, 10) }, (_, i) => {
-                  const dotIndex = Math.floor((i * totalQuestions) / 10)
-                  return (
-                    <div
-                      key={i}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        questionId > dotIndex ? 'bg-begin-teal' : 'bg-gray-200'
-                      }`}
-                    />
-                  )
-                })}
-              </div>
+          {/* Keyboard Shortcuts Help */}
+          <div className="text-center mb-4">
+            <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-xs">
+              <span>💡 Pro tip:</span>
+              <span>Press 1-5 to select • ← → arrows to navigate</span>
             </div>
-
-            <button
-              onClick={handleNext}
-              disabled={selectedValue === null}
-              className={`btn-begin-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transform transition-all duration-200 ${
-                selectedValue !== null ? 'hover:scale-105 shadow-lg hover:shadow-xl' : ''
-              } ${
-                questionId === totalQuestions ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600' : ''
-              }`}
-            >
-              {questionId === totalQuestions ? (
-                <>
-                  <Sparkles className="h-4 w-4" />
-                  Complete Profile! 🎉
-                </>
-              ) : (
-                <>
-                  Next
-                  <ArrowRight className="h-4 w-4" />
-                </>
-              )}
-            </button>
           </div>
+
         </div>
 
         {/* Enhanced Help Text */}
@@ -502,6 +487,63 @@ export default function QuestionPage() {
           onClose={() => setShowRecoveryModal(false)}
           onResumeSession={handleResumeSession}
         />
+      </div>
+
+      {/* Fixed Navigation Footer - Always Visible */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <button
+              onClick={handlePrevious}
+              disabled={questionId === 1}
+              className="btn-begin-secondary disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transform hover:scale-105 transition-all duration-200 text-sm px-4 py-3"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Previous
+            </button>
+
+            <div className="flex flex-col items-center">
+              <div className="text-xs text-gray-500 mb-1">
+                Question {questionId} of {totalQuestions}
+              </div>
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(totalQuestions, 8) }, (_, i) => {
+                  const dotIndex = Math.floor((i * totalQuestions) / 8)
+                  return (
+                    <div
+                      key={i}
+                      className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                        questionId > dotIndex ? 'bg-begin-teal' : 'bg-gray-200'
+                      }`}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+
+            <button
+              onClick={handleNext}
+              disabled={selectedValue === null}
+              className={`btn-begin-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transform transition-all duration-200 text-sm px-6 py-3 font-semibold ${
+                selectedValue !== null ? 'hover:scale-105 shadow-lg hover:shadow-xl animate-pulse ring-2 ring-begin-teal/20' : ''
+              } ${
+                questionId === totalQuestions ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600' : ''
+              }`}
+            >
+              {questionId === totalQuestions ? (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  Complete Profile! 🎉
+                </>
+              ) : (
+                <>
+                  Next
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
