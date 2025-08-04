@@ -37,8 +37,17 @@ export default function AssessmentCompletePage() {
 
         // Process the responses locally for immediate display
         const parsedResponses = JSON.parse(responses)
+        console.log('🔍 COMPLETION DEBUG - Raw responses from sessionStorage:', responses)
+        console.log('🔍 COMPLETION DEBUG - Parsed responses:', parsedResponses)
+        console.log('🔍 COMPLETION DEBUG - Response count:', Object.keys(parsedResponses).length)
+        console.log('🔍 COMPLETION DEBUG - Expected count: 24')
+        
         const scores = calculateScores(parsedResponses)
+        console.log('🔍 COMPLETION DEBUG - Calculated scores:', scores)
+        
         const personalityLabel = getPersonalityLabel(scores)
+        console.log('🔍 COMPLETION DEBUG - Personality label:', personalityLabel)
+        
         const description = generateDescription(scores)
 
         // Simulate processing time for better UX

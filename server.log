@@ -1,0 +1,209 @@
+
+> learning-profile-nextjs@0.1.0 dev
+> next dev --turbopack
+
+ ⚠ Warning: Found multiple lockfiles. Selecting /Users/SpeakaboosSuraj/package-lock.json.
+   Consider removing the lockfiles at:
+   * /Users/SpeakaboosSuraj/WorkStuff/Learning-Profile-NextJS/package-lock.json
+
+   ▲ Next.js 15.4.5 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://10.121.100.179:3000
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ✓ Starting...
+ ✓ Ready in 2.1s
+ ○ Compiling /api/debug-scoring ...
+ ✓ Compiled /api/debug-scoring in 2.3s
+🔍 DEBUG SCORING - Input responses: {
+  '1': 1,
+  '2': 1,
+  '3': 1,
+  '4': 1,
+  '5': 1,
+  '6': 1,
+  '7': 1,
+  '8': 1,
+  '9': 1,
+  '10': 1,
+  '11': 1,
+  '12': 1,
+  '13': 1,
+  '14': 1,
+  '15': 1,
+  '16': 1,
+  '17': 1,
+  '18': 1,
+  '19': 1,
+  '20': 1,
+  '21': 1,
+  '22': 1,
+  '23': 1,
+  '24': 1
+}
+🔍 DEBUG SCORING - Calculated scores: {
+  Communication: 1,
+  Collaboration: 1,
+  Content: 1,
+  'Critical Thinking': 1,
+  'Creative Innovation': 1,
+  Confidence: 1
+}
+🔍 DEBUG SCORING - Sorted scores: [ [ 'Communication', 1 ], [ 'Collaboration', 1 ] ]
+🔍 DEBUG SCORING - Primary: Communication (1), Secondary: Collaboration (1)
+🔍 DEBUG SCORING - Key: "Communication-Collaboration"
+🔍 DEBUG SCORING - Final personality label: Social Communicator
+ POST /api/debug-scoring 200 in 2580ms
+ ✓ Compiled /api/debug-profiles in 421ms
+🔍 DEBUG PROFILES - Found profiles: [
+  {
+    id: 10,
+    child_name: 'fanny',
+    age: 0,
+    scores: {
+      Content: 0,
+      Confidence: 0.25,
+      Collaboration: 0,
+      Communication: 0,
+      'Critical Thinking': 0,
+      'Creative Innovation': 0
+    },
+    personality_label: 'Unique Learner',
+    raw_responses: { '24': 1 },
+    email: '',
+    birth_month: 1,
+    birth_year: 2025,
+    grade_level: 'Kindergarten',
+    created_at: '2025-08-04T16:34:16.902782+00:00'
+  }
+]
+ GET /api/debug-profiles?name=fanny 200 in 1028ms
+🔍 DEBUG PROFILES - Found profiles: [
+  {
+    id: 10,
+    child_name: 'fanny',
+    age: 0,
+    scores: {
+      Content: 0,
+      Confidence: 0.25,
+      Collaboration: 0,
+      Communication: 0,
+      'Critical Thinking': 0,
+      'Creative Innovation': 0
+    },
+    personality_label: 'Unique Learner',
+    raw_responses: { '24': 1 },
+    email: '',
+    birth_month: 1,
+    birth_year: 2025,
+    grade_level: 'Kindergarten',
+    created_at: '2025-08-04T16:34:16.902782+00:00'
+  }
+]
+ GET /api/debug-profiles?name=fanny 200 in 216ms
+🔍 DEBUG SCORING - Input responses: { '24': 1 }
+🔍 DEBUG SCORING - Calculated scores: {
+  Communication: 0,
+  Collaboration: 0,
+  Content: 0,
+  'Critical Thinking': 0,
+  'Creative Innovation': 0,
+  Confidence: 0.25
+}
+🔍 DEBUG SCORING - Sorted scores: [ [ 'Confidence', 0.25 ], [ 'Communication', 0 ] ]
+🔍 DEBUG SCORING - Primary: Confidence (0.25), Secondary: Communication (0)
+🔍 DEBUG SCORING - Key: "Confidence-Communication"
+🔍 DEBUG SCORING - Final personality label: Confident Leader
+ POST /api/debug-scoring 200 in 213ms
+ ✓ Compiled /api/recalculate-profile/[id] in 178ms
+Error: Route "/api/recalculate-profile/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at POST (src/app/api/recalculate-profile/[id]/route.ts:10:29)
+   8 | ) {
+   9 |   try {
+> 10 |     const profileId = params.id
+     |                             ^
+  11 |
+  12 |     if (!supabase) {
+  13 |       return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 })
+🔄 RECALCULATING - Original profile: {
+  id: 10,
+  child_name: 'fanny',
+  old_personality_label: 'Unique Learner',
+  old_scores: {
+    Content: 0,
+    Confidence: 0.25,
+    Collaboration: 0,
+    Communication: 0,
+    'Critical Thinking': 0,
+    'Creative Innovation': 0
+  },
+  raw_responses: { '24': 1 }
+}
+🔄 RECALCULATING - New values: {
+  new_scores: {
+    Communication: 0,
+    Collaboration: 0,
+    Content: 0,
+    'Critical Thinking': 0,
+    'Creative Innovation': 0,
+    Confidence: 0.25
+  },
+  new_personality_label: 'Confident Leader'
+}
+ POST /api/recalculate-profile/10 500 in 1547ms
+🔄 RECALCULATING - Original profile: {
+  id: 10,
+  child_name: 'fanny',
+  old_personality_label: 'Unique Learner',
+  old_scores: {
+    Content: 0,
+    Confidence: 0.25,
+    Collaboration: 0,
+    Communication: 0,
+    'Critical Thinking': 0,
+    'Creative Innovation': 0
+  },
+  raw_responses: { '24': 1 }
+}
+🔄 RECALCULATING - New values: {
+  new_scores: {
+    Communication: 0,
+    Collaboration: 0,
+    Content: 0,
+    'Critical Thinking': 0,
+    'Creative Innovation': 0,
+    Confidence: 0.25
+  },
+  new_personality_label: 'Confident Leader'
+}
+ POST /api/recalculate-profile/10 500 in 577ms
+ ✓ Compiled /api/debug-gary in 227ms
+🔍 GARY DEBUG - Database record: {
+  id: 11,
+  child_name: 'gary',
+  personality_label: 'Unique Learner',
+  scores: {
+    Content: 0,
+    Confidence: 0.25,
+    Collaboration: 0,
+    Communication: 0,
+    'Critical Thinking': 0,
+    'Creative Innovation': 0
+  },
+  raw_responses: { '24': 1 },
+  response_count: 1
+}
+🔍 GARY DEBUG - Recalculated with current logic: {
+  recalculated_scores: {
+    Communication: 0,
+    Collaboration: 0,
+    Content: 0,
+    'Critical Thinking': 0,
+    'Creative Innovation': 0,
+    Confidence: 0.25
+  },
+  recalculated_label: 'Confident Leader'
+}
+ GET /api/debug-gary 200 in 653ms

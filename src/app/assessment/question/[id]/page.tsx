@@ -152,16 +152,27 @@ export default function QuestionPage() {
     
     // Save response
     const updatedResponses = { ...responses, [questionId]: selectedValue }
+    console.log(`🔍 ASSESSMENT DEBUG - Question ${questionId}: Saving response ${selectedValue}`)
+    console.log(`🔍 ASSESSMENT DEBUG - Updated responses:`, updatedResponses)
+    console.log(`🔍 ASSESSMENT DEBUG - Total responses so far: ${Object.keys(updatedResponses).length}`)
+    
     setResponses(updatedResponses)
     sessionStorage.setItem('assessmentResponses', JSON.stringify(updatedResponses))
+    
+    // Verify sessionStorage was updated
+    const storedResponses = sessionStorage.getItem('assessmentResponses')
+    console.log(`🔍 ASSESSMENT DEBUG - Verified sessionStorage:`, JSON.parse(storedResponses || '{}'))
     
     // Save progress immediately before navigation
     await saveProgressNow(updatedResponses, questionId < totalQuestions ? questionId + 1 : questionId)
     
     // Navigate to next question or completion
     if (questionId < totalQuestions) {
+      console.log(`🔍 ASSESSMENT DEBUG - Navigating to question ${questionId + 1}`)
       router.push(`/assessment/question/${questionId + 1}`)
     } else {
+      console.log(`🔍 ASSESSMENT DEBUG - Assessment complete! Final responses:`, updatedResponses)
+      console.log(`🔍 ASSESSMENT DEBUG - Total questions answered: ${Object.keys(updatedResponses).length}/${totalQuestions}`)
       // Clear session when completing assessment
       clearSessionId()
       router.push('/assessment/complete')
@@ -194,12 +205,15 @@ export default function QuestionPage() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'ArrowLeft' && questionId > 1) {
+        console.log(`🔍 KEYBOARD DEBUG - Left arrow: Going to question ${questionId - 1}`)
         handlePrevious()
       } else if (event.key === 'ArrowRight' && selectedValue !== null) {
+        console.log(`🔍 KEYBOARD DEBUG - Right arrow: Moving to next question with response ${selectedValue}`)
         handleNext()
       } else if (event.key >= '1' && event.key <= '5') {
         const value = parseInt(event.key)
         if (value >= 1 && value <= 5) {
+          console.log(`🔍 KEYBOARD DEBUG - Number key pressed: ${value} for question ${questionId}`)
           setSelectedValue(value)
         }
       }
