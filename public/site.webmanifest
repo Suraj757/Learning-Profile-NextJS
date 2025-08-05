@@ -1,0 +1,16 @@
+{
+  "name": "Learning Profile Next.js",
+  "short_name": "Learning Profile",
+  "description": "Personalized learning assessment platform",
+  "icons": [
+    {
+      "src": "/next.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#1e40af",
+  "background_color": "#fef7ed",
+  "display": "standalone",
+  "start_url": "/"
+}
