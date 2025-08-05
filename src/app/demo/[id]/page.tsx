@@ -4,6 +4,8 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, ArrowLeft, Star, Quote, Users, Home, School, Lightbulb, Eye, Play, Sparkles, MessageSquare, Target, CheckCircle, Calendar, Award, TrendingUp, ExternalLink, AlertCircle } from 'lucide-react'
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts'
+import EnhancedContentRecommendations from '@/components/content/EnhancedContentRecommendations'
+import { beginContentService } from '@/lib/content-recommendation-service'
 
 interface SampleProfileData {
   id: string
@@ -28,6 +30,7 @@ export default function SampleProfilePage() {
   const params = useParams()
   const [profileData, setProfileData] = useState<SampleProfileData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [enhancedRecommendations, setEnhancedRecommendations] = useState<any>(null)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -52,6 +55,26 @@ export default function SampleProfilePage() {
       fetchProfile()
     }
   }, [params.id])
+
+  // Load enhanced recommendations when profile data is available
+  useEffect(() => {
+    const loadEnhancedRecommendations = async () => {
+      if (profileData?.scores && profileData?.personality_label) {
+        try {
+          const learningProfile = {
+            personality_label: profileData.personality_label,
+            scores: profileData.scores
+          }
+          const recs = await beginContentService.getQuickRecommendationSummary(learningProfile)
+          setEnhancedRecommendations(recs)
+        } catch (error) {
+          console.error('Error loading enhanced recommendations:', error)
+        }
+      }
+    }
+    
+    loadEnhancedRecommendations()
+  }, [profileData])
 
   if (loading) {
     return (
@@ -403,6 +426,17 @@ export default function SampleProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* Enhanced Content Recommendations */}
+        {enhancedRecommendations && (
+          <div className="mb-8">
+            <EnhancedContentRecommendations
+              recommendations={enhancedRecommendations}
+              studentName={profileData.child_name}
+              learningProfile={profileData.personality_label}
+            />
+          </div>
+        )}
 
         {/* Create Your Own CTA */}
         <div className="text-center">

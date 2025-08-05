@@ -310,6 +310,124 @@ const BEGIN_CONTENT_DATABASE: BeginContent[] = [
     studentEngagement: 'Become an expert on different countries and cultures around the world',
     skillsFocused: ['Cultural Competency', 'Research Skills', 'Critical Analysis', 'Global Awareness'],
     implementationTips: ['Connect to current events', 'Find pen pals from featured countries', 'Plan themed family meals']
+  },
+
+  // Additional HOMER Content
+  {
+    id: 'homer-005',
+    title: 'HOMER Thinking Skills Games',
+    description: 'Brain games and puzzles that develop logic, memory, and problem-solving skills',
+    ageRange: '4-8',
+    category: 'homer',
+    app: 'HOMER',
+    tags: ['critical-thinking', 'memory', 'logic', 'problem-solving', 'brain-games'],
+    difficulty: 'intermediate',
+    duration: '10-20 min',
+    educationalValue: 8,
+    alignmentReason: 'Perfect for developing analytical thinking and cognitive flexibility',
+    parentValue: 'Watch your child develop stronger thinking skills through engaging brain games',
+    teacherValue: 'Use as brain breaks that actually build cognitive skills',
+    studentEngagement: 'Fun puzzles and challenges that feel like games, not work',
+    skillsFocused: ['Logical Reasoning', 'Memory', 'Pattern Recognition', 'Problem Solving'],
+    implementationTips: ['Start with shorter sessions', 'Celebrate problem-solving process', 'Connect to daily life puzzles']
+  },
+  {
+    id: 'homer-006',
+    title: 'HOMER Family Learning Activities',
+    description: 'Activities designed for parents and children to do together, building bonds while learning',
+    ageRange: '3-7',
+    category: 'homer',
+    app: 'HOMER',
+    tags: ['family-engagement', 'collaboration', 'bonding', 'shared-learning'],
+    difficulty: 'beginner',
+    duration: '15-30 min',
+    educationalValue: 9,
+    alignmentReason: 'Strengthens family connections while reinforcing learning concepts',
+    parentValue: 'Spend quality time with your child while supporting their education',
+    teacherValue: 'Send home activities that engage families in the learning process',
+    studentEngagement: 'Learn alongside parents and siblings in fun, pressure-free ways',
+    skillsFocused: ['Family Bonding', 'Communication', 'Shared Learning', 'Confidence Building'],
+    implementationTips: ['Set aside regular family learning time', 'Focus on fun over perfection', 'Let children lead when possible']
+  },
+
+  // Additional CodeSpark Content
+  {
+    id: 'codespark-004',
+    title: 'CodeSpark Storytelling with Code',
+    description: 'Create interactive stories where characters respond to code commands',
+    ageRange: '5-9',
+    category: 'codespark',
+    app: 'CodeSpark',
+    tags: ['storytelling', 'creativity', 'coding', 'narrative', 'character-development'],
+    difficulty: 'beginner',
+    duration: '20-30 min',
+    educationalValue: 8,
+    alignmentReason: 'Combines creativity with logical thinking through interactive storytelling',
+    parentValue: 'See your child create stories that come to life through programming',
+    teacherValue: 'Integrate coding with literacy and creative writing activities',
+    studentEngagement: 'Bring their own stories to life with animated characters',
+    skillsFocused: ['Creative Storytelling', 'Sequencing', 'Cause and Effect', 'Digital Literacy'],
+    implementationTips: ['Start with simple character movements', 'Encourage story sharing', 'Connect to traditional storytelling']
+  },
+
+  // Additional Little Passports Content
+  {
+    id: 'passports-004',
+    title: 'Little Passports USA Edition',
+    description: 'Explore different states and regions of the United States through interactive activities',
+    ageRange: '6-12',
+    category: 'little-passports',
+    app: 'Little Passports',
+    tags: ['geography', 'USA', 'states', 'local-culture', 'history'],
+    difficulty: 'intermediate',
+    duration: '25-45 min',
+    educationalValue: 9,
+    alignmentReason: 'Builds connection to local geography and American culture',
+    parentValue: 'Explore your own country together and plan future family trips',
+    teacherValue: 'Perfect complement to state history and geography curriculum',
+    studentEngagement: 'Discover amazing facts about places they might visit or live',
+    skillsFocused: ['US Geography', 'State History', 'Cultural Awareness', 'Research Skills'],
+    implementationTips: ['Connect to family heritage', 'Plan virtual or real visits', 'Create state comparison charts']
+  },
+
+  // Additional Parent Resources Content
+  {
+    id: 'parent-003',
+    title: 'Building Independence Gradually',
+    description: 'Age-appropriate strategies for fostering independence while maintaining support',
+    ageRange: '4-12',
+    category: 'parent-resource',
+    app: 'Begin Parent Resources',
+    tags: ['independence', 'confidence', 'life-skills', 'gradual-release', 'self-reliance'],
+    difficulty: 'intermediate',
+    duration: '8-12 min read',
+    educationalValue: 8,
+    alignmentReason: 'Helps children develop confidence and self-reliance at their own pace',
+    parentValue: 'Learn how to support independence without pushing too hard or too fast',
+    teacherValue: 'Share strategies with families for building classroom independence',
+    studentEngagement: 'Feel proud and capable as they master new responsibilities',
+    skillsFocused: ['Self-Reliance', 'Confidence', 'Life Skills', 'Problem Solving'],
+    implementationTips: ['Start with small, achievable tasks', 'Celebrate independent successes', 'Provide scaffolding as needed']
+  },
+
+  // Additional Classroom Tools
+  {
+    id: 'classroom-003',
+    title: 'Flexible Grouping Strategies',
+    description: 'Dynamic grouping techniques that adapt to different learning profiles and activities',
+    ageRange: '5-12',
+    category: 'classroom-activity',
+    app: 'Classroom Tools',
+    tags: ['flexible-grouping', 'differentiation', 'collaboration', 'peer-learning'],
+    difficulty: 'intermediate',
+    duration: '20-40 min setup',
+    educationalValue: 9,
+    alignmentReason: 'Maximizes learning by matching group dynamics to learning objectives',
+    parentValue: 'Understand how teachers group students for optimal learning',
+    teacherValue: 'Increase engagement and achievement through strategic grouping',
+    studentEngagement: 'Work with different classmates and experience varied learning approaches',
+    skillsFocused: ['Collaboration', 'Adaptability', 'Peer Learning', 'Social Skills'],
+    implementationTips: ['Change groups regularly', 'Mix strengths and challenges', 'Teach group work skills explicitly']
   }
 ]
 
@@ -516,18 +634,64 @@ export class BeginContentRecommendationService {
   }> {
     const recommendations = await this.getPersonalizedRecommendations(learningProfile)
     
-    // Get the highest-scored content from each category
+    // Get all content and sort by score
     const allContent = [
       ...recommendations.forTeachers.classroomActivities,
+      ...recommendations.forTeachers.individualSupports,
+      ...recommendations.forTeachers.interventionResources,
       ...recommendations.forParents.homeActivities,
-      ...recommendations.forStudents.engagementHooks
+      ...recommendations.forParents.reinforcementContent,
+      ...recommendations.forParents.familyProjects,
+      ...recommendations.forStudents.engagementHooks,
+      ...recommendations.forStudents.strengthBuilders
     ].sort((a, b) => (b.recommendationScore || 0) - (a.recommendationScore || 0))
     
+    // Remove duplicates and ensure uniqueness
+    const uniqueContent = allContent.filter((item, index, arr) => 
+      arr.findIndex(other => other.id === item.id) === index
+    )
+    
+    // Ensure we have at least 4 unique items by adding from database if needed
+    const additionalContent = BEGIN_CONTENT_DATABASE
+      .filter(item => !uniqueContent.find(existing => existing.id === item.id))
+      .slice(0, Math.max(0, 4 - uniqueContent.length))
+    
+    const finalContent = [...uniqueContent, ...additionalContent].slice(0, 8)
+    
+    // Select diverse recommendations across different categories and apps
+    const getUniqueRecommendation = (excludeIds: string[], preferredTags?: string[], preferredApps?: string[]) => {
+      // First try to find content with preferred tags/apps
+      if (preferredTags || preferredApps) {
+        const preferred = finalContent.find(item => 
+          !excludeIds.includes(item.id) && 
+          (
+            (preferredTags && item.tags.some(tag => preferredTags.includes(tag))) ||
+            (preferredApps && preferredApps.includes(item.app))
+          )
+        )
+        if (preferred) return preferred
+      }
+      
+      // Fall back to any unique content
+      return finalContent.find(item => !excludeIds.includes(item.id)) || finalContent[0]
+    }
+    
+    const topRecommendation = finalContent[0] || BEGIN_CONTENT_DATABASE[0]
+    const usedIds = [topRecommendation.id]
+    
+    const strengthActivity = getUniqueRecommendation(usedIds, [], ['HOMER', 'CodeSpark'])
+    usedIds.push(strengthActivity.id)
+    
+    const growthActivity = getUniqueRecommendation(usedIds, ['critical-thinking', 'problem-solving'], ['Little Passports', 'Begin Parent Resources'])
+    usedIds.push(growthActivity.id)
+    
+    const familyActivity = getUniqueRecommendation(usedIds, ['family-engagement', 'collaboration'], ['HOMER', 'Begin Parent Resources'])
+    
     return {
-      topRecommendation: allContent[0] || BEGIN_CONTENT_DATABASE[0],
-      strengthActivity: recommendations.forTeachers.individualSupports[0] || BEGIN_CONTENT_DATABASE[1],
-      growthActivity: recommendations.forTeachers.interventionResources[0] || BEGIN_CONTENT_DATABASE[2],
-      familyActivity: recommendations.forParents.homeActivities[0] || BEGIN_CONTENT_DATABASE[3]
+      topRecommendation,
+      strengthActivity,
+      growthActivity,
+      familyActivity
     }
   }
 }
