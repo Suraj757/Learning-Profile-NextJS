@@ -40,8 +40,46 @@ import { useTeacherAuth } from '@/lib/teacher-auth'
 import { getTeacherClassrooms, getTeacherAssignments, supabase, getTeacherByEmail } from '@/lib/supabase'
 import type { Classroom, ProfileAssignment } from '@/lib/supabase'
 import DelightfulLoading from '@/components/loading/DelightfulLoading'
-import BeginContentRecommendations from '@/components/teacher/BeginContentRecommendations'
+import EnhancedContentRecommendations from '@/components/content/EnhancedContentRecommendations'
+import { beginContentService } from '@/lib/content-recommendation-service'
 import { getDemoReportsData, createDemoDataForTeacher } from '@/lib/demo-data'
+
+// Wrapper component to handle async content loading
+function ContentRecommendationsWrapper({ learningProfile, studentName }: { 
+  learningProfile: any
+  studentName: string 
+}) {
+  const [recommendations, setRecommendations] = useState<any>(null)
+  
+  useEffect(() => {
+    async function loadRecommendations() {
+      try {
+        const recs = await beginContentService.getQuickRecommendationSummary(learningProfile)
+        setRecommendations(recs)
+      } catch (error) {
+        console.error('Error loading recommendations:', error)
+      }
+    }
+    loadRecommendations()
+  }, [learningProfile])
+
+  if (!recommendations) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <RefreshCw className="h-6 w-6 animate-spin text-begin-teal" />
+        <span className="ml-2 text-begin-blue/70">Loading personalized content...</span>
+      </div>
+    )
+  }
+
+  return (
+    <EnhancedContentRecommendations
+      recommendations={recommendations}
+      studentName={studentName}
+      learningProfile={learningProfile.personality_label}
+    />
+  )
+}
 
 // Helper function to get demo Day 1 Kit data
 function getDemoDay1KitData() {
@@ -1242,26 +1280,44 @@ function Day1KitContent() {
           </div>
         )}
 
-        {/* Begin Content Recommendations Section */}
+        {/* Enhanced Begin Content Recommendations Section */}
         {(() => {
           const completedAssignments = assignments.filter(a => a.status === 'completed' && a.assessment_results)
           
           if (completedAssignments.length === 0) return null
           
           return (
-            <div className="space-y-6">
+            <div className="space-y-8">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-begin-blue mb-2 flex items-center justify-center gap-2">
+                  <Sparkles className="h-6 w-6 text-begin-teal" />
+                  Personalized Learning Content
+                </h2>
+                <p className="text-begin-blue/70">
+                  Real Begin app activities tailored to each student's learning profile
+                </p>
+              </div>
+              
               {completedAssignments.slice(0, 3).map((assignment, index) => {
                 const learningProfile = assignment.assessment_results
                 if (!learningProfile || !learningProfile.personality_label) return null
                 
                 return (
-                  <BeginContentRecommendations
-                    key={assignment.id}
-                    learningProfile={learningProfile}
-                    studentName={assignment.student_name || `Student ${index + 1}`}
-                    context="day1-kit"
-                    showCategory="teacher"
-                  />
+                  <div key={assignment.id} className="card-begin p-6">
+                    <div className="mb-4">
+                      <h3 className="text-lg font-bold text-begin-blue mb-1">
+                        {assignment.child_name || assignment.student_name || `Student ${index + 1}`}
+                      </h3>
+                      <p className="text-sm text-begin-blue/70">
+                        {learningProfile.personality_label} Learning Profile
+                      </p>
+                    </div>
+                    
+                    <ContentRecommendationsWrapper 
+                      learningProfile={learningProfile}
+                      studentName={assignment.child_name || assignment.student_name || `Student ${index + 1}`}
+                    />
+                  </div>
                 )
               })}
               
