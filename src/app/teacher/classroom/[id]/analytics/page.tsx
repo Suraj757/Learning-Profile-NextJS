@@ -12,7 +12,7 @@ import {
   BookOpen
 } from 'lucide-react'
 import { useTeacherAuth } from '@/lib/teacher-auth'
-import { getTeacherClassrooms } from '@/lib/supabase'
+import { getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
 import { SAMPLE_PROFILES, SampleProfile } from '@/lib/sample-profiles'
 import ClassroomOverviewDashboard from '@/components/analytics/ClassroomOverviewDashboard'
 import StudentComparisonTool from '@/components/analytics/StudentComparisonTool'
@@ -46,30 +46,75 @@ function ClassroomAnalyticsContent() {
     if (!teacher) return
 
     try {
-      // Get classroom info
-      const classrooms = await getTeacherClassrooms(teacher.id)
+      console.log('🏫 Loading classroom analytics for classroom:', classroomId)
+      
+      // Get classroom info and assignments
+      const [classrooms, assignments] = await Promise.all([
+        getTeacherClassrooms(teacher.id),
+        getTeacherAssignments(teacher.id)
+      ])
+      
       const currentClassroom = classrooms?.find(c => c.id.toString() === classroomId)
       
       if (!currentClassroom) {
-        // Fallback for demo/offline
+        console.log('❌ Classroom not found, using fallback')
         setClassroom({
           id: classroomId,
-          name: "Mrs. Demo's 3rd Grade",
+          name: "Demo Classroom",
           grade_level: '3rd Grade',
           school_year: '2024-2025'
         })
+        setStudents(SAMPLE_PROFILES.slice(0, 6))
+        return
+      }
+      
+      setClassroom(currentClassroom)
+      
+      // Convert completed assignments to student profiles for analytics
+      const completedAssignments = assignments?.filter(a => 
+        a.status === 'completed' && 
+        a.assessment_results &&
+        a.assessment_results.personality_label
+      ) || []
+      
+      console.log('📊 Found completed assignments:', completedAssignments.length)
+      
+      if (completedAssignments.length > 0) {
+        // Convert assessment results to SampleProfile format for analytics components
+        const realStudentProfiles: SampleProfile[] = completedAssignments.map((assignment, index) => {
+          const results = assignment.assessment_results!
+          
+          return {
+            id: assignment.id.toString(),
+            childName: assignment.child_name,
+            grade: results.grade || currentClassroom.grade_level,
+            personalityType: results.personality_label,
+            scores: results.scores || {},
+            // Generate compatible data for analytics components
+            responses: Object.entries(results.scores || {}).reduce((acc, [key, value], i) => {
+              acc[i + 1] = Math.round(value)
+              return acc
+            }, {} as Record<number, number>),
+            traits: {
+              dominant: results.personality_label,
+              secondary: Object.keys(results.scores || {})
+                .sort((a, b) => (results.scores[b] || 0) - (results.scores[a] || 0))[1] || 'Balanced'
+            },
+            created_at: assignment.completed_at || assignment.assigned_at
+          }
+        })
+        
+        setStudents(realStudentProfiles)
+        console.log('✅ Using real student data for analytics')
       } else {
-        setClassroom(currentClassroom)
+        // Fallback to sample data if no completed assessments
+        console.log('⚠️ No completed assessments, using sample data')
+        setStudents(SAMPLE_PROFILES.slice(0, 6))
       }
 
-      // For demo purposes, use sample profiles as classroom students
-      // In a real app, this would fetch actual student profiles for the classroom
-      const classroomStudents = SAMPLE_PROFILES.slice(0, 6) // First 6 sample profiles
-      setStudents(classroomStudents)
-
     } catch (error) {
-      console.error('Error loading classroom data:', error)
-      // Fallback data for demo
+      console.error('❌ Error loading classroom data:', error)
+      // Fallback data
       setClassroom({
         id: classroomId,
         name: "Demo Classroom",

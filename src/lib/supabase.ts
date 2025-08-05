@@ -378,24 +378,46 @@ export async function getTeacherAssignments(teacherId: number) {
     throw new Error('Supabase not configured')
   }
   
-  const { data, error } = await supabase
+  // First get the assignments
+  const { data: assignments, error: assignmentsError } = await supabase
     .from('profile_assignments')
-    .select(`
-      *,
-      assessment_results:profiles!profile_assignments_assessment_id_fkey(
-        id,
-        child_name,
-        scores,
-        personality_label,
-        description,
-        grade
-      )
-    `)
+    .select('*')
     .eq('teacher_id', teacherId)
     .order('assigned_at', { ascending: false })
   
-  if (error) throw error
-  return data
+  if (assignmentsError) throw assignmentsError
+  
+  if (!assignments || assignments.length === 0) {
+    return assignments
+  }
+  
+  // Get assessment results for completed assignments that have assessment_id
+  const completedAssignments = assignments.filter(a => a.status === 'completed' && a.assessment_id)
+  
+  if (completedAssignments.length > 0) {
+    const assessmentIds = completedAssignments.map(a => a.assessment_id).filter(Boolean)
+    
+    if (assessmentIds.length > 0) {
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, child_name, scores, personality_label, description, grade')
+        .in('id', assessmentIds)
+      
+      if (!profilesError && profiles) {
+        // Match profiles to assignments
+        assignments.forEach(assignment => {
+          if (assignment.assessment_id) {
+            const matchingProfile = profiles.find(p => p.id === assignment.assessment_id)
+            if (matchingProfile) {
+              assignment.assessment_results = matchingProfile
+            }
+          }
+        })
+      }
+    }
+  }
+  
+  return assignments
 }
 
 export async function updateAssignmentStatus(assignmentId: number, status: 'sent' | 'completed', assessmentId?: number) {
