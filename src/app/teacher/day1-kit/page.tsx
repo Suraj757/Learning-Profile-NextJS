@@ -41,6 +41,72 @@ import type { Classroom, ProfileAssignment } from '@/lib/supabase'
 import DelightfulLoading from '@/components/loading/DelightfulLoading'
 import { getDemoReportsData, createDemoDataForTeacher } from '@/lib/demo-data'
 
+// Helper function to get demo Day 1 Kit data
+function getDemoDay1KitData() {
+  return {
+    classroom: {
+      name: "Mrs. Demo's 3rd Grade",
+      grade: "3rd Grade",
+      studentCount: 24,
+      profilesCompleted: 20,
+      schoolStartDate: "2024-08-26",
+      daysUntilStart: 2
+    },
+    learningStyleDistribution: {
+      creative: 6,
+      analytical: 4,
+      collaborative: 7,
+      confident: 3,
+      balanced: 4
+    },
+    atRiskStudents: [
+      {
+        name: "Marcus Chen",
+        issue: "May struggle with group work (strongly analytical)",
+        solution: "Pair with Sofia for collaborative projects",
+        avatar: "MC"
+      },
+      {
+        name: "Aiden Wilson", 
+        issue: "Needs independent work options (prefers solo)",
+        solution: "Provide choice boards and extension activities",
+        avatar: "AW"
+      },
+      {
+        name: "Maya Patel",
+        issue: "Building confidence for class participation",
+        solution: "Start with small group sharing before whole class",
+        avatar: "MP"
+      }
+    ],
+    seatingRecommendations: [
+      { student: "Emma Johnson", position: "Front left", reason: "Natural helper - good mentor position" },
+      { student: "Sofia Rodriguez", position: "Center table", reason: "Social hub - connects all groups" },
+      { student: "Marcus Chen", position: "Quiet corner", reason: "Needs focused environment" }
+    ],
+    emailTemplates: [
+      {
+        type: "Creative Learners",
+        subject: "Your Creative Learner - Let's Build Amazing Things Together!",
+        preview: "I'm so excited to share that [Child Name] shows incredible creative potential...",
+        studentCount: 6
+      },
+      {
+        type: "Analytical Learners", 
+        subject: "Your Analytical Thinker - Ready for Deep Learning!",
+        preview: "I want you to know that [Child Name] has remarkable analytical abilities...",
+        studentCount: 4
+      },
+      {
+        type: "Collaborative Learners",
+        subject: "Your Team Player - Building Connections and Learning!",
+        preview: "[Child Name] has such a gift for bringing people together and learning with others...",
+        studentCount: 7
+      }
+    ]
+  }
+}
+
 // Helper function to analyze learning style distribution from actual student data
 function analyzeLearningStyleDistribution(assignments: any[]) {
   const distribution = {
@@ -341,19 +407,22 @@ function Day1KitContent() {
         getTeacherAssignments(teacher.id)
       ])
       
-      console.log('Final data fetch - Classrooms:', classroomsData?.length, 'Assignments:', assignmentsData?.length)
+      console.log('📊 Data fetch results:')
+      console.log('  - Classrooms:', classroomsData?.length || 0)
+      console.log('  - Assignments:', assignmentsData?.length || 0)
       
       let finalClassrooms = classroomsData || []
       let finalAssignments = assignmentsData || []
       
       // If no live data available, fall back to demo data
       if (finalClassrooms.length === 0 || finalAssignments.length === 0) {
-        console.log('No live data found, using demo data. Classrooms:', finalClassrooms.length, 'Assignments:', finalAssignments.length)
+        console.log('⚠️  No live data found, using demo data')
+        console.log('    Reason: Classrooms =', finalClassrooms.length, 'Assignments =', finalAssignments.length)
         const demoData = getDemoReportsData(teacher.id)
         finalClassrooms = finalClassrooms.length > 0 ? finalClassrooms : demoData.classrooms as any
         finalAssignments = finalAssignments.length > 0 ? finalAssignments : demoData.assignments as any
       } else {
-        console.log('Using live data. Classrooms:', finalClassrooms.length, 'Assignments:', finalAssignments.length)
+        console.log('✅ Using live data from database')
       }
       
       setClassrooms(finalClassrooms)
