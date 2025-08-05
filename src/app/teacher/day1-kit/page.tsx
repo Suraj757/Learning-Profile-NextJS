@@ -355,19 +355,31 @@ function Day1KitContent() {
         console.log('  - Classrooms:', classroomsData?.length || 0, classroomsData?.map(c => c.name))
         console.log('  - Assignments:', assignmentsData?.length || 0, 'completed:', assignmentsData?.filter(a => a.status === 'completed').length || 0)
         console.log('  - Assignments with assessment_results:', assignmentsData?.filter(a => a.assessment_results).length || 0)
+        console.log('  - Assignments with assessment_id:', assignmentsData?.filter(a => a.assessment_id).length || 0)
         
-        // Debug first few assignments
+        // Debug ALL assignments to understand the data structure
         if (assignmentsData && assignmentsData.length > 0) {
-          console.log('📋 Sample assignment data:')
-          assignmentsData.slice(0, 3).forEach((assignment, i) => {
-            console.log(`  Assignment ${i + 1}:`, {
+          console.log('📋 DETAILED assignment analysis:')
+          assignmentsData.forEach((assignment, i) => {
+            console.log(`  📝 Assignment ${i + 1}:`, {
+              id: assignment.id,
               child_name: assignment.child_name,
               status: assignment.status,
               assessment_id: assignment.assessment_id,
               has_results: !!assignment.assessment_results,
-              personality_label: assignment.assessment_results?.personality_label
+              results_structure: assignment.assessment_results ? Object.keys(assignment.assessment_results) : null,
+              personality_label: assignment.assessment_results?.personality_label,
+              scores_available: assignment.assessment_results?.scores ? Object.keys(assignment.assessment_results.scores) : null
             })
           })
+          
+          // Test the analysis function directly
+          console.log('🧪 Testing analysis function:')
+          const testDistribution = analyzeLearningStyleDistribution(assignmentsData)
+          console.log('  - Learning style distribution result:', testDistribution)
+          
+          const testAtRisk = identifyAtRiskStudents(assignmentsData)
+          console.log('  - At-risk students result:', testAtRisk.length, 'students')
         }
         
         // If teacher exists but has no data, create some demo data
