@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { BookOpen, ArrowLeft, Camera, Send, MessageSquare, CheckCircle, Clock, Users, Star, Heart, Upload, Eye, Mail } from 'lucide-react'
 import AuthRequired from '@/components/teacher/AuthRequired'
+import EmailComposer from '@/components/teacher/EmailComposer'
 import { useTeacherAuth } from '@/lib/teacher-auth'
 import { getTeacherByEmail, getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
 import { getDemoReportsData } from '@/lib/demo-data'
@@ -80,6 +81,8 @@ export default function ParentUpdatesPage() {
   const [selectedStudent, setSelectedStudent] = useState<any>(null)
   const [updateType, setUpdateType] = useState<'day3' | 'week1' | 'custom'>('day3')
   const [showComposer, setShowComposer] = useState(false)
+  const [showEmailComposer, setShowEmailComposer] = useState(false)
+  const [emailType, setEmailType] = useState<'invitation' | 'reminder' | 'custom'>('invitation')
   const [students, setStudents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [classrooms, setClassrooms] = useState<any[]>([])
@@ -299,13 +302,25 @@ Mrs. Johnson`
                     <Heart className="h-6 w-6 text-begin-teal" />
                     First Week Updates
                   </h2>
-                  <button
-                    onClick={() => setShowComposer(true)}
-                    className="btn-begin-primary flex items-center gap-2"
-                  >
-                    <Send className="h-4 w-4" />
-                    Compose Update
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        setEmailType('invitation')
+                        setShowEmailComposer(true)
+                      }}
+                      className="btn-begin-secondary flex items-center gap-2"
+                    >
+                      <Mail className="h-4 w-4" />
+                      Send Invitations
+                    </button>
+                    <button
+                      onClick={() => setShowComposer(true)}
+                      className="btn-begin-primary flex items-center gap-2"
+                    >
+                      <Send className="h-4 w-4" />
+                      Compose Update
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-4">
@@ -387,13 +402,13 @@ Mrs. Johnson`
                 <div className="space-y-3">
                   <button 
                     onClick={() => {
-                      // TODO: Implement batch sending
-                      alert('Batch sending feature coming soon! For now, you can compose individual updates below.')
+                      setEmailType('invitation')
+                      setShowEmailComposer(true)
                     }}
                     className="w-full btn-begin-primary text-left flex items-center gap-3 hover:bg-begin-teal/90 transition-colors"
                   >
                     <Mail className="h-4 w-4" />
-                    Send Day 3 Updates (Batch)
+                    Send Assessment Invitations
                   </button>
                   <button 
                     onClick={() => {
@@ -494,6 +509,14 @@ Mrs. Johnson`
               </div>
             </div>
           </div>
+
+          {/* Email Composer Modal */}
+          <EmailComposer
+            isOpen={showEmailComposer}
+            onClose={() => setShowEmailComposer(false)}
+            teacherEmail={teacher?.email || ''}
+            defaultType={emailType}
+          />
 
           {/* Student Detail Modal */}
           {selectedStudent && (
