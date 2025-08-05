@@ -36,7 +36,7 @@ import {
   Zap
 } from 'lucide-react'
 import { useTeacherAuth } from '@/lib/teacher-auth'
-import { getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
+import { getTeacherClassrooms, getTeacherAssignments, supabase } from '@/lib/supabase'
 import type { Classroom, ProfileAssignment } from '@/lib/supabase'
 import DelightfulLoading from '@/components/loading/DelightfulLoading'
 import { getDemoReportsData } from '@/lib/demo-data'
@@ -251,19 +251,31 @@ function Day1KitContent() {
     if (!teacher) return
 
     try {
+      console.log('=== Day 1 Kit Data Loading Debug ===')
+      console.log('Teacher from localStorage:', teacher.email, 'ID:', teacher.id)
+      console.log('Supabase connection status:', !!supabase)
+      
       const [classroomsData, assignmentsData] = await Promise.all([
         getTeacherClassrooms(teacher.id),
         getTeacherAssignments(teacher.id)
       ])
+      
+      console.log('📊 Data fetch results:')
+      console.log('  - Classrooms:', classroomsData?.length || 0)
+      console.log('  - Assignments:', assignmentsData?.length || 0)
       
       let finalClassrooms = classroomsData || []
       let finalAssignments = assignmentsData || []
       
       // If no live data available, fall back to demo data
       if (finalClassrooms.length === 0 || finalAssignments.length === 0) {
+        console.log('⚠️  No live data found, using demo data')
+        console.log('    Reason: Classrooms =', finalClassrooms.length, 'Assignments =', finalAssignments.length)
         const demoData = getDemoReportsData(teacher.id)
         finalClassrooms = finalClassrooms.length > 0 ? finalClassrooms : demoData.classrooms as any
         finalAssignments = finalAssignments.length > 0 ? finalAssignments : demoData.assignments as any
+      } else {
+        console.log('✅ Using live data from database')
       }
       
       setClassrooms(finalClassrooms)
@@ -291,9 +303,10 @@ function Day1KitContent() {
       setDay1Data(generatedDay1Data)
       
     } catch (error) {
-      console.error('Error loading Day 1 Kit data:', error)
+      console.error('❌ Error loading Day 1 Kit data:', error)
       
       // Fall back to demo data on error
+      console.log('⚠️  Falling back to demo data due to error')
       const demoData = getDemoReportsData(teacher.id)
       setClassrooms(demoData.classrooms as any)
       setAssignments(demoData.assignments as any)
