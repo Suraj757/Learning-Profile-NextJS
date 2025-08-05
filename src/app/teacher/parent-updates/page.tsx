@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { BookOpen, ArrowLeft, Camera, Send, MessageSquare, CheckCircle, Clock, Users, Star, Heart, Upload, Eye, Mail } from 'lucide-react'
 import AuthRequired from '@/components/teacher/AuthRequired'
-import EmailComposer from '@/components/teacher/EmailComposer'
+import ImprovedEmailComposer from '@/components/teacher/ImprovedEmailComposer'
 import { useTeacherAuth } from '@/lib/teacher-auth'
 import { getTeacherByEmail, getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
 import { getDemoReportsData } from '@/lib/demo-data'
@@ -511,7 +511,7 @@ Mrs. Johnson`
           </div>
 
           {/* Email Composer Modal */}
-          <EmailComposer
+          <ImprovedEmailComposer
             isOpen={showEmailComposer}
             onClose={() => setShowEmailComposer(false)}
             teacherEmail={teacher?.email || ''}

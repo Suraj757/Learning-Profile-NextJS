@@ -92,7 +92,7 @@ export class EmailService {
         html: this.formatEmailHTML(content),
         text: content,
         reply_to: request.replyTo,
-        tags: request.tags?.map(tag => ({ name: 'category', value: tag }))
+        tags: request.tags?.map((tag, index) => ({ value: tag, name: `tag_${index}` }))
       })
 
       if (result.error) {
