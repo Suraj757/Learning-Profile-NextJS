@@ -84,42 +84,61 @@ const BEGIN_CONTENT_DATABASE: BeginContent[] = [
     implementationTips: ['Save and share artwork', 'Ask open-ended questions about creations', 'Display work proudly']
   },
 
-  // CodeSpark Programming & Logic Content
+  // CodeSpark Specific Games & Activities (Based on Begin Curriculum)
   {
     id: 'codespark-001',
-    title: 'CodeSpark Game Creation',
-    description: 'Kids create their own games using drag-and-drop coding blocks, learning programming fundamentals',
-    ageRange: '4-10',
-    category: 'codespark',
-    app: 'CodeSpark',
-    tags: ['coding', 'logic', 'creativity', 'problem-solving', 'STEM'],
-    difficulty: 'intermediate',
-    duration: '20-45 min',
-    educationalValue: 10,
-    alignmentReason: 'Perfect for developing logical thinking and problem-solving through hands-on coding',
-    parentValue: 'Watch your child create actual games and learn future-ready skills in a fun way',
-    teacherValue: 'Students develop computational thinking while working on engaging projects',
-    studentEngagement: 'Create games with their favorite characters and share with friends',
-    skillsFocused: ['Computational Thinking', 'Logic', 'Sequencing', 'Problem Solving', 'Creativity'],
-    implementationTips: ['Start with guided puzzles', 'Encourage experimentation', 'Share creations with family']
-  },
-  {
-    id: 'codespark-002',
-    title: 'CodeSpark Puzzle Adventures',
-    description: 'Step-by-step coding puzzles that teach programming concepts through play',
+    title: 'CodeSpark: The Foos Puzzle Adventures',
+    description: 'Sequential logic puzzles where kids drag commands to help Foo characters reach their goals',
     ageRange: '4-8',
     category: 'codespark',
     app: 'CodeSpark',
-    tags: ['coding', 'puzzles', 'logic', 'sequence', 'critical-thinking'],
+    tags: ['sequencing', 'logic', 'pattern-recognition', 'critical-thinking', 'deductive-reasoning'],
     difficulty: 'beginner',
-    duration: '10-20 min',
+    duration: '15-25 min',
+    educationalValue: 10,
+    alignmentReason: 'Directly builds sequencing skills and deductive reasoning from Begin curriculum (KMPat1)',
+    parentValue: 'Watch your child develop logical thinking skills that transfer to math and reading comprehension',
+    teacherValue: 'Perfect for building the sequential reasoning skills needed for story grammar and math patterns',
+    studentEngagement: 'Help adorable Foo characters solve puzzles by arranging action commands in the right order',
+    skillsFocused: ['Sequential Logic', 'Cause and Effect', 'Pattern Recognition', 'Problem Decomposition'],
+    implementationTips: ['Start with 3-step sequences', 'Ask "What happens if...?" questions', 'Connect to daily routines']
+  },
+  {
+    id: 'codespark-002',
+    title: 'CodeSpark: Create Mode - Story Games',
+    description: 'Open-ended game creation where kids build interactive stories with characters and scenes',
+    ageRange: '5-10',
+    category: 'codespark',
+    app: 'CodeSpark',
+    tags: ['creativity', 'storytelling', 'open-ended-creation', 'narrative-structure', 'character-development'],
+    difficulty: 'intermediate',
+    duration: '25-45 min',
     educationalValue: 9,
-    alignmentReason: 'Builds critical thinking through structured programming challenges',
-    parentValue: 'See how coding improves your child\'s logical thinking and persistence',
-    teacherValue: 'Integrate computational thinking into daily problem-solving activities',
-    studentEngagement: 'Help cute characters solve problems using code commands',
-    skillsFocused: ['Sequencing', 'Logic', 'Pattern Recognition', 'Debugging', 'Persistence'],
-    implementationTips: ['Celebrate debugging successes', 'Connect to math patterns', 'Try offline sequencing games']
+    alignmentReason: 'Supports creative story creation skills from Begin curriculum (KLLan138, KLCom154)',
+    parentValue: 'See your child create complete interactive stories, combining creativity with logical thinking',
+    teacherValue: 'Integrates with literacy curriculum - students create logical story structures digitally',
+    studentEngagement: 'Build their own interactive story worlds where characters respond to their commands',
+    skillsFocused: ['Story Structure', 'Creative Expression', 'Character Development', 'Logical Sequences'],
+    implementationTips: ['Start with simple 3-scene stories', 'Discuss story beginning-middle-end', 'Share stories with class']
+  },
+  
+  {
+    id: 'codespark-003',
+    title: 'CodeSpark: Pattern Party Challenges',
+    description: 'Music and movement games where kids create and extend patterns using code commands',
+    ageRange: '4-7',
+    category: 'codespark',
+    app: 'CodeSpark',
+    tags: ['pattern-recognition', 'patterns-extension', 'music', 'movement', 'repetition'],
+    difficulty: 'beginner',
+    duration: '12-20 min',
+    educationalValue: 8,
+    alignmentReason: 'Directly teaches pattern recognition and extension from Begin curriculum (KMPat6)',
+    parentValue: 'Your child learns to see and create patterns - a crucial skill for math and reading',
+    teacherValue: 'Perfect bridge between pattern recognition in math and coding logic',
+    studentEngagement: 'Make characters dance and play music by creating repeating pattern sequences',
+    skillsFocused: ['Pattern Recognition', 'Pattern Extension', 'Musical Patterns', 'Repetition Understanding'],
+    implementationTips: ['Start with AB patterns', 'Clap patterns together', 'Find patterns in daily life']
   },
 
   // Little Passports Geography & Cultural Learning
@@ -274,24 +293,43 @@ const BEGIN_CONTENT_DATABASE: BeginContent[] = [
     implementationTips: ['Send home with clear instructions', 'Follow up on family experiences', 'Celebrate home learning']
   },
 
-  // Advanced Learning Challenges
+  // Advanced CodeSpark Challenges
   {
-    id: 'codespark-003',
-    title: 'CodeSpark Advanced Game Design',
-    description: 'Complex game creation projects using advanced coding concepts and creative problem-solving',
-    ageRange: '8-12',
+    id: 'codespark-004',
+    title: 'CodeSpark: Word Problems with Code',
+    description: 'Math word problems solved through coding - kids write programs to solve story-based math challenges',
+    ageRange: '6-10',
     category: 'codespark',
     app: 'CodeSpark',
-    tags: ['advanced-coding', 'game-design', 'creative-problem-solving', 'STEM'],
-    difficulty: 'advanced',
-    duration: '45-90 min',
+    tags: ['math-integration', 'word-problems', 'computational-thinking', 'number-operations', 'problem-solving'],
+    difficulty: 'intermediate',
+    duration: '20-35 min',
     educationalValue: 10,
-    alignmentReason: 'Challenges advanced learners with complex programming concepts',
-    parentValue: 'See your child tackle real programming challenges and create impressive projects',
-    teacherValue: 'Extend STEM learning for advanced students with authentic coding projects',
-    studentEngagement: 'Create complex games and share them with friends and family',
-    skillsFocused: ['Advanced Logic', 'Systems Thinking', 'Creative Problem Solving', 'Persistence'],
-    implementationTips: ['Encourage iteration and improvement', 'Connect to real programming careers', 'Showcase student creations']
+    alignmentReason: 'Combines coding with math problem-solving, supporting number operations curriculum (KMNum series)',
+    parentValue: 'See your child use coding to solve real math problems, making abstract concepts concrete',
+    teacherValue: 'Perfect integration of computational thinking with math curriculum standards',
+    studentEngagement: 'Use code to help characters solve everyday math problems like sharing treats or counting objects',
+    skillsFocused: ['Mathematical Reasoning', 'Problem Decomposition', 'Number Operations', 'Algorithm Design'],
+    implementationTips: ['Start with simple counting problems', 'Connect to real-world scenarios', 'Visualize math concepts']
+  },
+  
+  {
+    id: 'codespark-005',
+    title: 'CodeSpark: Debugging Detective',
+    description: 'Find and fix errors in pre-made code sequences, developing debugging and logical reasoning skills',
+    ageRange: '5-9',
+    category: 'codespark',
+    app: 'CodeSpark',
+    tags: ['debugging', 'error-detection', 'logical-reasoning', 'transitive-reasoning', 'problem-solving'],
+    difficulty: 'intermediate',
+    duration: '15-25 min',
+    educationalValue: 9,
+    alignmentReason: 'Builds transitive reasoning and deductive problem-solving from Begin curriculum (KMPat5, KMPat1)',
+    parentValue: 'Your child learns to think like a detective, finding and fixing problems systematically',
+    teacherValue: 'Develops the same logical reasoning skills needed for reading comprehension and math proofs',
+    studentEngagement: 'Become a code detective and help fix broken programs to save the day',
+    skillsFocused: ['Debugging Skills', 'Logical Analysis', 'Error Detection', 'Systematic Thinking'],
+    implementationTips: ['Read code aloud together', 'Ask "What should happen?"', 'Celebrate finding errors']
   },
   {
     id: 'passports-003',
@@ -352,22 +390,22 @@ const BEGIN_CONTENT_DATABASE: BeginContent[] = [
 
   // Additional CodeSpark Content
   {
-    id: 'codespark-004',
-    title: 'CodeSpark Storytelling with Code',
-    description: 'Create interactive stories where characters respond to code commands',
-    ageRange: '5-9',
+    id: 'codespark-006',
+    title: 'CodeSpark: Sequence Builder Games',
+    description: 'Progressive challenges building counting sequences and number patterns through character movement',
+    ageRange: '4-8',
     category: 'codespark',
     app: 'CodeSpark',
-    tags: ['storytelling', 'creativity', 'coding', 'narrative', 'character-development'],
+    tags: ['counting-sequences', 'number-patterns', 'repetition', 'skip-counting', 'mathematical-patterns'],
     difficulty: 'beginner',
-    duration: '20-30 min',
-    educationalValue: 8,
-    alignmentReason: 'Combines creativity with logical thinking through interactive storytelling',
-    parentValue: 'See your child create stories that come to life through programming',
-    teacherValue: 'Integrate coding with literacy and creative writing activities',
-    studentEngagement: 'Bring their own stories to life with animated characters',
-    skillsFocused: ['Creative Storytelling', 'Sequencing', 'Cause and Effect', 'Digital Literacy'],
-    implementationTips: ['Start with simple character movements', 'Encourage story sharing', 'Connect to traditional storytelling']
+    duration: '15-30 min',
+    educationalValue: 9,
+    alignmentReason: 'Directly supports counting sequence skills from Begin curriculum (KMNum56-70)',
+    parentValue: 'Your child learns number patterns through movement and code, making math concepts stick',
+    teacherValue: 'Perfect supplement to number sense curriculum - students see patterns visually',
+    studentEngagement: 'Help characters move in number patterns - by 2s, 5s, 10s - to reach their destinations',
+    skillsFocused: ['Counting Sequences', 'Skip Counting', 'Number Patterns', 'Mathematical Visualization'],
+    implementationTips: ['Start with counting by 1s', 'Use body movements too', 'Connect to number lines']
   },
 
   // Additional Little Passports Content
@@ -581,12 +619,12 @@ export class BeginContentRecommendationService {
     if (personalityType.includes('confident')) tags.push('confidence', 'leadership', 'advanced-coding')
     
     // Add score-based tags
-    if (scores.communication >= 7) tags.push('reading', 'vocabulary', 'storytelling')
+    if (scores.communication >= 7) tags.push('reading', 'vocabulary', 'storytelling', 'narrative-structure')
     if (scores.collaboration >= 7) tags.push('family-engagement', 'social-emotional', 'friendship')
-    if (scores.content >= 7) tags.push('math', 'numbers', 'science')
-    if (scores.critical_thinking >= 7) tags.push('coding', 'logic', 'problem-solving')
-    if (scores.creative_innovation >= 7) tags.push('creativity', 'art', 'game-design')
-    if (scores.confidence >= 7) tags.push('advanced-coding', 'cultural-studies', 'leadership')
+    if (scores.content >= 7) tags.push('math', 'numbers', 'science', 'counting-sequences', 'number-patterns')
+    if (scores.critical_thinking >= 7) tags.push('coding', 'logic', 'problem-solving', 'deductive-reasoning', 'pattern-recognition', 'debugging')
+    if (scores.creative_innovation >= 7) tags.push('creativity', 'art', 'game-design', 'open-ended-creation', 'storytelling')
+    if (scores.confidence >= 7) tags.push('advanced-coding', 'cultural-studies', 'leadership', 'word-problems')
     
     return [...new Set(tags)] // Remove duplicates
   }
