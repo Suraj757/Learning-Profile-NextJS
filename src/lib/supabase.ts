@@ -398,21 +398,45 @@ export async function getTeacherAssignments(teacherId: number) {
     const assessmentIds = completedAssignments.map(a => a.assessment_id).filter(Boolean)
     
     if (assessmentIds.length > 0) {
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, child_name, scores, personality_label, description, grade')
+      // Try assessment_results table first (likely the correct one)
+      const { data: assessmentResults, error: assessmentError } = await supabase
+        .from('assessment_results')
+        .select('id, child_name, scores, personality_label, age, raw_responses, email, birth_month, birth_year')
         .in('id', assessmentIds)
       
-      if (!profilesError && profiles) {
-        // Match profiles to assignments
+      if (!assessmentError && assessmentResults) {
+        console.log('✅ Found assessment results:', assessmentResults.length)
+        // Match assessment results to assignments
         assignments.forEach(assignment => {
           if (assignment.assessment_id) {
-            const matchingProfile = profiles.find(p => p.id === assignment.assessment_id)
-            if (matchingProfile) {
-              assignment.assessment_results = matchingProfile
+            const matchingResult = assessmentResults.find(r => r.id === assignment.assessment_id)
+            if (matchingResult) {
+              assignment.assessment_results = matchingResult
             }
           }
         })
+      } else {
+        console.log('❌ Assessment results query failed:', assessmentError)
+        // Fallback: try profiles table with string conversion
+        const stringIds = assessmentIds.map(id => id.toString())
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, child_name, scores, personality_label, description, grade')
+          .in('id', stringIds)
+        
+        if (!profilesError && profiles) {
+          console.log('✅ Found profiles as fallback:', profiles.length)
+          assignments.forEach(assignment => {
+            if (assignment.assessment_id) {
+              const matchingProfile = profiles.find(p => p.id === assignment.assessment_id.toString())
+              if (matchingProfile) {
+                assignment.assessment_results = matchingProfile
+              }
+            }
+          })
+        } else {
+          console.log('❌ Both assessment_results and profiles queries failed')
+        }
       }
     }
   }
