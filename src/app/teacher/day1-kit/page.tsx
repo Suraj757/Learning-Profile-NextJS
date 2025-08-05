@@ -349,6 +349,10 @@ function Day1KitContent() {
         throw new Error('Supabase not configured')
       }
       
+      // Declare variables in the main scope
+      let classroomsData: any[] = []
+      let assignmentsData: any[] = []
+      
       // Verify teacher exists in database
       try {
         console.log('🔍 Looking up teacher in database by email:', teacher.email)
@@ -364,19 +368,22 @@ function Day1KitContent() {
         const teacherId = dbTeacher.id
         console.log('Using teacher ID from database:', teacherId)
         
-        const [classroomsData, assignmentsData] = await Promise.all([
+        const [dbClassroomsData, dbAssignmentsData] = await Promise.all([
           getTeacherClassrooms(teacherId),
           getTeacherAssignments(teacherId)
         ])
         
+        classroomsData = dbClassroomsData || []
+        assignmentsData = dbAssignmentsData || []
+        
         console.log('📊 Live data check:')
-        console.log('  - Classrooms:', classroomsData?.length || 0, classroomsData?.map(c => c.name))
-        console.log('  - Assignments:', assignmentsData?.length || 0, 'completed:', assignmentsData?.filter(a => a.status === 'completed').length || 0)
-        console.log('  - Assignments with assessment_results:', assignmentsData?.filter(a => a.assessment_results).length || 0)
-        console.log('  - Assignments with assessment_id:', assignmentsData?.filter(a => a.assessment_id).length || 0)
+        console.log('  - Classrooms:', classroomsData.length, classroomsData.map(c => c.name))
+        console.log('  - Assignments:', assignmentsData.length, 'completed:', assignmentsData.filter(a => a.status === 'completed').length)
+        console.log('  - Assignments with assessment_results:', assignmentsData.filter(a => a.assessment_results).length)
+        console.log('  - Assignments with assessment_id:', assignmentsData.filter(a => a.assessment_id).length)
         
         // Debug ALL assignments to understand the data structure
-        if (assignmentsData && assignmentsData.length > 0) {
+        if (assignmentsData.length > 0) {
           console.log('📋 DETAILED assignment analysis:')
           assignmentsData.forEach((assignment, i) => {
             console.log(`  📝 Assignment ${i + 1}:`, {
@@ -401,7 +408,7 @@ function Day1KitContent() {
         }
         
         // If teacher exists but has no data, create some demo data
-        if ((!classroomsData || classroomsData.length === 0) && (!assignmentsData || assignmentsData.length === 0)) {
+        if (classroomsData.length === 0 && assignmentsData.length === 0) {
           console.log('Teacher exists but has no data, creating demo data')
           await createDemoDataForTeacher(teacherId)
           
@@ -411,78 +418,53 @@ function Day1KitContent() {
             getTeacherAssignments(teacherId)
           ])
           
-          console.log('After creating demo data - Classrooms:', newClassroomsData?.length, 'Assignments:', newAssignmentsData?.length)
+          classroomsData = newClassroomsData || []
+          assignmentsData = newAssignmentsData || []
           
-          setClassrooms(newClassroomsData || [])
-          setAssignments(newAssignmentsData || [])
-          
-          // Use the new data for analysis
-          const completedAssignments = (newAssignmentsData || []).filter(a => a.status === 'completed')
-          const primaryClassroom = (newClassroomsData || [])[0] || { name: 'Your Classroom', grade_level: '3rd Grade' }
-          
-          const generatedDay1Data = {
-            classroom: {
-              name: primaryClassroom.name,
-              grade: primaryClassroom.grade_level,
-              studentCount: (newAssignmentsData || []).length,
-              profilesCompleted: completedAssignments.length,
-              schoolStartDate: "2024-08-26",
-              daysUntilStart: Math.max(0, Math.ceil((new Date('2024-08-26').getTime() - new Date().getTime()) / (1000 * 3600 * 24)))
-            },
-            learningStyleDistribution: analyzeLearningStyleDistribution(completedAssignments),
-            atRiskStudents: identifyAtRiskStudents(completedAssignments),
-            seatingRecommendations: generateSeatingRecommendations(completedAssignments),
-            emailTemplates: generateEmailTemplates(completedAssignments)
-          }
-          
-          setDay1Data(generatedDay1Data)
-          return
+          console.log('After creating demo data - Classrooms:', classroomsData.length, 'Assignments:', assignmentsData.length)
         }
         
       } catch (dbError) {
         console.log('❌ Database teacher lookup failed:', dbError.message)
-        console.log('⚠️  Will use demo data due to database error')
-        const demoData = getDemoDay1KitData()
-        setDay1Data(demoData)
-        return
+        console.log('⚠️  Trying fallback with original teacher ID')
+        
+        // Try to get data with original teacher ID as fallback
+        const [fallbackClassroomsData, fallbackAssignmentsData] = await Promise.all([
+          getTeacherClassrooms(teacher.id),
+          getTeacherAssignments(teacher.id)
+        ])
+        
+        classroomsData = fallbackClassroomsData || []
+        assignmentsData = fallbackAssignmentsData || []
       }
       
-      // Try to get data with original teacher ID as fallback
-      const [classroomsData, assignmentsData] = await Promise.all([
-        getTeacherClassrooms(teacher.id),
-        getTeacherAssignments(teacher.id)
-      ])
-      
-      console.log('📊 Data fetch results:')
-      console.log('  - Classrooms:', classroomsData?.length || 0)
-      console.log('  - Assignments:', assignmentsData?.length || 0)
-      
-      let finalClassrooms = classroomsData || []
-      let finalAssignments = assignmentsData || []
+      console.log('📊 Final data status:')
+      console.log('  - Classrooms:', classroomsData.length)
+      console.log('  - Assignments:', assignmentsData.length)
       
       // If no live data available, fall back to demo data
-      if (finalClassrooms.length === 0 || finalAssignments.length === 0) {
+      if (classroomsData.length === 0 || assignmentsData.length === 0) {
         console.log('⚠️  No live data found, using demo data')
-        console.log('    Reason: Classrooms =', finalClassrooms.length, 'Assignments =', finalAssignments.length)
+        console.log('    Reason: Classrooms =', classroomsData.length, 'Assignments =', assignmentsData.length)
         const demoData = getDemoReportsData(teacher.id)
-        finalClassrooms = finalClassrooms.length > 0 ? finalClassrooms : demoData.classrooms as any
-        finalAssignments = finalAssignments.length > 0 ? finalAssignments : demoData.assignments as any
+        classroomsData = classroomsData.length > 0 ? classroomsData : demoData.classrooms as any
+        assignmentsData = assignmentsData.length > 0 ? assignmentsData : demoData.assignments as any
       } else {
         console.log('✅ Using live data from database')
       }
       
-      setClassrooms(finalClassrooms)
-      setAssignments(finalAssignments)
+      setClassrooms(classroomsData)
+      setAssignments(assignmentsData)
       
       // Generate Day 1 Kit data from actual classroom data
-      const primaryClassroom = finalClassrooms[0] || { name: 'Your Classroom', grade_level: '3rd Grade' }
-      const completedAssignments = finalAssignments.filter(a => a.status === 'completed')
+      const primaryClassroom = classroomsData[0] || { name: 'Your Classroom', grade_level: '3rd Grade' }
+      const completedAssignments = assignmentsData.filter(a => a.status === 'completed')
       
       const generatedDay1Data = {
         classroom: {
           name: primaryClassroom.name,
           grade: primaryClassroom.grade_level,
-          studentCount: finalAssignments.length,
+          studentCount: assignmentsData.length,
           profilesCompleted: completedAssignments.length,
           schoolStartDate: "2024-08-26",
           daysUntilStart: Math.max(0, Math.ceil((new Date('2024-08-26').getTime() - new Date().getTime()) / (1000 * 3600 * 24)))

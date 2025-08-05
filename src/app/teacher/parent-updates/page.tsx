@@ -1,52 +1,61 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { BookOpen, ArrowLeft, Camera, Send, MessageSquare, CheckCircle, Clock, Users, Star, Heart, Upload, Eye, Mail } from 'lucide-react'
 import AuthRequired from '@/components/teacher/AuthRequired'
+import { useTeacherAuth } from '@/lib/teacher-auth'
+import { getTeacherByEmail, getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
+import { getDemoReportsData } from '@/lib/demo-data'
 
-// Sample data for parent updates
-const sampleStudents = [
-  {
-    id: 1,
-    name: 'Emma Thompson',
-    learningStyle: 'Creative',
-    updateStatus: 'sent',
-    lastUpdate: '2025-01-04',
-    parentResponse: 'Thank you! This matches exactly what we see at home. Emma has been so excited about school!',
-    photos: 2,
-    quickWins: ['Used visual storytelling for math problems', 'Created art-based vocabulary cards']
-  },
-  {
-    id: 2, 
-    name: 'Marcus Johnson',
-    learningStyle: 'Analytical',
-    updateStatus: 'draft',
-    lastUpdate: null,
-    parentResponse: null,
-    photos: 1,
-    quickWins: ['Step-by-step problem solving approach', 'Data tracking charts for reading progress']
-  },
-  {
-    id: 3,
-    name: 'Sofia Martinez',
-    learningStyle: 'Collaborative',
-    updateStatus: 'sent',
-    lastUpdate: '2025-01-04',
-    parentResponse: 'Amazing! Sofia talks about her group projects every day. Thank you for understanding her social nature.',
-    photos: 3,
-    quickWins: ['Peer reading partnerships', 'Group discussion circles for science']
-  },
-  {
-    id: 4,
-    name: 'Alex Chen',
-    learningStyle: 'Confident',
-    updateStatus: 'scheduled',
-    lastUpdate: null,
-    parentResponse: null,
-    photos: 0,
-    quickWins: ['Leadership roles in group activities', 'Presentation opportunities']
+// Helper functions for learning style content
+const getQuickWinsForStyle = (style: string) => {
+  const quickWins = {
+    'Creative': [
+      'Used visual storytelling for math problems',
+      'Created art-based vocabulary cards',
+      'Incorporated drawing into writing assignments'
+    ],
+    'Analytical': [
+      'Step-by-step problem solving approach',
+      'Data tracking charts for reading progress',
+      'Logic puzzles for critical thinking'
+    ],
+    'Collaborative': [
+      'Peer reading partnerships',
+      'Group discussion circles for science',
+      'Team-based project presentations'
+    ],
+    'Confident': [
+      'Leadership roles in group activities',
+      'Presentation opportunities',
+      'Student mentor responsibilities'
+    ],
+    'Balanced': [
+      'Mixed learning approach strategies',
+      'Flexible activity options',
+      'Personalized learning pathways'
+    ]
   }
-]
+  return quickWins[style as keyof typeof quickWins] || quickWins['Balanced']
+}
+
+const generateUpdateStatus = (index: number) => {
+  const statuses = ['sent', 'draft', 'scheduled', 'sent']
+  return statuses[index % statuses.length] as 'sent' | 'draft' | 'scheduled'
+}
+
+const generateParentResponse = (status: string, childName: string, style: string) => {
+  if (status !== 'sent') return null
+  
+  const responses = {
+    'Creative': `Thank you! This matches exactly what we see at home. ${childName} has been so excited about school!`,
+    'Analytical': `This is so helpful! ${childName} loves the structured approach you're using. They talk about the step-by-step methods every day.`,
+    'Collaborative': `Amazing! ${childName} talks about their group projects every day. Thank you for understanding their social nature.`,
+    'Confident': `Perfect! ${childName} comes home excited about being a leader in class. This approach is working so well.`,
+    'Balanced': `Thank you for understanding ${childName}'s learning style. They're really thriving with your personalized approach.`
+  }
+  return responses[style as keyof typeof responses] || responses['Balanced']
+}
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -67,9 +76,123 @@ const getStatusIcon = (status: string) => {
 }
 
 export default function ParentUpdatesPage() {
+  const { teacher, isAuthenticated } = useTeacherAuth()
   const [selectedStudent, setSelectedStudent] = useState<any>(null)
   const [updateType, setUpdateType] = useState<'day3' | 'week1' | 'custom'>('day3')
   const [showComposer, setShowComposer] = useState(false)
+  const [students, setStudents] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [classrooms, setClassrooms] = useState<any[]>([])
+  const [assignments, setAssignments] = useState<any[]>([])
+
+  useEffect(() => {
+    if (isAuthenticated && teacher) {
+      loadParentUpdatesData()
+    }
+  }, [isAuthenticated, teacher])
+
+  const loadParentUpdatesData = async () => {
+    if (!teacher) return
+
+    try {
+      console.log('=== Parent Updates Data Loading ===')
+      console.log('Teacher:', teacher.email, 'ID:', teacher.id)
+      
+      // Try to get teacher from database first
+      let teacherId = teacher.id
+      try {
+        const dbTeacher = await getTeacherByEmail(teacher.email)
+        if (dbTeacher) {
+          teacherId = dbTeacher.id
+          console.log('Using database teacher ID:', teacherId)
+        }
+      } catch (dbError) {
+        console.log('Using localStorage teacher ID as fallback')
+      }
+      
+      const [classroomsData, assignmentsData] = await Promise.all([
+        getTeacherClassrooms(teacherId),
+        getTeacherAssignments(teacherId)
+      ])
+      
+      console.log('Live data check:')
+      console.log('  - Classrooms:', classroomsData?.length || 0)
+      console.log('  - Assignments:', assignmentsData?.length || 0)
+      
+      let finalClassrooms = classroomsData || []
+      let finalAssignments = assignmentsData || []
+      
+      // If no live data, use demo data
+      if (finalClassrooms.length === 0 || finalAssignments.length === 0) {
+        console.log('No live data found, using demo data')
+        const demoData = getDemoReportsData(teacherId)
+        finalClassrooms = finalClassrooms.length > 0 ? finalClassrooms : demoData.classrooms as any
+        finalAssignments = finalAssignments.length > 0 ? finalAssignments : demoData.assignments as any
+      }
+      
+      setClassrooms(finalClassrooms)
+      setAssignments(finalAssignments)
+      
+      // Convert assignments to student format for parent updates
+      const studentData = finalAssignments.map((assignment, index) => {
+        const results = assignment.assessment_results
+        let learningStyle = 'Balanced'
+        
+        if (results?.personality_label) {
+          const label = results.personality_label.toLowerCase()
+          if (label.includes('creative')) learningStyle = 'Creative'
+          else if (label.includes('analytical')) learningStyle = 'Analytical'
+          else if (label.includes('collaborative')) learningStyle = 'Collaborative'
+          else if (label.includes('confident')) learningStyle = 'Confident'
+        }
+        
+        const updateStatus = generateUpdateStatus(index)
+        
+        return {
+          id: assignment.id,
+          name: assignment.child_name,
+          learningStyle,
+          updateStatus,
+          lastUpdate: updateStatus === 'sent' ? '2025-01-04' : null,
+          parentResponse: generateParentResponse(updateStatus, assignment.child_name, learningStyle),
+          photos: Math.floor(Math.random() * 4),
+          quickWins: getQuickWinsForStyle(learningStyle)
+        }
+      })
+      
+      setStudents(studentData)
+      console.log('Generated parent updates for', studentData.length, 'students')
+      
+    } catch (error) {
+      console.error('Error loading parent updates data:', error)
+      // Fallback to demo data
+      const demoData = getDemoReportsData(teacher.id)
+      setClassrooms(demoData.classrooms as any)
+      setAssignments(demoData.assignments as any)
+      
+      // Generate demo student data
+      const demoStudents = (demoData.assignments as any[]).slice(0, 4).map((assignment: any, index: number) => {
+        const styles = ['Creative', 'Analytical', 'Collaborative', 'Confident']
+        const style = styles[index % styles.length]
+        const updateStatus = generateUpdateStatus(index)
+        
+        return {
+          id: assignment.id,
+          name: assignment.child_name,
+          learningStyle: style,
+          updateStatus,
+          lastUpdate: updateStatus === 'sent' ? '2025-01-04' : null,
+          parentResponse: generateParentResponse(updateStatus, assignment.child_name, style),
+          photos: Math.floor(Math.random() * 4),
+          quickWins: getQuickWinsForStyle(style)
+        }
+      })
+      
+      setStudents(demoStudents)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const generateUpdateTemplate = (student: any, type: 'day3' | 'week1' | 'custom') => {
     const templates = {
@@ -147,22 +270,22 @@ Mrs. Johnson`
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div className="card-begin p-6 text-center">
               <Users className="h-8 w-8 text-begin-teal mx-auto mb-2" />
-              <div className="text-2xl font-bold text-begin-blue">{sampleStudents.length}</div>
+              <div className="text-2xl font-bold text-begin-blue">{students.length}</div>
               <div className="text-sm text-gray-600">Students</div>
             </div>
             <div className="card-begin p-6 text-center">
               <Send className="h-8 w-8 text-green-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-begin-blue">{sampleStudents.filter(s => s.updateStatus === 'sent').length}</div>
+              <div className="text-2xl font-bold text-begin-blue">{students.filter(s => s.updateStatus === 'sent').length}</div>
               <div className="text-sm text-gray-600">Updates Sent</div>
             </div>
             <div className="card-begin p-6 text-center">
               <MessageSquare className="h-8 w-8 text-purple-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-begin-blue">{sampleStudents.filter(s => s.parentResponse).length}</div>
+              <div className="text-2xl font-bold text-begin-blue">{students.filter(s => s.parentResponse).length}</div>
               <div className="text-sm text-gray-600">Parent Responses</div>
             </div>
             <div className="card-begin p-6 text-center">
               <Star className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-begin-blue">100%</div>
+              <div className="text-2xl font-bold text-begin-blue">{students.filter(s => s.parentResponse).length > 0 ? Math.round((students.filter(s => s.parentResponse).length / students.filter(s => s.updateStatus === 'sent').length) * 100) : 0}%</div>
               <div className="text-sm text-gray-600">Response Rate</div>
             </div>
           </div>
@@ -186,7 +309,22 @@ Mrs. Johnson`
                 </div>
 
                 <div className="space-y-4">
-                  {sampleStudents.map((student) => (
+                  {loading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-begin-teal mx-auto mb-4"></div>
+                      <p className="text-begin-blue/70">Loading parent updates...</p>
+                    </div>
+                  ) : students.length === 0 ? (
+                    <div className="text-center py-8">
+                      <MessageSquare className="h-12 w-12 text-begin-gray mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-begin-blue mb-2">No Students Yet</h3>
+                      <p className="text-begin-blue/70 mb-4">Send learning profile assessments to start building parent connections.</p>
+                      <Link href="/teacher/send-assessment" className="btn-begin-primary">
+                        Send First Assessment
+                      </Link>
+                    </div>
+                  ) : (
+                    students.map((student) => (
                     <div key={student.id} className="border border-gray-200 rounded-2xl p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -233,7 +371,8 @@ Mrs. Johnson`
                         </div>
                       )}
                     </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
             </div>
@@ -365,7 +504,7 @@ Mrs. Johnson`
                       <label className="block text-sm font-medium text-gray-700 mb-2">Select Student</label>
                       <select className="w-full p-3 border border-gray-300 rounded-lg">
                         <option>Choose a student...</option>
-                        {sampleStudents.map(student => (
+                        {students.map(student => (
                           <option key={student.id} value={student.id}>{student.name}</option>
                         ))}
                       </select>
