@@ -1,7 +1,7 @@
 {
   "name": "Learning Profile Next.js",
   "short_name": "Learning Profile",
-  "description": "Personalized learning assessment platform",
+  "description": "Personalized learning assessment platform with debugging",
   "icons": [
     {
       "src": "/next.svg",
