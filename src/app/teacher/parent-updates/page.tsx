@@ -385,15 +385,80 @@ Mrs. Johnson`
                   Quick Actions
                 </h3>
                 <div className="space-y-3">
-                  <button className="w-full btn-begin-primary text-left flex items-center gap-3">
+                  <button 
+                    onClick={() => {
+                      // TODO: Implement batch sending
+                      alert('Batch sending feature coming soon! For now, you can compose individual updates below.')
+                    }}
+                    className="w-full btn-begin-primary text-left flex items-center gap-3 hover:bg-begin-teal/90 transition-colors"
+                  >
                     <Mail className="h-4 w-4" />
                     Send Day 3 Updates (Batch)
                   </button>
-                  <button className="w-full btn-begin-secondary text-left flex items-center gap-3">
+                  <button 
+                    onClick={() => {
+                      // TODO: Implement bulk photo upload
+                      alert('Bulk photo upload feature coming soon! For now, you can add photos to individual updates.')
+                    }}
+                    className="w-full btn-begin-secondary text-left flex items-center gap-3 hover:bg-begin-blue/5 transition-colors"
+                  >
                     <Upload className="h-4 w-4" />
                     Upload Photos (Bulk)
                   </button>
-                  <button className="w-full btn-begin-secondary text-left flex items-center gap-3">
+                  <button 
+                    onClick={() => {
+                      // Create a preview window showing parent perspective
+                      const previewWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes')
+                      if (previewWindow) {
+                        previewWindow.document.write(`
+                          <!DOCTYPE html>
+                          <html>
+                          <head>
+                            <title>Parent View Preview</title>
+                            <style>
+                              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 40px; background: #f8fafc; }
+                              .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                              h1 { color: #1e40af; margin-bottom: 20px; }
+                              .student-card { background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #0ea5e9; }
+                              .learning-style { background: #10b981; color: white; padding: 4px 12px; border-radius: 20px; font-size: 14px; display: inline-block; margin-bottom: 10px; }
+                              .quick-wins { background: #fef3c7; padding: 15px; border-radius: 8px; margin-top: 15px; }
+                              .teacher-note { font-style: italic; color: #6b7280; background: #f9fafb; padding: 15px; border-radius: 8px; margin-top: 20px; }
+                            </style>
+                          </head>
+                          <body>
+                            <div class="container">
+                              <h1>Your Child's Learning Profile Update</h1>
+                              <p>Dear Parent,</p>
+                              <p>I wanted to share how I'm using your child's learning profile to help them succeed in our classroom.</p>
+                              
+                              ${students.slice(0, 1).map(student => `
+                                <div class="student-card">
+                                  <h2>${student.name}</h2>
+                                  <div class="learning-style">${student.learningStyle} Learner</div>
+                                  <div class="quick-wins">
+                                    <h3>What's Working Great:</h3>
+                                    <ul>
+                                      ${student.quickWins.map(win => `<li>${win}</li>`).join('')}
+                                    </ul>
+                                  </div>
+                                  <div class="teacher-note">
+                                    <strong>Teacher's Note:</strong> ${student.name} has been responding really well to these approaches! I can already see them engaging more during lessons.
+                                  </div>
+                                </div>
+                              `).join('')}
+                              
+                              <p>I'd love to hear - how does this match what you see at home? Are there any other strategies that work well for your child that I should try in the classroom?</p>
+                              <p>Looking forward to a great year together!</p>
+                              <p>Best regards,<br>Mrs. Johnson</p>
+                            </div>
+                          </body>
+                          </html>
+                        `)
+                        previewWindow.document.close()
+                      }
+                    }}
+                    className="w-full btn-begin-secondary text-left flex items-center gap-3 hover:bg-begin-blue/5 transition-colors"
+                  >
                     <Eye className="h-4 w-4" />
                     Preview Parent View
                   </button>
