@@ -380,7 +380,17 @@ export async function getTeacherAssignments(teacherId: number) {
   
   const { data, error } = await supabase
     .from('profile_assignments')
-    .select('*')
+    .select(`
+      *,
+      assessment_results:profiles!profile_assignments_assessment_id_fkey(
+        id,
+        child_name,
+        scores,
+        personality_label,
+        description,
+        grade
+      )
+    `)
     .eq('teacher_id', teacherId)
     .order('assigned_at', { ascending: false })
   

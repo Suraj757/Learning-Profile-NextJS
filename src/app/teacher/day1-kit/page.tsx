@@ -118,12 +118,13 @@ function analyzeLearningStyleDistribution(assignments: any[]) {
   }
   
   assignments.forEach(assignment => {
-    if (assignment.assessment_results) {
-      const label = assignment.assessment_results.personality_label?.toLowerCase()
-      if (label?.includes('creative')) distribution.creative++
-      else if (label?.includes('analytical')) distribution.analytical++
-      else if (label?.includes('collaborative')) distribution.collaborative++
-      else if (label?.includes('confident')) distribution.confident++
+    // Check both assessment_results and status to ensure we only count truly completed assessments
+    if (assignment.status === 'completed' && assignment.assessment_results && assignment.assessment_results.personality_label) {
+      const label = assignment.assessment_results.personality_label.toLowerCase()
+      if (label.includes('creative')) distribution.creative++
+      else if (label.includes('analytical')) distribution.analytical++
+      else if (label.includes('collaborative')) distribution.collaborative++
+      else if (label.includes('confident')) distribution.confident++
       else distribution.balanced++
     }
   })
@@ -136,7 +137,7 @@ function identifyAtRiskStudents(assignments: any[]) {
   const atRiskStudents = []
   
   assignments.forEach(assignment => {
-    if (assignment.assessment_results?.scores) {
+    if (assignment.status === 'completed' && assignment.assessment_results?.scores) {
       const scores = assignment.assessment_results.scores
       const confidence = scores.Confidence || 0
       const collaboration = scores.Collaboration || 0
@@ -353,6 +354,21 @@ function Day1KitContent() {
         console.log('📊 Live data check:')
         console.log('  - Classrooms:', classroomsData?.length || 0, classroomsData?.map(c => c.name))
         console.log('  - Assignments:', assignmentsData?.length || 0, 'completed:', assignmentsData?.filter(a => a.status === 'completed').length || 0)
+        console.log('  - Assignments with assessment_results:', assignmentsData?.filter(a => a.assessment_results).length || 0)
+        
+        // Debug first few assignments
+        if (assignmentsData && assignmentsData.length > 0) {
+          console.log('📋 Sample assignment data:')
+          assignmentsData.slice(0, 3).forEach((assignment, i) => {
+            console.log(`  Assignment ${i + 1}:`, {
+              child_name: assignment.child_name,
+              status: assignment.status,
+              assessment_id: assignment.assessment_id,
+              has_results: !!assignment.assessment_results,
+              personality_label: assignment.assessment_results?.personality_label
+            })
+          })
+        }
         
         // If teacher exists but has no data, create some demo data
         if ((!classroomsData || classroomsData.length === 0) && (!assignmentsData || assignmentsData.length === 0)) {
