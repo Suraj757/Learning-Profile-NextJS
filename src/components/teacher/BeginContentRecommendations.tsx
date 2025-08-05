@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { BookOpen, Play, Users, Home, Star, Clock, Target, Sparkles, ExternalLink } from 'lucide-react'
 import { BeginContent, ContentRecommendations, beginContentService } from '@/lib/content-recommendation-service'
-import { LearningProfile } from '@/lib/types'
+import { LearningProfile } from '@/lib/supabase'
 
 interface BeginContentRecommendationsProps {
   learningProfile: LearningProfile

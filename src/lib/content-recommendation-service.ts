@@ -1,5 +1,5 @@
 // Begin content recommendation service based on learning profiles
-import { LearningProfile } from './types'
+import { LearningProfile } from './supabase'
 
 export interface BeginContent {
   id: string
