@@ -178,38 +178,52 @@ function generateSeatingRecommendations(assignments: any[]) {
   const recommendations = []
   
   assignments.forEach(assignment => {
-    if (assignment.assessment_results) {
-      const label = assignment.assessment_results.personality_label?.toLowerCase()
+    if (assignment.status === 'completed' && assignment.assessment_results && assignment.assessment_results.personality_label) {
+      const label = assignment.assessment_results.personality_label.toLowerCase()
       const scores = assignment.assessment_results.scores || {}
       
-      if (label?.includes('collaborative') && scores.Collaboration > 4) {
+      console.log('🪑 Generating seating for:', assignment.child_name, 'label:', label, 'scores:', Object.keys(scores))
+      
+      // More flexible score checking - use any available score > 3.5
+      const highScores = Object.entries(scores).filter(([key, value]) => typeof value === 'number' && value > 3.5)
+      const hasHighScore = highScores.length > 0
+      
+      if (label.includes('collaborative')) {
         recommendations.push({
           student: assignment.child_name,
           position: 'Center table',
-          reason: 'Social hub - connects all groups'
+          reason: hasHighScore ? 'Strong collaborator - connects all groups' : 'Social hub - connects all groups'
         })
-      } else if (label?.includes('analytical') && scores.Content > 4) {
+      } else if (label.includes('analytical')) {
         recommendations.push({
           student: assignment.child_name,
           position: 'Quiet corner',
-          reason: 'Needs focused environment for deep thinking'
+          reason: hasHighScore ? 'Analytical thinker - needs focused environment' : 'Needs focused environment for deep thinking'
         })
-      } else if (label?.includes('creative') && scores['Creative Innovation'] > 4) {
+      } else if (label.includes('creative')) {
         recommendations.push({
           student: assignment.child_name,
           position: 'Art/creation area',
-          reason: 'Benefits from access to creative materials'
+          reason: hasHighScore ? 'Creative innovator - benefits from materials access' : 'Benefits from access to creative materials'
         })
-      } else if (label?.includes('confident') && scores.Confidence > 4) {
+      } else if (label.includes('confident')) {
         recommendations.push({
           student: assignment.child_name,
           position: 'Front leadership position',
-          reason: 'Natural helper - good mentor position'
+          reason: hasHighScore ? 'Natural leader - excellent mentor position' : 'Natural helper - good mentor position'
+        })
+      } else {
+        // Fallback for any other personality types
+        recommendations.push({
+          student: assignment.child_name,
+          position: 'Flexible seating area',
+          reason: `${label} learner - adaptable placement`
         })
       }
     }
   })
   
+  console.log('🪑 Generated seating recommendations:', recommendations.length)
   return recommendations.slice(0, 6) // Limit to top 6 recommendations
 }
 
@@ -223,14 +237,18 @@ function generateEmailTemplates(assignments: any[]) {
   }
   
   assignments.forEach(assignment => {
-    if (assignment.assessment_results) {
-      const label = assignment.assessment_results.personality_label?.toLowerCase()
-      if (label?.includes('creative')) styleGroups.creative.push(assignment)
-      else if (label?.includes('analytical')) styleGroups.analytical.push(assignment)
-      else if (label?.includes('collaborative')) styleGroups.collaborative.push(assignment)
-      else if (label?.includes('confident')) styleGroups.confident.push(assignment)
+    if (assignment.status === 'completed' && assignment.assessment_results && assignment.assessment_results.personality_label) {
+      const label = assignment.assessment_results.personality_label.toLowerCase()
+      console.log('📧 Categorizing for email:', assignment.child_name, 'as:', label)
+      
+      if (label.includes('creative')) styleGroups.creative.push(assignment)
+      else if (label.includes('analytical')) styleGroups.analytical.push(assignment)
+      else if (label.includes('collaborative')) styleGroups.collaborative.push(assignment)
+      else if (label.includes('confident')) styleGroups.confident.push(assignment)
     }
   })
+  
+  console.log('📧 Email group sizes:', Object.entries(styleGroups).map(([key, arr]) => `${key}: ${arr.length}`).join(', '))
   
   const templates = []
   
