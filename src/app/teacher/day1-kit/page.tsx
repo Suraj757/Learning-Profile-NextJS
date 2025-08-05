@@ -317,7 +317,7 @@ function Day1KitContent() {
     if (!teacher) return
 
     try {
-      console.log('=== Day 1 Kit Data Loading Debug ===')
+      console.log('=== Day 1 Kit Data Loading Debug v2 ===')
       console.log('Teacher from localStorage:', teacher.email, 'ID:', teacher.id)
       console.log('Supabase connection status:', !!supabase)
       console.log('Environment check:')
