@@ -371,11 +371,13 @@ export default function ClassroomStudentsPage() {
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex items-center justify-end gap-2">
-                            {assignment?.status === 'completed' ? (
+                            {assignment?.status === 'completed' && assignment?.assessment_id ? (
                               <Link
-                                href={`/teacher/student/${student.id}/profile`}
+                                href={`/results/${assignment.assessment_id}`}
                                 className="p-2 text-begin-teal hover:text-begin-teal-hover transition-colors"
                                 title="View Profile"
+                                target="_blank"
+                                rel="noopener noreferrer"
                               >
                                 <Eye className="h-4 w-4" />
                               </Link>
