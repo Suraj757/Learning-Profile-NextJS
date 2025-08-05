@@ -4,6 +4,8 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, Share, Download, Star, ArrowRight, Sparkles, MessageSquare, Calendar, Target, CheckCircle, Clock, Mail, Phone, Home, School, Lightbulb, TrendingUp, Award, Users, Play, Book, Palette, Brain, Heart, Eye, AlertCircle, Copy, Check, ExternalLink } from 'lucide-react'
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts'
+import EnhancedContentRecommendations from '@/components/content/EnhancedContentRecommendations'
+import { beginContentService } from '@/lib/content-recommendation-service'
 
 interface ProfileData {
   id: string
@@ -20,6 +22,7 @@ export default function ResultsPage() {
   const [profileData, setProfileData] = useState<ProfileData | null>(null)
   const [loading, setLoading] = useState(true)
   const [copiedEmail, setCopiedEmail] = useState(false)
+  const [enhancedRecommendations, setEnhancedRecommendations] = useState<any>(null)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -125,6 +128,26 @@ export default function ResultsPage() {
       fetchProfile()
     }
   }, [params.id])
+
+  // Load enhanced recommendations when profile data is available
+  useEffect(() => {
+    const loadEnhancedRecommendations = async () => {
+      if (profileData?.scores && profileData?.personalityLabel) {
+        try {
+          const learningProfile = {
+            personality_label: profileData.personalityLabel,
+            scores: profileData.scores
+          }
+          const recs = await beginContentService.getQuickRecommendationSummary(learningProfile)
+          setEnhancedRecommendations(recs)
+        } catch (error) {
+          console.error('Error loading enhanced recommendations:', error)
+        }
+      }
+    }
+    
+    loadEnhancedRecommendations()
+  }, [profileData])
 
   // Get age-appropriate grade level activities
   const getGradeBasedAge = (grade: string) => {
@@ -706,6 +729,17 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
             })}
           </div>
         </div>
+
+        {/* Enhanced Content Recommendations */}
+        {enhancedRecommendations && (
+          <div className="mt-8">
+            <EnhancedContentRecommendations
+              recommendations={enhancedRecommendations}
+              studentName={profileData.childName}
+              learningProfile={profileData.personalityLabel}
+            />
+          </div>
+        )}
 
         {/* Development Planning */}
         <div className="card-begin p-8 mt-8">
