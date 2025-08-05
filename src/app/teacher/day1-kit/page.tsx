@@ -33,12 +33,14 @@ import {
   ChevronRight,
   Calendar,
   MapPin,
-  Zap
+  Zap,
+  Sparkles
 } from 'lucide-react'
 import { useTeacherAuth } from '@/lib/teacher-auth'
 import { getTeacherClassrooms, getTeacherAssignments, supabase, getTeacherByEmail } from '@/lib/supabase'
 import type { Classroom, ProfileAssignment } from '@/lib/supabase'
 import DelightfulLoading from '@/components/loading/DelightfulLoading'
+import BeginContentRecommendations from '@/components/teacher/BeginContentRecommendations'
 import { getDemoReportsData, createDemoDataForTeacher } from '@/lib/demo-data'
 
 // Helper function to get demo Day 1 Kit data
@@ -1237,6 +1239,45 @@ function Day1KitContent() {
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Begin Content Recommendations Section */}
+        {completedAssignments.length > 0 && (
+          <div className="space-y-6">
+            {completedAssignments.slice(0, 3).map((assignment, index) => {
+              const learningProfile = assignment.assessment_results
+              if (!learningProfile || !learningProfile.personality_label) return null
+              
+              return (
+                <BeginContentRecommendations
+                  key={assignment.id}
+                  learningProfile={learningProfile}
+                  studentName={assignment.student_name || `Student ${index + 1}`}
+                  context="day1-kit"
+                  showCategory="teacher"
+                />
+              )
+            })}
+            
+            {completedAssignments.length > 3 && (
+              <div className="card-begin bg-gradient-to-r from-purple-50 to-blue-50 text-center py-8">
+                <Sparkles className="h-12 w-12 text-purple-500 mx-auto mb-4" />
+                <h3 className="font-bold text-begin-blue mb-2">
+                  Content for All {completedAssignments.length} Students
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Personalized Begin content recommendations available for your entire class
+                </p>
+                <Link
+                  href="/teacher/student-cards"
+                  className="btn-begin-primary inline-flex items-center gap-2"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  View All Student Content
+                </Link>
+              </div>
+            )}
           </div>
         )}
 

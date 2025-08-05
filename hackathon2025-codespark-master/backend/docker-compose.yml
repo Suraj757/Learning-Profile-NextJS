@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: hackathon-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hackathon_db
+      POSTGRES_USER: hackathon_user
+      POSTGRES_PASSWORD: hackathon_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - hackathon-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  hackathon-network:
+    driver: bridge
