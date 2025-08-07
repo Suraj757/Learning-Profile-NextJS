@@ -729,44 +729,44 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                 </p>
               </div>
           
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Today's Activities */}
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-200">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
-                  1
-                </div>
-                <h3 className="text-xl font-bold text-green-800">Do This Today (Next 2 Hours)</h3>
-              </div>
-              <div className="space-y-4">
-                {dailyActivities.today.map((activity, index) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-white/70 rounded-xl">
-                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-gray-800">{activity}</span>
+              <div className="grid lg:grid-cols-2 gap-8">
+                {/* Today's Activities */}
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                      1
+                    </div>
+                    <h3 className="text-xl font-bold text-green-800">Do This Today (Next 2 Hours)</h3>
                   </div>
-                ))}
+                  <div className="space-y-4">
+                    {dailyActivities.today.map((activity, index) => (
+                      <div key={index} className="flex items-start gap-3 p-3 bg-white/70 rounded-xl">
+                        <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-gray-800">{activity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* This Week's Plan */}
+                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-2xl border border-blue-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                      7
+                    </div>
+                    <h3 className="text-xl font-bold text-blue-800">This Week's Goals</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {dailyActivities.thisWeek.map((activity, index) => (
+                      <div key={index} className="flex items-start gap-3 p-3 bg-white/70 rounded-xl">
+                        <Calendar className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-gray-800">{activity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
-            
-            {/* This Week's Plan */}
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-2xl border border-blue-200">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
-                  7
-                </div>
-                <h3 className="text-xl font-bold text-blue-800">This Week's Goals</h3>
-              </div>
-              <div className="space-y-4">
-                {dailyActivities.thisWeek.map((activity, index) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-white/70 rounded-xl">
-                    <Calendar className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-gray-800">{activity}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
           </>
         ) : (
           <>
@@ -1251,79 +1251,81 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
           </div>
           
           {viewMode === 'parent' ? (
-            <div className="grid lg:grid-cols-2 gap-8">
-              {/* Home Example */}
-              <div className="bg-gradient-to-br from-orange-50 to-yellow-50 p-6 rounded-2xl border border-orange-200">
-                <div className="flex items-center gap-3 mb-4">
-                  <Home className="h-6 w-6 text-orange-600" />
-                  <h3 className="text-lg font-bold text-orange-800">At Home This Weekend</h3>
-                </div>
-              
-              <div className="space-y-4">
-                <div className="bg-white/70 p-4 rounded-xl">
-                  <p className="text-sm font-medium text-gray-800 mb-2">
-                    "Since {profileData.childName} is a {profileData.personalityLabel}, try this specific activity this weekend:"
-                  </p>
-                  <div className="bg-orange-100 p-3 rounded-lg">
-                    <p className="text-sm text-gray-700">
-                      {profileData.personalityLabel === 'Creative Collaborator' 
-                        ? `Set up a "family restaurant" where ${profileData.childName} designs the menu, you cook together, and everyone role-plays being customers. This combines their creativity with collaboration while practicing real-world skills.`
-                        : profileData.personalityLabel === 'Analytical Thinker'
-                        ? `Give ${profileData.childName} a broken household item (old phone, radio, etc.) and let them take it apart to see how it works. Provide simple tools and ask them to explain what they discover. This feeds their analytical nature safely.`
-                        : profileData.personalityLabel === 'Social Connector'
-                        ? `Have ${profileData.childName} plan and host a "family game night" where they choose games, explain rules, and make sure everyone feels included. This leverages their social strengths while building leadership skills.`
-                        : `Create a "choose your own adventure" day where ${profileData.childName} makes all the decisions about family activities, from breakfast to bedtime story. This honors their independence while keeping family connection.`}
-                    </p>
+            <>
+              <div className="grid lg:grid-cols-2 gap-8">
+                {/* Home Example */}
+                <div className="bg-gradient-to-br from-orange-50 to-yellow-50 p-6 rounded-2xl border border-orange-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Home className="h-6 w-6 text-orange-600" />
+                    <h3 className="text-lg font-bold text-orange-800">At Home This Weekend</h3>
+                  </div>
+                
+                  <div className="space-y-4">
+                    <div className="bg-white/70 p-4 rounded-xl">
+                      <p className="text-sm font-medium text-gray-800 mb-2">
+                        "Since {profileData.childName} is a {profileData.personalityLabel}, try this specific activity this weekend:"
+                      </p>
+                      <div className="bg-orange-100 p-3 rounded-lg">
+                        <p className="text-sm text-gray-700">
+                          {profileData.personalityLabel === 'Creative Collaborator' 
+                            ? `Set up a "family restaurant" where ${profileData.childName} designs the menu, you cook together, and everyone role-plays being customers. This combines their creativity with collaboration while practicing real-world skills.`
+                            : profileData.personalityLabel === 'Analytical Thinker'
+                            ? `Give ${profileData.childName} a broken household item (old phone, radio, etc.) and let them take it apart to see how it works. Provide simple tools and ask them to explain what they discover. This feeds their analytical nature safely.`
+                            : profileData.personalityLabel === 'Social Connector'
+                            ? `Have ${profileData.childName} plan and host a "family game night" where they choose games, explain rules, and make sure everyone feels included. This leverages their social strengths while building leadership skills.`
+                            : `Create a "choose your own adventure" day where ${profileData.childName} makes all the decisions about family activities, from breakfast to bedtime story. This honors their independence while keeping family connection.`}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-white/70 p-4 rounded-xl">
+                      <p className="text-sm font-medium text-gray-800 mb-2">"If it goes well, you'll see:"</p>
+                      <ul className="text-sm text-gray-700 space-y-1">
+                        <li>• {profileData.childName} staying engaged longer than usual</li>
+                        <li>• Natural learning happening without pressure</li>
+                        <li>• Pride and confidence in their abilities</li>
+                        <li>• Asking to do similar activities again</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
                 
-                <div className="bg-white/70 p-4 rounded-xl">
-                  <p className="text-sm font-medium text-gray-800 mb-2">"If it goes well, you'll see:"</p>
-                  <ul className="text-sm text-gray-700 space-y-1">
-                    <li>• {profileData.childName} staying engaged longer than usual</li>
-                    <li>• Natural learning happening without pressure</li>
-                    <li>• Pride and confidence in their abilities</li>
-                    <li>• Asking to do similar activities again</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            
-            {/* School Example */}
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-200">
-              <div className="flex items-center gap-3 mb-4">
-                <School className="h-6 w-6 text-green-600" />
-                <h3 className="text-lg font-bold text-green-800">Tell Your Teacher Exactly This</h3>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="bg-white/70 p-4 rounded-xl">
-                  <p className="text-sm font-medium text-gray-800 mb-2">
-                    "Here's exactly what to tell your teacher about {profileData.childName}'s learning style:"
-                  </p>
-                  <div className="bg-green-100 p-3 rounded-lg">
-                    <p className="text-sm text-gray-700 italic">
-                      "{profileData.childName} thrives when they can {profileData.personalityLabel === 'Creative Collaborator' ? 'express ideas through art, storytelling, or building before writing them down' : profileData.personalityLabel === 'Analytical Thinker' ? 'understand the "why" behind concepts and explore cause-and-effect relationships' : profileData.personalityLabel === 'Social Connector' ? 'learn through discussion, peer interaction, and helping others understand concepts' : 'work at their own pace and have choices in how they show their learning'}. 
-                      
-                      At home, we've noticed they learn best when {profileData.personalityLabel === 'Creative Collaborator' ? 'they can use their hands and imagination' : profileData.personalityLabel === 'Analytical Thinker' ? 'they can ask questions and investigate' : profileData.personalityLabel === 'Social Connector' ? 'they can teach others what they\'ve learned' : 'they feel in control of their learning environment'}. 
-                      
-                      Would it be possible to {profileData.personalityLabel === 'Creative Collaborator' ? 'sometimes let them draw their ideas before writing, or use creative projects to show understanding' : profileData.personalityLabel === 'Analytical Thinker' ? 'provide extension questions or let them research topics that interest them' : profileData.personalityLabel === 'Social Connector' ? 'use partner work or let them help explain concepts to classmates' : 'offer choices in assignments or provide quiet spaces when they need to focus'}?"
-                    </p>
+                {/* School Example */}
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <School className="h-6 w-6 text-green-600" />
+                    <h3 className="text-lg font-bold text-green-800">Tell Your Teacher Exactly This</h3>
                   </div>
-                </div>
-                
-                <div className="bg-white/70 p-4 rounded-xl">
-                  <p className="text-sm font-medium text-gray-800 mb-2">"If the teacher is receptive, you can add:"</p>
-                  <div className="bg-green-50 p-3 rounded-lg border border-green-200">
-                    <p className="text-sm text-gray-700">
-                      "I have a detailed learning profile report I'd be happy to share. It shows their specific strengths and gives practical classroom strategies. Would that be helpful?"
-                    </p>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-white/70 p-4 rounded-xl">
+                      <p className="text-sm font-medium text-gray-800 mb-2">
+                        "Here's exactly what to tell your teacher about {profileData.childName}'s learning style:"
+                      </p>
+                      <div className="bg-green-100 p-3 rounded-lg">
+                        <p className="text-sm text-gray-700 italic">
+                          "{profileData.childName} thrives when they can {profileData.personalityLabel === 'Creative Collaborator' ? 'express ideas through art, storytelling, or building before writing them down' : profileData.personalityLabel === 'Analytical Thinker' ? 'understand the "why" behind concepts and explore cause-and-effect relationships' : profileData.personalityLabel === 'Social Connector' ? 'learn through discussion, peer interaction, and helping others understand concepts' : 'work at their own pace and have choices in how they show their learning'}. 
+                          
+                          At home, we've noticed they learn best when {profileData.personalityLabel === 'Creative Collaborator' ? 'they can use their hands and imagination' : profileData.personalityLabel === 'Analytical Thinker' ? 'they can ask questions and investigate' : profileData.personalityLabel === 'Social Connector' ? 'they can teach others what they\'ve learned' : 'they feel in control of their learning environment'}. 
+                          
+                          Would it be possible to {profileData.personalityLabel === 'Creative Collaborator' ? 'sometimes let them draw their ideas before writing, or use creative projects to show understanding' : profileData.personalityLabel === 'Analytical Thinker' ? 'provide extension questions or let them research topics that interest them' : profileData.personalityLabel === 'Social Connector' ? 'use partner work or let them help explain concepts to classmates' : 'offer choices in assignments or provide quiet spaces when they need to focus'}?"
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-white/70 p-4 rounded-xl">
+                      <p className="text-sm font-medium text-gray-800 mb-2">"If the teacher is receptive, you can add:"</p>
+                      <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                        <p className="text-sm text-gray-700">
+                          "I have a detailed learning profile report I'd be happy to share. It shows their specific strengths and gives practical classroom strategies. Would that be helpful?"
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </>
           ) : (
-            /* Teacher Examples */
             <div className="grid lg:grid-cols-2 gap-8">
               {/* Lesson Planning Example */}
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-200">
@@ -1416,9 +1418,8 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                 </div>
               </div>
             </div>
+          )}
         </div>
-          </>
-        )}
 
         <div className="grid lg:grid-cols-2 gap-8 mt-8">
           {/* Radar Chart */}
