@@ -1084,7 +1084,7 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                   {Object.entries(profileData.scores)
                     .sort(([,a], [,b]) => a - b)[0][0]} 
                   ({Object.entries(profileData.scores)
-                    .sort(([,a], [,b]) => (Number(a) || 0) - (Number(b) || 0))[0][1] ? (Number(Object.entries(scores).sort(([,a], [,b]) => (Number(a) || 0) - (Number(b) || 0))[0][1]) || 0).toFixed(1) : '0.0'}/5)
+                    .sort(([,a], [,b]) => (Number(a) || 0) - (Number(b) || 0))[0][1] ? (Number(Object.entries(profileData.scores).sort(([,a], [,b]) => (Number(a) || 0) - (Number(b) || 0))[0][1]) || 0).toFixed(1) : '0.0'}/5)
                 </p>
               </div>
             </div>
