@@ -6,17 +6,46 @@ import { BookOpen, Share, Download, Star, ArrowRight, Sparkles, MessageSquare, C
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts'
 import EnhancedContentRecommendations from '@/components/content/EnhancedContentRecommendations'
 import { beginContentService } from '@/lib/content-recommendation-service'
+import { INTEREST_OPTIONS, ENGAGEMENT_OPTIONS, MODALITY_OPTIONS, SOCIAL_OPTIONS } from '@/lib/questions'
 
 // Helper function to extract motivators, interests, and school experience from raw responses
 function extractAdditionalData(rawResponses: Record<string, any>) {
   if (!rawResponses) return {}
   
+  // Helper function to convert response to text
+  const getResponseText = (questionId: string, response: any, options?: readonly string[]) => {
+    if (!response && response !== 0) return null
+    
+    if (Array.isArray(response)) {
+      // For interests (checkboxes) - could be array of strings or indices
+      return response.map(item => {
+        if (typeof item === 'string') return item
+        if (typeof item === 'number' && options) return options[item]
+        return item
+      }).filter(Boolean)
+    }
+    
+    if (typeof response === 'string') return response
+    if (typeof response === 'number' && options) return options[response]
+    
+    return response
+  }
+  
+  // School experience options
+  const SCHOOL_EXPERIENCE_OPTIONS = [
+    "This is their first time in a structured learning environment",
+    "They've been in daycare/preschool for less than 6 months", 
+    "They've been in daycare/preschool for 6 months to 1 year",
+    "They've been in daycare/preschool for 1-2 years",
+    "They've been in daycare/preschool for 2+ years and are comfortable with school routines"
+  ]
+  
   return {
-    interests: Array.isArray(rawResponses['22']) ? rawResponses['22'] : [],
-    engagementStyle: rawResponses['23'] || null,
-    learningModality: rawResponses['24'] || null,
-    socialPreference: rawResponses['25'] || null,
-    schoolExperience: rawResponses['26'] || null
+    interests: getResponseText('22', rawResponses['22'], INTEREST_OPTIONS) || [],
+    engagementStyle: getResponseText('23', rawResponses['23'], ENGAGEMENT_OPTIONS),
+    learningModality: getResponseText('24', rawResponses['24'], MODALITY_OPTIONS),
+    socialPreference: getResponseText('25', rawResponses['25'], SOCIAL_OPTIONS),
+    schoolExperience: getResponseText('26', rawResponses['26'], SCHOOL_EXPERIENCE_OPTIONS)
   }
 }
 
@@ -755,7 +784,10 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                 What Makes {profileData.childName} Tick
               </h2>
               <p className="text-gray-600">
-                Understanding their interests, motivators, and school readiness helps you support their unique learning journey
+                {viewMode === 'parent' 
+                  ? `Understanding what motivates ${profileData.childName} helps you support their learning at home`
+                  : `Key insights to help you engage ${profileData.childName} from day one in your classroom`
+                }
               </p>
             </div>
             
@@ -767,18 +799,45 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                     <div className="bg-pink-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold">
                       ❤️
                     </div>
-                    <h3 className="text-xl font-bold text-pink-800">Favorite Topics & Interests</h3>
+                    <h3 className="text-xl font-bold text-pink-800">
+                      {viewMode === 'parent' ? `${profileData.childName}'s Favorite Topics` : 'Engagement Triggers'}
+                    </h3>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {profileData.interests.map((interest, index) => (
-                      <span key={index} className="bg-pink-100 text-pink-800 px-3 py-2 rounded-full text-sm font-medium">
-                        {interest}
-                      </span>
-                    ))}
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    {profileData.interests.map((interest, index) => {
+                      // Interest emoji mapping for visual appeal
+                      const getInterestEmoji = (interest: string) => {
+                        const emojiMap: Record<string, string> = {
+                          'Pets': '🐶', 'Wild Animals': '🦁', 'Ocean Animals': '🐠', 'Farm Animals': '🐷',
+                          'Dinosaurs': '🦕', 'Reptiles': '🐍', 'Trucks & Cars': '🚗', 'Trains': '🚂',
+                          'Planes & Boats': '✈️', 'How Things Work': '⚙️', 'Seasons & Weather': '🌦️', 'Plants': '🌱',
+                          'Human Body': '🧬', 'Under the Sea': '🌊', 'On the Beach': '🏖️', 'Superheroes': '🦸',
+                          'Princesses': '👸', 'Fairytales': '🏰', 'Sports': '⚽', 'Robots': '🤖',
+                          'Space & Planets': '🌌', 'Art & Drawing': '🎨', 'Music': '🎵', 'Stories & Books': '📚',
+                          'Cooking': '🍳', 'Family & Friends': '👪', 'Helping Others': '🤝', 'Computers': '💻'
+                        }
+                        return emojiMap[interest] || '🌟'
+                      }
+                      
+                      return (
+                        <div key={index} className="bg-white/80 rounded-xl p-3 text-center hover:bg-white transition-colors">
+                          <div className="text-2xl mb-1">{getInterestEmoji(interest)}</div>
+                          <span className="text-pink-800 text-xs font-medium">{interest}</span>
+                        </div>
+                      )
+                    })}
                   </div>
-                  <p className="text-sm text-pink-700 mt-4 italic">
-                    Use these topics to capture {profileData.childName}'s attention and make learning more engaging!
-                  </p>
+                  <div className="bg-pink-100 border border-pink-200 rounded-lg p-3">
+                    <p className="text-sm text-pink-700 font-medium mb-1">
+                      {viewMode === 'parent' ? '🏠 At Home:' : '🏫 In Class:'}
+                    </p>
+                    <p className="text-sm text-pink-700">
+                      {viewMode === 'parent' 
+                        ? `Connect learning activities to these interests! Use ${profileData.interests.slice(0,2).join(' and ')} to make homework and reading time more engaging.`
+                        : `Use these topics to capture attention during lessons. Start activities with connections to ${profileData.interests.slice(0,2).join(' or ')} for instant engagement.`
+                      }
+                    </p>
+                  </div>
                 </div>
               )}
               
@@ -788,25 +847,66 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                   <div className="bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold">
                     🧠
                   </div>
-                  <h3 className="text-xl font-bold text-blue-800">How {profileData.childName} Learns Best</h3>
+                  <h3 className="text-xl font-bold text-blue-800">
+                    {viewMode === 'parent' ? `How ${profileData.childName} Learns` : 'Learning Style Insights'}
+                  </h3>
                 </div>
                 <div className="space-y-4">
                   {profileData.engagementStyle && (
-                    <div className="bg-white/70 p-4 rounded-xl">
-                      <p className="text-sm font-medium text-blue-800 mb-2">Engagement Style:</p>
-                      <p className="text-sm text-blue-700">{profileData.engagementStyle}</p>
+                    <div className="bg-white/70 p-4 rounded-xl border-l-4 border-blue-500">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-lg">⚙️</span>
+                        <p className="text-sm font-medium text-blue-800">Best Engagement Style:</p>
+                      </div>
+                      <p className="text-sm text-blue-700 font-medium">{profileData.engagementStyle}</p>
+                      {viewMode === 'parent' && (
+                        <p className="text-xs text-blue-600 mt-2 italic">
+                          🏠 Try: Set up learning activities that match this style
+                        </p>
+                      )}
+                      {viewMode === 'teacher' && (
+                        <p className="text-xs text-blue-600 mt-2 italic">
+                          🏫 Strategy: Design lessons incorporating this engagement approach
+                        </p>
+                      )}
                     </div>
                   )}
                   {profileData.learningModality && (
-                    <div className="bg-white/70 p-4 rounded-xl">
-                      <p className="text-sm font-medium text-blue-800 mb-2">Learning Preference:</p>
-                      <p className="text-sm text-blue-700">{profileData.learningModality}</p>
+                    <div className="bg-white/70 p-4 rounded-xl border-l-4 border-indigo-500">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-lg">📚</span>
+                        <p className="text-sm font-medium text-blue-800">Learning Preference:</p>
+                      </div>
+                      <p className="text-sm text-blue-700 font-medium">{profileData.learningModality}</p>
+                      {viewMode === 'parent' && (
+                        <p className="text-xs text-blue-600 mt-2 italic">
+                          🏠 Try: Explain new concepts using this approach
+                        </p>
+                      )}
+                      {viewMode === 'teacher' && (
+                        <p className="text-xs text-blue-600 mt-2 italic">
+                          🏫 Strategy: Present information in this format for best comprehension
+                        </p>
+                      )}
                     </div>
                   )}
                   {profileData.socialPreference && (
-                    <div className="bg-white/70 p-4 rounded-xl">
-                      <p className="text-sm font-medium text-blue-800 mb-2">Social Learning Style:</p>
-                      <p className="text-sm text-blue-700">{profileData.socialPreference}</p>
+                    <div className="bg-white/70 p-4 rounded-xl border-l-4 border-purple-500">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-lg">👥</span>
+                        <p className="text-sm font-medium text-blue-800">Social Learning Style:</p>
+                      </div>
+                      <p className="text-sm text-blue-700 font-medium">{profileData.socialPreference}</p>
+                      {viewMode === 'parent' && (
+                        <p className="text-xs text-blue-600 mt-2 italic">
+                          🏠 Try: Structure homework and activities to match this preference
+                        </p>
+                      )}
+                      {viewMode === 'teacher' && (
+                        <p className="text-xs text-blue-600 mt-2 italic">
+                          🏫 Strategy: Group students and assign roles accordingly
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -819,17 +919,98 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                     <div className="bg-green-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold">
                       🏫
                     </div>
-                    <h3 className="text-xl font-bold text-green-800">School Readiness Background</h3>
+                    <h3 className="text-xl font-bold text-green-800">
+                      {viewMode === 'parent' ? 'School Background' : 'School Readiness Context'}
+                    </h3>
                   </div>
-                  <div className="bg-white/70 p-4 rounded-xl">
-                    <p className="text-sm font-medium text-green-800 mb-2">Previous Experience:</p>
-                    <p className="text-sm text-green-700">{profileData.schoolExperience}</p>
-                    <p className="text-sm text-green-600 mt-3 italic">
-                      This background helps you understand {profileData.childName}'s comfort level with school routines and expectations.
-                    </p>
+                  <div className="bg-white/70 p-4 rounded-xl border-l-4 border-green-500">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-lg">🎓</span>
+                      <p className="text-sm font-medium text-green-800">Previous Experience:</p>
+                    </div>
+                    <p className="text-sm text-green-700 font-medium mb-3">{profileData.schoolExperience}</p>
+                    
+                    {viewMode === 'parent' && (
+                      <div className="bg-green-100 border border-green-200 rounded p-3">
+                        <p className="text-sm text-green-700 font-medium mb-1">🏠 What This Means for Home:</p>
+                        <p className="text-xs text-green-600">
+                          {profileData.schoolExperience.includes('first time') 
+                            ? "Help them practice school routines like sitting for activities, following instructions, and taking turns."
+                            : profileData.schoolExperience.includes('less than 6 months')
+                            ? "They're still adjusting to school structure - be patient with behavior changes as they adapt."
+                            : "They're comfortable with school routines, so you can focus on supporting their specific learning needs."
+                          }
+                        </p>
+                      </div>
+                    )}
+                    
+                    {viewMode === 'teacher' && (
+                      <div className="bg-green-100 border border-green-200 rounded p-3">
+                        <p className="text-sm text-green-700 font-medium mb-1">🏫 Teaching Implications:</p>
+                        <p className="text-xs text-green-600">
+                          {profileData.schoolExperience.includes('first time') 
+                            ? "Expect to spend extra time on routines, procedures, and classroom expectations. Provide clear structure and consistent support."
+                            : profileData.schoolExperience.includes('less than 6 months')
+                            ? "They have some school experience but may need reinforcement of routines and extra emotional support during transitions."
+                            : "They're familiar with school structure, so you can move more quickly into academic learning and focus on differentiated instruction."
+                          }
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
+            </div>
+            
+            {/* Additional Tips Section */}
+            <div className="mt-8 grid md:grid-cols-2 gap-6">
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-xl border border-amber-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-lg">💡</span>
+                  <h4 className="font-bold text-amber-800">
+                    {viewMode === 'parent' ? 'Quick Parent Tips' : 'Classroom Strategies'}
+                  </h4>
+                </div>
+                <div className="space-y-2 text-sm text-amber-700">
+                  {viewMode === 'parent' ? (
+                    <>
+                      <p>• Reference these interests during homework time to boost engagement</p>
+                      <p>• Use their preferred learning style for explaining new concepts</p>
+                      <p>• Respect their social preferences when arranging playdates or study time</p>
+                    </>
+                  ) : (
+                    <>
+                      <p>• Use interest topics as hooks for lesson introductions</p>
+                      <p>• Match instructional methods to their learning preferences</p>
+                      <p>• Consider these factors when forming groups or assigning partners</p>
+                    </>
+                  )}
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-br from-teal-50 to-cyan-50 p-6 rounded-xl border border-teal-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-lg">🌟</span>
+                  <h4 className="font-bold text-teal-800">
+                    {viewMode === 'parent' ? 'Support Their Growth' : 'Differentiation Ideas'}
+                  </h4>
+                </div>
+                <div className="space-y-2 text-sm text-teal-700">
+                  {viewMode === 'parent' ? (
+                    <>
+                      <p>• Share these insights with teachers during conferences</p>
+                      <p>• Look for activities and books that match their interests</p>
+                      <p>• Create learning environments that suit their style</p>
+                    </>
+                  ) : (
+                    <>
+                      <p>• Modify assignments to incorporate their favorite topics</p>
+                      <p>• Adjust your teaching approach to match their learning style</p>
+                      <p>• Use this info to support them during challenging moments</p>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         )}
