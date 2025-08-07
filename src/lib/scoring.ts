@@ -76,12 +76,23 @@ export function calculateScores(responses: Record<number, number | string | stri
     }
   })
   
+  // Ensure all 6C categories have numeric values
+  const requiredCategories = ['Communication', 'Collaboration', 'Content', 'Critical Thinking', 'Creative Innovation', 'Confidence']
+  requiredCategories.forEach(category => {
+    if (!(category in scores) || typeof scores[category] !== 'number' || isNaN(scores[category])) {
+      console.warn(`Missing or invalid score for ${category}, setting to 0`)
+      scores[category] = 0
+    }
+  })
+  
+  console.log('Final calculated scores:', scores)
   return scores
 }
 
 export function getPersonalityLabel(scores: Scores): string {
-  // Find the top 2 highest scoring categories
+  // Find the top 2 highest scoring categories, ensuring numeric values
   const sortedScores = Object.entries(scores)
+    .map(([category, score]) => [category, Number(score) || 0] as [string, number])
     .sort(([,a], [,b]) => b - a)
     .slice(0, 2)
   

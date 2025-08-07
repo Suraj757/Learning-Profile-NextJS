@@ -309,7 +309,7 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
       products.push({
         product: 'Begin Creative Arts & Storytelling Kit',
         description: `Perfect for ${childName} because creative learners need multiple ways to express their ideas`,
-        specificWhy: `Since ${childName} scored ${scores['Creative Innovation'].toFixed(1)}/5.0 in Creative Innovation, they'll love the open-ended art projects that let them create their own stories and characters`,
+        specificWhy: `Since ${childName} scored ${(Number(scores['Creative Innovation']) || 0).toFixed(1)}/5.0 in Creative Innovation, they'll love the open-ended art projects that let them create their own stories and characters`,
         activities: [`Create illustrated stories about their daily adventures`, `Design and build 3D story scenes`, `Make comic strips about family memories`],
         icon: Palette,
         ageAppropriate: age >= 4
@@ -320,7 +320,7 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
       products.push({
         product: 'Begin Interactive Story Builder',
         description: `Ideal for ${childName} because they love to share ideas and explain their thinking`,
-        specificWhy: `With a ${scores['Communication'].toFixed(1)}/5.0 Communication score, ${childName} will thrive with tools that let them tell stories and express complex ideas`,
+        specificWhy: `With a ${(Number(scores['Communication']) || 0).toFixed(1)}/5.0 Communication score, ${childName} will thrive with tools that let them tell stories and express complex ideas`,
         activities: [`Record their own story narrations`, `Create choose-your-own-adventure stories`, `Interview family members and create story podcasts`],
         icon: MessageSquare,
         ageAppropriate: age >= 5
@@ -331,7 +331,7 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
       products.push({
         product: 'Begin Logic & Problem-Solving Games',
         description: `Perfect match for ${childName}'s analytical mind and love of figuring things out`,
-        specificWhy: `Their ${scores['Critical Thinking'].toFixed(1)}/5.0 Critical Thinking score shows they need challenges that make them think deeply and solve complex problems`,
+        specificWhy: `Their ${(Number(scores['Critical Thinking']) || 0).toFixed(1)}/5.0 Critical Thinking score shows they need challenges that make them think deeply and solve complex problems`,
         activities: [`Multi-step strategy games that build logical reasoning`, `"How it works" exploration activities`, `Pattern recognition challenges with real-world applications`],
         icon: Brain,
         ageAppropriate: age >= 6
@@ -342,7 +342,7 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
       products.push({
         product: 'Begin Family Learning Adventures',
         description: `Designed for ${childName} because they learn best when working with others`,
-        specificWhy: `With a ${scores['Collaboration'].toFixed(1)}/5.0 Collaboration score, ${childName} needs activities that involve the whole family working together`,
+        specificWhy: `With a ${(Number(scores['Collaboration']) || 0).toFixed(1)}/5.0 Collaboration score, ${childName} needs activities that involve the whole family working together`,
         activities: [`Family cooking projects with math and science`, `Collaborative art projects that span multiple days`, `Family reading challenges with discussion guides`],
         icon: Users,
         ageAppropriate: age >= 4
@@ -353,7 +353,7 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
       products.push({
         product: 'Begin Confidence Building Challenges',
         description: `Tailored for ${childName} to build on their natural confidence and leadership abilities`,
-        specificWhy: `Their ${scores['Confidence'].toFixed(1)}/5.0 Confidence score shows they're ready for activities that let them teach, lead, and showcase their abilities`,
+        specificWhy: `Their ${(Number(scores['Confidence']) || 0).toFixed(1)}/5.0 Confidence score shows they're ready for activities that let them teach, lead, and showcase their abilities`,
         activities: [`Leadership games where they guide family activities`, `"Teaching moments" where they explain concepts to others`, `Confidence-building challenges with clear success markers`],
         icon: Award,
         ageAppropriate: age >= 5
@@ -1024,7 +1024,7 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                           />
                         </div>
                         <span className="text-sm font-medium text-gray-700">
-                          {score.toFixed(1)}/5.0
+                          {(Number(score) || 0).toFixed(1)}/5.0
                         </span>
                       </div>
                     </div>
@@ -1061,7 +1061,7 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                     .sort(([,a], [,b]) => b - a)
                     .slice(0, 2)
                     .map(([category, score]) => (
-                      <li key={category}>• {category} ({score.toFixed(1)}/5)</li>
+                      <li key={category}>• {category} ({(Number(score) || 0).toFixed(1)}/5)</li>
                     ))}
                 </ul>
               </div>
@@ -1084,7 +1084,7 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                   {Object.entries(profileData.scores)
                     .sort(([,a], [,b]) => a - b)[0][0]} 
                   ({Object.entries(profileData.scores)
-                    .sort(([,a], [,b]) => a - b)[0][1].toFixed(1)}/5)
+                    .sort(([,a], [,b]) => (Number(a) || 0) - (Number(b) || 0))[0][1] ? (Number(Object.entries(scores).sort(([,a], [,b]) => (Number(a) || 0) - (Number(b) || 0))[0][1]) || 0).toFixed(1) : '0.0'}/5)
                 </p>
               </div>
             </div>
