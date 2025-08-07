@@ -15,6 +15,12 @@ export interface SampleProfile {
   realWorldExample: string
   strengths: string[]
   growthAreas: string[]
+  interests?: string[]
+  engagementStyle?: string
+  learningModality?: string
+  socialPreference?: string
+  schoolExperience?: string
+  rawResponses?: Record<string, any>
   isPublic?: boolean
   shareToken?: string
 }
@@ -52,6 +58,18 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
       'Developing patience for detailed, sequential tasks',
       'Strengthening basic math computation skills'
     ],
+    interests: ['Pets', 'Art & Drawing', 'Fairytales', 'Music', 'Helping Others'],
+    engagementStyle: 'Hands-on building and crafts',
+    learningModality: 'Visual demonstrations and watching examples',
+    socialPreference: 'Collaborative group activities',
+    schoolExperience: 'They have been in daycare/preschool for 2+ years and are comfortable with school routines',
+    rawResponses: {
+      '22': ['Pets', 'Art & Drawing', 'Fairytales', 'Music', 'Helping Others'],
+      '23': 'Hands-on building and crafts',
+      '24': 'Visual demonstrations and watching examples',
+      '25': 'Collaborative group activities',
+      '26': 'They have been in daycare/preschool for 2+ years and are comfortable with school routines'
+    },
     isPublic: true,
     shareToken: 'emma-sample-2024'
   },
@@ -87,6 +105,18 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
       'Working effectively in team environments',
       'Expressing creativity beyond academic subjects'
     ],
+    interests: ['How Things Work', 'Robots', 'Space & Planets', 'Computers', 'Dinosaurs'],
+    engagementStyle: 'Digital games and apps',
+    learningModality: 'Independent exploration and figuring things out alone',
+    socialPreference: 'Working independently',
+    schoolExperience: 'They have been in daycare/preschool for 2+ years and are comfortable with school routines',
+    rawResponses: {
+      '22': ['How Things Work', 'Robots', 'Space & Planets', 'Computers', 'Dinosaurs'],
+      '23': 'Digital games and apps',
+      '24': 'Independent exploration and figuring things out alone',
+      '25': 'Working independently',
+      '26': 'They have been in daycare/preschool for 2+ years and are comfortable with school routines'
+    },
     isPublic: true,
     shareToken: 'marcus-sample-2024'
   },
@@ -122,6 +152,18 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
       'Developing confidence in solo problem-solving',
       'Strengthening analytical thinking skills'
     ],
+    interests: ['Helping Others', 'Family & Friends', 'Animals', 'Stories & Books', 'Cooking'],
+    engagementStyle: 'Pretend play and imaginative activities',
+    learningModality: 'Story-based and imaginative explanations',
+    socialPreference: 'One-on-one time with adults',
+    schoolExperience: 'They have been in daycare/preschool for less than 6 months',
+    rawResponses: {
+      '22': ['Helping Others', 'Family & Friends', 'Animals', 'Stories & Books', 'Cooking'],
+      '23': 'Pretend play and imaginative activities',
+      '24': 'Story-based and imaginative explanations',
+      '25': 'One-on-one time with adults',
+      '26': 'They have been in daycare/preschool for less than 6 months'
+    },
     isPublic: true,
     shareToken: 'sofia-sample-2024'
   },
@@ -157,6 +199,18 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
       'Seeking help when needed instead of struggling alone',
       'Communicating ideas clearly to larger groups'
     ],
+    interests: ['How Things Work', 'Robots', 'Building & Construction', 'Puzzles', 'Inventions'],
+    engagementStyle: 'Hands-on building and crafts',
+    learningModality: 'Independent exploration and figuring things out alone',
+    socialPreference: 'Working independently',
+    schoolExperience: 'They have been in daycare/preschool for 1-2 years',
+    rawResponses: {
+      '22': ['How Things Work', 'Robots', 'Building & Construction', 'Puzzles', 'Inventions'],
+      '23': 'Hands-on building and crafts',
+      '24': 'Independent exploration and figuring things out alone',
+      '25': 'Working independently',
+      '26': 'They have been in daycare/preschool for 1-2 years'
+    },
     isPublic: true,
     shareToken: 'aiden-sample-2024'
   },
@@ -192,6 +246,18 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
       'Learning to slow down and check work carefully',
       'Building patience for complex, multi-step processes'
     ],
+    interests: ['Sports', 'Art & Drawing', 'Music', 'Helping Others', 'Games & Puzzles'],
+    engagementStyle: 'Movement-based activities (dancing, running, jumping)',
+    learningModality: 'Visual demonstrations and watching examples',
+    socialPreference: 'Collaborative group activities',
+    schoolExperience: 'They have been in daycare/preschool for 6 months to 1 year',
+    rawResponses: {
+      '22': ['Sports', 'Art & Drawing', 'Music', 'Helping Others', 'Games & Puzzles'],
+      '23': 'Movement-based activities (dancing, running, jumping)',
+      '24': 'Visual demonstrations and watching examples',
+      '25': 'Collaborative group activities',
+      '26': 'They have been in daycare/preschool for 6 months to 1 year'
+    },
     isPublic: true,
     shareToken: 'zara-sample-2024'
   },
@@ -227,6 +293,18 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
       'Developing stronger collaboration skills',
       'Learning to value the process as much as the outcome'
     ],
+    interests: ['Computers', 'Puzzles & Brain Teasers', 'How Things Work', 'Building & Construction', 'Art & Drawing'],
+    engagementStyle: 'Digital games and apps',
+    learningModality: 'Independent exploration and figuring things out alone',
+    socialPreference: 'Playing alongside others (parallel play)',
+    schoolExperience: 'They have been in daycare/preschool for 2+ years and are comfortable with school routines',
+    rawResponses: {
+      '22': ['Computers', 'Puzzles & Brain Teasers', 'How Things Work', 'Building & Construction', 'Art & Drawing'],
+      '23': 'Digital games and apps',
+      '24': 'Independent exploration and figuring things out alone',
+      '25': 'Playing alongside others (parallel play)',
+      '26': 'They have been in daycare/preschool for 2+ years and are comfortable with school routines'
+    },
     isPublic: true,
     shareToken: 'kai-sample-2024'
   },
@@ -262,6 +340,18 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
       'Developing stronger verbal communication skills',
       'Learning to express ideas and opinions more boldly'
     ],
+    interests: ['Wild Animals', 'Space & Planets', 'Stories & Books', 'Dinosaurs', 'How Things Work'],
+    engagementStyle: 'Pretend play and imaginative activities',
+    learningModality: 'Story-based and imaginative explanations',
+    socialPreference: 'One-on-one time with adults',
+    schoolExperience: 'This is their first time in a structured learning environment',
+    rawResponses: {
+      '22': ['Wild Animals', 'Space & Planets', 'Stories & Books', 'Dinosaurs', 'How Things Work'],
+      '23': 'Pretend play and imaginative activities',
+      '24': 'Story-based and imaginative explanations',
+      '25': 'One-on-one time with adults',
+      '26': 'This is their first time in a structured learning environment'
+    },
     isPublic: true,
     shareToken: 'maya-sample-2024'
   },
@@ -297,6 +387,18 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
       'Learning to advocate for his own needs, not just others',
       'Developing deeper expertise in areas of personal interest'
     ],
+    interests: ['Sports', 'Leadership & Teamwork', 'Helping Others', 'Community & Social Issues', 'Games & Strategy'],
+    engagementStyle: 'Collaborative group activities',
+    learningModality: 'Step-by-step verbal instructions',
+    socialPreference: 'Collaborative group activities',
+    schoolExperience: 'They have been in daycare/preschool for 2+ years and are comfortable with school routines',
+    rawResponses: {
+      '22': ['Sports', 'Leadership & Teamwork', 'Helping Others', 'Community & Social Issues', 'Games & Strategy'],
+      '23': 'Collaborative group activities',
+      '24': 'Step-by-step verbal instructions',
+      '25': 'Collaborative group activities',
+      '26': 'They have been in daycare/preschool for 2+ years and are comfortable with school routines'
+    },
     isPublic: true,
     shareToken: 'diego-sample-2024'
   }
