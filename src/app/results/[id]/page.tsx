@@ -1417,6 +1417,8 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
               </div>
             </div>
         </div>
+          </>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-8 mt-8">
           {/* Radar Chart */}
