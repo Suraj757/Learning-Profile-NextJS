@@ -765,6 +765,8 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                 ))}
               </div>
             </div>
+          </div>
+        </div>
           </>
         ) : (
           <>
