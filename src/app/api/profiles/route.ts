@@ -44,39 +44,105 @@ export async function POST(request: NextRequest) {
       }
     } else {
       console.log('Supabase configured, attempting to save to database')
-      // Save assessment result to Supabase
-      const { data: profileData, error: profileError } = await supabase
-        .from('assessment_results')
-        .insert([{
-          child_name,
-          age: 0, // Legacy field, kept for compatibility
-          age_group: age_group || '5+',
-          scores,
-          personality_label,
-          raw_responses: responses,
-          email: '', // Not required for teacher assignments
-          birth_month: 1,
-          birth_year: new Date().getFullYear(),
-          grade_level: grade
-        }])
-        .select()
-        .single()
+      
+      // Prepare the base data payload
+      const baseData = {
+        child_name,
+        age: 0, // Legacy field, kept for compatibility
+        scores,
+        personality_label,
+        raw_responses: responses,
+        email: '', // Not required for teacher assignments
+        birth_month: 1,
+        birth_year: new Date().getFullYear(),
+        grade_level: grade
+      }
 
-      if (profileError) {
-        console.error('Error saving profile:', {
-          error: profileError,
-          message: profileError.message,
-          details: profileError.details,
-          hint: profileError.hint,
-          code: profileError.code
-        })
+      // Try to include age_group, but handle cases where the column doesn't exist
+      let insertData = { ...baseData }
+      
+      // First attempt: try with age_group column
+      try {
+        insertData.age_group = age_group || '5+'
+        const { data: profileData, error: profileError } = await supabase
+          .from('assessment_results')
+          .insert([insertData])
+          .select()
+          .single()
+
+        if (profileError) {
+          // Check if error is due to missing age_group column
+          if (profileError.code === '42703' || profileError.message?.includes('age_group')) {
+            console.log('age_group column not found, retrying without it...')
+            
+            // Retry without age_group column
+            delete insertData.age_group
+            const { data: retryData, error: retryError } = await supabase
+              .from('assessment_results')
+              .insert([insertData])
+              .select()
+              .single()
+
+            if (retryError) {
+              console.error('Error saving profile (retry without age_group):', {
+                error: retryError,
+                message: retryError.message,
+                details: retryError.details,
+                hint: retryError.hint,
+                code: retryError.code
+              })
+              return NextResponse.json(
+                { 
+                  error: `Failed to save profile: ${retryError.message || 'Database error'}`,
+                  details: 'The database may need to be updated with the latest schema. Please contact support if this issue persists.'
+                },
+                { status: 500 }
+              )
+            }
+            
+            // Add age_group to successful response for consistency
+            profile = { ...retryData, age_group: age_group || '5+' }
+          } else {
+            // Other database error
+            console.error('Error saving profile:', {
+              error: profileError,
+              message: profileError.message,
+              details: profileError.details,
+              hint: profileError.hint,
+              code: profileError.code
+            })
+            
+            // Provide more specific error messages based on error type
+            let userMessage = 'Failed to save profile'
+            if (profileError.code === '23505') {
+              userMessage = 'A profile with this information already exists'
+            } else if (profileError.code === '23502') {
+              userMessage = 'Missing required information for profile creation'
+            } else if (profileError.message) {
+              userMessage = `Database error: ${profileError.message}`
+            }
+            
+            return NextResponse.json(
+              { 
+                error: userMessage,
+                details: 'Please try again or contact support if the issue persists.'
+              },
+              { status: 500 }
+            )
+          }
+        } else {
+          profile = profileData
+        }
+      } catch (unexpectedError) {
+        console.error('Unexpected error during profile save:', unexpectedError)
         return NextResponse.json(
-          { error: `Failed to save profile: ${profileError.message || 'Unknown error'}` },
+          { 
+            error: 'An unexpected error occurred while saving your profile',
+            details: 'Please try again or contact support if the issue persists.'
+          },
           { status: 500 }
         )
       }
-      
-      profile = profileData
     }
 
     // If this was a teacher assignment, update the assignment status (only if Supabase is available)

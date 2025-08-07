@@ -61,7 +61,19 @@ export default function AssessmentCompletePage() {
             })
 
             if (!response.ok) {
-              throw new Error('Failed to save profile')
+              // Get detailed error information from the API response
+              const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }))
+              const errorMessage = errorData.error || 'Failed to save profile'
+              const errorDetails = errorData.details || 'Please try again.'
+              
+              console.error('API Error Response:', {
+                status: response.status,
+                statusText: response.statusText,
+                error: errorMessage,
+                details: errorDetails
+              })
+              
+              throw new Error(`${errorMessage}${errorDetails ? ' - ' + errorDetails : ''}`)
             }
 
             const { profile, shareUrl } = await response.json()
@@ -111,7 +123,24 @@ export default function AssessmentCompletePage() {
             }, 3000)
           } catch (err) {
             console.error('Error saving profile:', err)
-            setError('Failed to save your profile. Please try again.')
+            
+            // Provide specific error message based on the error type
+            let errorMessage = 'Failed to save your profile. Please try again.'
+            
+            if (err instanceof Error) {
+              // Check for specific error types to provide better guidance
+              if (err.message.includes('age_group')) {
+                errorMessage = `We're updating our system to better serve ${name}. Your assessment results are safe! Please wait a moment and try again, or contact support if the issue persists.`
+              } else if (err.message.includes('Database error')) {
+                errorMessage = `There was a temporary issue saving ${name}'s profile. Don't worry - we can help you recover your results! Please try again or contact support.`
+              } else if (err.message.includes('Network')) {
+                errorMessage = `It looks like there's a connection issue. Your assessment for ${name} is complete, but we couldn't save it right now. Please check your internet connection and try again.`
+              } else {
+                errorMessage = `We encountered an issue saving ${name}'s learning profile: ${err.message}`
+              }
+            }
+            
+            setError(errorMessage)
             setIsProcessing(false)
           }
         }, 2000)
@@ -237,14 +266,97 @@ export default function AssessmentCompletePage() {
                 onClick={() => {
                   setError(null)
                   setIsProcessing(true)
-                  typeof window !== 'undefined' && window.location.reload()
+                  // Attempt to retry the save operation
+                  const processAssessment = async () => {
+                    try {
+                      const name = sessionStorage.getItem('childName')
+                      const gradeLevel = sessionStorage.getItem('grade')
+                      const ageGroupValue = sessionStorage.getItem('ageGroup')
+                      const responses = sessionStorage.getItem('assessmentResponses')
+                      const assignmentToken = sessionStorage.getItem('assignmentToken')
+
+                      if (!name || !responses || !gradeLevel) {
+                        setError('Assessment data is missing. Please start over.')
+                        setIsProcessing(false)
+                        return
+                      }
+
+                      const parsedResponses = JSON.parse(responses)
+                      
+                      const response = await fetch('/api/profiles', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                          child_name: name,
+                          grade: gradeLevel,
+                          age_group: ageGroupValue,
+                          responses: parsedResponses,
+                          assignment_token: assignmentToken
+                        })
+                      })
+
+                      if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }))
+                        throw new Error(errorData.error || 'Failed to save profile')
+                      }
+
+                      const { profile } = await response.json()
+                      
+                      // Success! Redirect to results
+                      router.push(`/results/${profile.id}`)
+                    } catch (err) {
+                      console.error('Retry error:', err)
+                      setError(err instanceof Error ? err.message : 'Failed to save profile. Please contact support.')
+                      setIsProcessing(false)
+                    }
+                  }
+                  processAssessment()
                 }}
                 className="btn-begin-primary flex items-center gap-2 mx-auto"
               >
-                Try Again
+                Try Saving Again
               </button>
-              <Link href="/assessment/start" className="btn-begin-secondary flex items-center gap-2 mx-auto">
-                Start Over
+              
+              {/* Show local results option if we have the data */}
+              <button
+                onClick={() => {
+                  // Generate local results from session data
+                  const name = sessionStorage.getItem('childName')
+                  const gradeLevel = sessionStorage.getItem('grade')
+                  const ageGroupValue = sessionStorage.getItem('ageGroup')
+                  const responses = sessionStorage.getItem('assessmentResponses')
+                  
+                  if (name && responses && gradeLevel) {
+                    const parsedResponses = JSON.parse(responses)
+                    const scores = calculateScores(parsedResponses, ageGroupValue || 'Unknown')
+                    const personalityLabel = getPersonalityLabel(scores)
+                    const description = generateDescription(scores)
+                    
+                    // Store local profile for viewing
+                    const localProfileId = `local_${Date.now()}`
+                    localStorage.setItem(`profile_${localProfileId}`, JSON.stringify({
+                      id: localProfileId,
+                      child_name: name,
+                      grade_level: gradeLevel,
+                      scores,
+                      personality_label: personalityLabel,
+                      description,
+                      created_at: new Date().toISOString(),
+                      isLocal: true
+                    }))
+                    
+                    router.push(`/results/${localProfileId}`)
+                  }
+                }}
+                className="btn-begin-secondary flex items-center gap-2 mx-auto"
+              >
+                View Results Offline
+              </button>
+              
+              <Link href="/assessment/start" className="text-center block text-begin-teal hover:text-begin-blue underline">
+                Start New Assessment
               </Link>
             </div>
           </div>
