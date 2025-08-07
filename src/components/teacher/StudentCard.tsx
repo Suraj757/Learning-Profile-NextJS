@@ -148,14 +148,14 @@ export default function StudentCard({ card, onPrint, onEmailParent }: StudentCar
       </div>
 
       {/* Student Interests */}
-      {card.interests && card.interests.length > 0 && (
+      {Array.isArray(card.interests) && card.interests.length > 0 && (
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <Heart className="h-5 w-5 text-pink-500" />
             <h3 className="font-bold text-begin-blue">FAVORITE TOPICS</h3>
           </div>
           <div className="flex flex-wrap gap-2">
-            {card.interests.slice(0, 5).map((interest, index) => (
+            {(Array.isArray(card.interests) ? card.interests : []).slice(0, 5).map((interest, index) => (
               <span key={index} className="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-xs font-medium">
                 {interest}
               </span>

@@ -33,7 +33,13 @@ import { INTEREST_OPTIONS, ENGAGEMENT_OPTIONS, MODALITY_OPTIONS, SOCIAL_OPTIONS 
 
 // Helper function to extract motivators, interests, and school experience from raw responses
 function extractStudentAdditionalData(rawResponses: Record<string, any>) {
-  if (!rawResponses) return {}
+  if (!rawResponses) return {
+    interests: [],
+    engagementStyle: null,
+    learningModality: null,
+    socialPreference: null,
+    schoolExperience: null
+  }
   
   // Helper function to convert response to text
   const getResponseText = (questionId: string, response: any, options?: readonly string[]) => {
@@ -63,13 +69,20 @@ function extractStudentAdditionalData(rawResponses: Record<string, any>) {
     "They've been in daycare/preschool for 2+ years and are comfortable with school routines"
   ]
   
-  return {
+  const extractedData = {
     interests: getResponseText('22', rawResponses['22'], INTEREST_OPTIONS) || [],
     engagementStyle: getResponseText('23', rawResponses['23'], ENGAGEMENT_OPTIONS),
     learningModality: getResponseText('24', rawResponses['24'], MODALITY_OPTIONS),
     socialPreference: getResponseText('25', rawResponses['25'], SOCIAL_OPTIONS),
     schoolExperience: getResponseText('26', rawResponses['26'], SCHOOL_EXPERIENCE_OPTIONS)
   }
+  
+  // Ensure interests is always an array
+  if (!Array.isArray(extractedData.interests)) {
+    extractedData.interests = []
+  }
+  
+  return extractedData
 }
 
 interface StudentCardData {
@@ -160,7 +173,11 @@ function StudentCardsContent() {
             parent_insight: getParentInsightForStyle(learningStyle),
             emergency_backup: getEmergencyPlanForStyle(learningStyle),
             assessment_results: assessmentResults,
-            ...additionalData
+            interests: Array.isArray(additionalData.interests) ? additionalData.interests : [],
+            engagementStyle: additionalData.engagementStyle,
+            learningModality: additionalData.learningModality,
+            socialPreference: additionalData.socialPreference,
+            schoolExperience: additionalData.schoolExperience
           }
         })
         

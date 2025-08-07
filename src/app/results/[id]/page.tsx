@@ -793,7 +793,7 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
             
             <div className="grid lg:grid-cols-2 gap-8">
               {/* Interests Section */}
-              {profileData.interests && profileData.interests.length > 0 && (
+              {Array.isArray(profileData.interests) && profileData.interests.length > 0 && (
                 <div className="bg-gradient-to-br from-pink-50 to-purple-50 p-6 rounded-2xl border border-pink-200">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="bg-pink-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold">
@@ -804,7 +804,7 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                     </h3>
                   </div>
                   <div className="grid grid-cols-2 gap-3 mb-4">
-                    {profileData.interests.map((interest, index) => {
+                    {(Array.isArray(profileData.interests) ? profileData.interests : []).map((interest, index) => {
                       // Interest emoji mapping for visual appeal
                       const getInterestEmoji = (interest: string) => {
                         const emojiMap: Record<string, string> = {
@@ -833,8 +833,8 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                     </p>
                     <p className="text-sm text-pink-700">
                       {viewMode === 'parent' 
-                        ? `Connect learning activities to these interests! Use ${profileData.interests.slice(0,2).join(' and ')} to make homework and reading time more engaging.`
-                        : `Use these topics to capture attention during lessons. Start activities with connections to ${profileData.interests.slice(0,2).join(' or ')} for instant engagement.`
+                        ? `Connect learning activities to these interests! Use ${(Array.isArray(profileData.interests) ? profileData.interests : []).slice(0,2).join(' and ')} to make homework and reading time more engaging.`
+                        : `Use these topics to capture attention during lessons. Start activities with connections to ${(Array.isArray(profileData.interests) ? profileData.interests : []).slice(0,2).join(' or ')} for instant engagement.`
                       }
                     </p>
                   </div>
