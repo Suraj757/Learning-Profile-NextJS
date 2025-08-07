@@ -29,17 +29,46 @@ import AuthRequired from '@/components/teacher/AuthRequired'
 import StudentCard from '@/components/teacher/StudentCard'
 import { generateStudentCardData } from '@/lib/student-card-data'
 import { getDemoReportsData } from '@/lib/demo-data'
+import { INTEREST_OPTIONS, ENGAGEMENT_OPTIONS, MODALITY_OPTIONS, SOCIAL_OPTIONS } from '@/lib/questions'
 
 // Helper function to extract motivators, interests, and school experience from raw responses
 function extractStudentAdditionalData(rawResponses: Record<string, any>) {
   if (!rawResponses) return {}
   
+  // Helper function to convert response to text
+  const getResponseText = (questionId: string, response: any, options?: readonly string[]) => {
+    if (!response && response !== 0) return null
+    
+    if (Array.isArray(response)) {
+      // For interests (checkboxes) - could be array of strings or indices
+      return response.map(item => {
+        if (typeof item === 'string') return item
+        if (typeof item === 'number' && options) return options[item]
+        return item
+      }).filter(Boolean)
+    }
+    
+    if (typeof response === 'string') return response
+    if (typeof response === 'number' && options) return options[response]
+    
+    return response
+  }
+  
+  // School experience options
+  const SCHOOL_EXPERIENCE_OPTIONS = [
+    "This is their first time in a structured learning environment",
+    "They've been in daycare/preschool for less than 6 months", 
+    "They've been in daycare/preschool for 6 months to 1 year",
+    "They've been in daycare/preschool for 1-2 years",
+    "They've been in daycare/preschool for 2+ years and are comfortable with school routines"
+  ]
+  
   return {
-    interests: Array.isArray(rawResponses['22']) ? rawResponses['22'] : [],
-    engagementStyle: rawResponses['23'] || null,
-    learningModality: rawResponses['24'] || null,
-    socialPreference: rawResponses['25'] || null,
-    schoolExperience: rawResponses['26'] || null
+    interests: getResponseText('22', rawResponses['22'], INTEREST_OPTIONS) || [],
+    engagementStyle: getResponseText('23', rawResponses['23'], ENGAGEMENT_OPTIONS),
+    learningModality: getResponseText('24', rawResponses['24'], MODALITY_OPTIONS),
+    socialPreference: getResponseText('25', rawResponses['25'], SOCIAL_OPTIONS),
+    schoolExperience: getResponseText('26', rawResponses['26'], SCHOOL_EXPERIENCE_OPTIONS)
   }
 }
 
