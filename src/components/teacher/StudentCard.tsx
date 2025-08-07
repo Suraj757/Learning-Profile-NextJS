@@ -26,6 +26,11 @@ interface StudentCardProps {
     quick_wins: string[]
     parent_insight: string
     emergency_backup: string
+    interests?: string[]
+    engagementStyle?: string
+    learningModality?: string
+    socialPreference?: string
+    schoolExperience?: string
     assessment_results?: {
       id: number
       personality_label: string
@@ -142,6 +147,54 @@ export default function StudentCard({ card, onPrint, onEmailParent }: StudentCar
         </div>
       </div>
 
+      {/* Student Interests */}
+      {card.interests && card.interests.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Heart className="h-5 w-5 text-pink-500" />
+            <h3 className="font-bold text-begin-blue">FAVORITE TOPICS</h3>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {card.interests.slice(0, 5).map((interest, index) => (
+              <span key={index} className="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-xs font-medium">
+                {interest}
+              </span>
+            ))}
+          </div>
+          <p className="text-begin-blue/60 text-xs mt-2 italic">Use these topics to capture their attention!</p>
+        </div>
+      )}
+
+      {/* Learning Preferences */}
+      {(card.engagementStyle || card.learningModality || card.socialPreference) && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Brain className="h-5 w-5 text-indigo-500" />
+            <h3 className="font-bold text-begin-blue">LEARNING PREFERENCES</h3>
+          </div>
+          <div className="space-y-2">
+            {card.engagementStyle && (
+              <div className="bg-indigo-50 border border-indigo-200 rounded p-3">
+                <p className="text-xs font-medium text-indigo-800 mb-1">Engagement Style:</p>
+                <p className="text-indigo-700 text-xs">{card.engagementStyle}</p>
+              </div>
+            )}
+            {card.learningModality && (
+              <div className="bg-indigo-50 border border-indigo-200 rounded p-3">
+                <p className="text-xs font-medium text-indigo-800 mb-1">Learning Style:</p>
+                <p className="text-indigo-700 text-xs">{card.learningModality}</p>
+              </div>
+            )}
+            {card.socialPreference && (
+              <div className="bg-indigo-50 border border-indigo-200 rounded p-3">
+                <p className="text-xs font-medium text-indigo-800 mb-1">Social Style:</p>
+                <p className="text-indigo-700 text-xs">{card.socialPreference}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Potential Challenges */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-3">
@@ -186,6 +239,20 @@ export default function StudentCard({ card, onPrint, onEmailParent }: StudentCar
           <p className="text-begin-blue text-sm italic leading-relaxed">"{card.parent_insight}"</p>
         </div>
       </div>
+
+      {/* School Experience */}
+      {card.schoolExperience && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Brain className="h-5 w-5 text-emerald-500" />
+            <h3 className="font-bold text-begin-blue">SCHOOL BACKGROUND</h3>
+          </div>
+          <div className="bg-emerald-50 border-l-4 border-emerald-500 p-3 rounded-r-card">
+            <p className="text-emerald-800 text-sm leading-relaxed">{card.schoolExperience}</p>
+            <p className="text-emerald-600 text-xs mt-2 italic">This helps you understand their comfort with school routines</p>
+          </div>
+        </div>
+      )}
 
       {/* Emergency Backup Plan */}
       <div className="bg-red-50 border border-red-200 rounded-card p-4">

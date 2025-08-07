@@ -30,6 +30,19 @@ import StudentCard from '@/components/teacher/StudentCard'
 import { generateStudentCardData } from '@/lib/student-card-data'
 import { getDemoReportsData } from '@/lib/demo-data'
 
+// Helper function to extract motivators, interests, and school experience from raw responses
+function extractStudentAdditionalData(rawResponses: Record<string, any>) {
+  if (!rawResponses) return {}
+  
+  return {
+    interests: Array.isArray(rawResponses['22']) ? rawResponses['22'] : [],
+    engagementStyle: rawResponses['23'] || null,
+    learningModality: rawResponses['24'] || null,
+    socialPreference: rawResponses['25'] || null,
+    schoolExperience: rawResponses['26'] || null
+  }
+}
+
 interface StudentCardData {
   id: number
   child_name: string
@@ -41,11 +54,17 @@ interface StudentCardData {
   quick_wins: string[]
   parent_insight: string
   emergency_backup: string
+  interests?: string[]
+  engagementStyle?: string
+  learningModality?: string
+  socialPreference?: string
+  schoolExperience?: string
   assessment_results?: {
     id: number
     personality_label: string
     scores: Record<string, number>
     grade_level: string
+    raw_responses?: Record<string, any>
   }
 }
 
@@ -90,6 +109,7 @@ function StudentCardsContent() {
         // Use actual assessment data to create student cards
         const actualCards = completedAssignments.map((assignment, index) => {
           const assessmentResults = assignment.assessment_results
+          const additionalData = extractStudentAdditionalData(assessmentResults?.raw_responses)
           
           // Determine learning style from personality label
           let learningStyle = 'Creative' as const
@@ -110,7 +130,8 @@ function StudentCardsContent() {
             quick_wins: getQuickWinsForStyle(learningStyle),
             parent_insight: getParentInsightForStyle(learningStyle),
             emergency_backup: getEmergencyPlanForStyle(learningStyle),
-            assessment_results: assessmentResults
+            assessment_results: assessmentResults,
+            ...additionalData
           }
         })
         
