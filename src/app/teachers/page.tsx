@@ -36,19 +36,19 @@ export default function TeachersLandingPage() {
           <div className="bg-gradient-to-r from-begin-teal to-begin-cyan text-white rounded-2xl p-4 mb-6 max-w-4xl mx-auto">
             <p className="text-white text-body font-medium">
               <Award className="h-5 w-5 inline mr-2" />
-              <strong>FREE for All Educators</strong> • Begin 6Cs Framework backed by 40+ years of learning science
+              <strong>FREE for All Educators</strong> • Help every student succeed with personalized learning insights
             </p>
           </div>
           
           <h1 className="text-display md:text-display font-bold text-begin-blue mb-6 text-balance">
-            Unlock Every Student&apos;s{' '}
-            <span className="text-begin-teal">6Cs Potential</span>{' '}
+            Know What Motivates{' '}
+            <span className="text-begin-teal">Every Student</span>{' '}
             Before Day 1
           </h1>
           
           <p className="text-body-lg text-begin-blue/80 mb-8 max-w-4xl mx-auto leading-relaxed">
-            <strong>Join 2,500+ educators</strong> using Begin&apos;s 6Cs Framework to build Communication, Collaboration, Content mastery, Critical Thinking, Creative Innovation, and Confidence in every student. 
-            Get personalized insights based on each child&apos;s unique learning profile delivered directly to your classroom dashboard.
+            <strong>Join 2,500+ educators</strong> using Begin Learning Profiles to understand what drives each student to succeed. 
+            Discover their learning preferences, motivators, and school readiness insights that help you support every child from the very first day.
           </p>
           
           <div className="flex items-center justify-center gap-6 text-sm text-begin-blue/70 mb-10 flex-wrap">
@@ -62,7 +62,7 @@ export default function TeachersLandingPage() {
             </span>
             <span className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-600" />
-              <strong>Begin 6Cs</strong> framework
+              <strong>Student motivators</strong> revealed
             </span>
             <span className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-600" />
@@ -102,10 +102,10 @@ export default function TeachersLandingPage() {
               <Lightbulb className="h-8 w-8 text-begin-blue" />
             </div>
             <h2 className="text-hero font-bold text-begin-blue mb-6 text-balance">
-              Built on Begin&apos;s 40+ Years of Learning Science
+              Understand What Makes Each Student Tick
             </h2>
             <p className="text-body-lg text-begin-blue/80 max-w-3xl mx-auto mb-8">
-              Begin&apos;s 6Cs Framework has been refined through decades of research since the 1980s, creating personalized learning experiences that develop the whole child across Communication, Collaboration, Content, Critical Thinking, Creative Innovation, and Confidence.
+              Begin Learning Profiles reveal each child's unique motivators, learning preferences, and school readiness factors. Get the insights you need to help every student feel confident and engaged in your classroom.
             </p>
           </div>
           
@@ -114,9 +114,9 @@ export default function TeachersLandingPage() {
               <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Users className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-heading-lg font-bold mb-4 text-begin-blue">Begin 6Cs Framework</h3>
+              <h3 className="text-heading-lg font-bold mb-4 text-begin-blue">Student Motivator Analysis</h3>
               <p className="text-body text-begin-blue/70 leading-relaxed">
-                Comprehensive assessment of Communication, Collaboration, Content mastery, Critical Thinking, Creative Innovation, and Confidence to develop well-rounded learners.
+                Discover what drives each child to learn - whether it's creative expression, social connection, analytical challenges, or hands-on exploration.
               </p>
             </div>
             
@@ -124,9 +124,9 @@ export default function TeachersLandingPage() {
               <div className="bg-green-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Target className="h-8 w-8 text-green-600" />
               </div>
-              <h3 className="text-heading-lg font-bold mb-4 text-begin-blue">Personalized Learning Profiles</h3>
+              <h3 className="text-heading-lg font-bold mb-4 text-begin-blue">School Readiness Insights</h3>
               <p className="text-body text-begin-blue/70 leading-relaxed">
-                Every child&apos;s unique learning profile reveals their strengths across the 6Cs, enabling truly personalized instruction that builds confidence and competence.
+                Understand each student's comfort with routines, social dynamics, academic confidence, and learning environment preferences to set them up for success.
               </p>
             </div>
             
@@ -134,9 +134,9 @@ export default function TeachersLandingPage() {
               <div className="bg-purple-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <BarChart3 className="h-8 w-8 text-purple-600" />
               </div>
-              <h3 className="text-heading-lg font-bold mb-4 text-begin-blue">Research-Backed Assessment</h3>
+              <h3 className="text-heading-lg font-bold mb-4 text-begin-blue">Actionable Teaching Strategies</h3>
               <p className="text-body text-begin-blue/70 leading-relaxed">
-                Four decades of Begin&apos;s learning research distilled into actionable insights that help you develop each student&apos;s 6Cs capabilities from day one.
+                Get specific, practical recommendations for how to engage each student, support their learning style, and help them thrive in your classroom environment.
               </p>
             </div>
           </div>
@@ -148,10 +148,10 @@ export default function TeachersLandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-hero font-bold text-begin-blue mb-6 text-balance">
-              Develop the 6Cs in Every Student from Day 1
+              Help Every Student Succeed from Day 1
             </h2>
             <p className="text-body-lg text-begin-blue/80 max-w-3xl mx-auto">
-              Stop spending weeks figuring out each student. Get Begin&apos;s research-backed 6Cs insights that help you build Communication, Collaboration, Content mastery, Critical Thinking, Creative Innovation, and Confidence immediately.
+              Stop spending weeks figuring out each student. Get Begin Learning Profile insights that reveal what motivates each child, how they learn best, and what they need to feel confident and successful in school.
             </p>
           </div>
           
@@ -163,7 +163,7 @@ export default function TeachersLandingPage() {
                 </div>
                 <div>
                   <h3 className="text-heading font-bold text-begin-blue mb-2">Save 3-4 Weeks of Assessment Time</h3>
-                  <p className="text-body text-begin-blue/70">Instead of spending the first month figuring out each child&apos;s 6Cs strengths, get detailed personalized learning profiles before students walk through your door.</p>
+                  <p className="text-body text-begin-blue/70">Instead of spending the first month figuring out what motivates each child, get detailed personalized learning profiles before students walk through your door.</p>
                 </div>
               </div>
               
@@ -172,8 +172,8 @@ export default function TeachersLandingPage() {
                   <Users className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-heading font-bold text-begin-blue mb-2">Develop 6Cs from Day 1</h3>
-                  <p className="text-body text-begin-blue/70">Know which students excel in Communication, need Collaboration support, show Creative Innovation potential, or require Confidence building before you meet them.</p>
+                  <h3 className="text-heading font-bold text-begin-blue mb-2">Understand Student Motivators from Day 1</h3>
+                  <p className="text-body text-begin-blue/70">Know which students thrive with creative projects, need social interaction, love analytical challenges, or require quiet reflection time before you meet them.</p>
                 </div>
               </div>
               
@@ -183,7 +183,7 @@ export default function TeachersLandingPage() {
                 </div>
                 <div>
                   <h3 className="text-heading font-bold text-begin-blue mb-2">Build Stronger Parent Partnerships</h3>
-                  <p className="text-body text-begin-blue/70">Start parent conversations with shared understanding of each child&apos;s 6Cs strengths and personalized learning profile from Begin&apos;s research.</p>
+                  <p className="text-body text-begin-blue/70">Start parent conversations with shared understanding of each child's learning preferences, motivators, and what helps them succeed at school.</p>
                 </div>
               </div>
 
@@ -193,7 +193,7 @@ export default function TeachersLandingPage() {
                 </div>
                 <div>
                   <h3 className="text-heading font-bold text-begin-blue mb-2">Build Student Confidence</h3>
-                  <p className="text-body text-begin-blue/70">Understand each student&apos;s 6Cs profile to create learning experiences that build on strengths and develop the whole child with confidence.</p>
+                  <p className="text-body text-begin-blue/70">Understand what makes each student feel successful and create learning experiences that tap into their natural motivators and interests.</p>
                 </div>
               </div>
             </div>
@@ -203,27 +203,27 @@ export default function TeachersLandingPage() {
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                  <span className="text-body">Complete 6Cs profile (Communication, Collaboration, Content, Critical Thinking, Creative Innovation, Confidence)</span>
+                  <span className="text-body">Complete learning profile revealing student motivators, interests, and school readiness factors</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                  <span className="text-body">Personalized learning preferences based on Begin&apos;s 40+ years of research</span>
+                  <span className="text-body">Personalized learning preferences and classroom environment needs</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                  <span className="text-body">Individual strengths and development areas across all 6Cs</span>
+                  <span className="text-body">Individual strengths and what helps each student feel confident and successful</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                  <span className="text-body">Specific 6Cs-based teaching strategies for each child</span>
+                  <span className="text-body">Specific teaching strategies based on each child's motivators and learning style</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                  <span className="text-body">Classroom activities that develop the whole child</span>
+                  <span className="text-body">Classroom activities that tap into each student's natural interests and motivators</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                  <span className="text-body">Parent collaboration tools based on Begin&apos;s research</span>
+                  <span className="text-body">Parent collaboration tools with shared understanding of what helps their child succeed</span>
                 </div>
               </div>
             </div>
@@ -236,10 +236,10 @@ export default function TeachersLandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-hero font-bold text-begin-blue mb-6 text-balance">
-              What Teachers Are Saying About the 6Cs
+              What Teachers Are Saying About Begin Learning Profiles
             </h2>
             <p className="text-body-lg text-begin-blue/80 max-w-3xl mx-auto">
-              <strong>Real feedback from educators</strong> who&apos;ve transformed their classrooms with Begin&apos;s 6Cs Framework
+              <strong>Real feedback from educators</strong> who understand their students' motivators and help them succeed from day one
             </p>
           </div>
           
@@ -256,11 +256,11 @@ export default function TeachersLandingPage() {
                 </div>
               </div>
               <p className="text-body text-begin-blue/90 mb-6 italic leading-relaxed">
-                &ldquo;For the first time in 15 years of teaching, I walked into my classroom on Day 1 already knowing that Emma excels in Creative Innovation, that Marcus shows strong Critical Thinking skills, and that Sofia is a natural Collaborator. The 6Cs profiles completely changed how I develop each child&apos;s potential from day one.&rdquo;
+                &ldquo;For the first time in 15 years of teaching, I walked into my classroom on Day 1 already knowing that Emma thrives with creative projects, Marcus loves analytical challenges, and Sofia learns best through social interaction. The Begin Learning Profiles completely changed how I motivate and engage each child from day one.&rdquo;
               </p>
               <div className="flex items-center gap-2 text-sm text-begin-blue/70">
                 <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                <span>Building 6Cs from Day 1</span>
+                <span>Understanding students from Day 1</span>
               </div>
             </div>
             
@@ -276,7 +276,7 @@ export default function TeachersLandingPage() {
                 </div>
               </div>
               <p className="text-body text-begin-blue/90 mb-6 italic leading-relaxed">
-                &ldquo;The parent conversations at Back-to-School night were incredible this year. Instead of generic small talk, I could immediately discuss each child&apos;s 6Cs strengths - their Communication style, Confidence levels, and Creative Innovation potential. Parents were amazed by Begin&apos;s detailed insights. It built trust from day one.&rdquo;
+                &ldquo;The parent conversations at Back-to-School night were incredible this year. Instead of generic small talk, I could immediately discuss what motivates each child - their interests, learning preferences, and what makes them feel confident at school. Parents were amazed by the detailed insights. It built trust from day one.&rdquo;
               </p>
               <div className="flex items-center gap-2 text-sm text-begin-blue/70">
                 <Star className="h-4 w-4 text-yellow-500 fill-current" />
