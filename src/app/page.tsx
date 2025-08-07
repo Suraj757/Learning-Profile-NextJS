@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, Users, BookOpen, Target, Star } from 'lucide-react'
+import { ArrowRight, Users, BookOpen, Target, Star, GraduationCap, ChevronRight } from 'lucide-react'
 
 export default function HomePage() {
   return (
@@ -12,12 +12,21 @@ export default function HomePage() {
               <BookOpen className="h-8 w-8 text-begin-teal" />
               <span className="text-heading-lg font-bold text-begin-blue">Begin Learning Profile</span>
             </div>
-            <Link 
-              href="/teacher/register"
-              className="text-begin-teal hover:text-begin-teal-hover font-semibold text-body transition-colors"
-            >
-              Teacher Dashboard
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link 
+                href="/teachers"
+                className="btn-begin-secondary inline-flex items-center gap-2 text-sm py-2 px-4"
+              >
+                <GraduationCap className="h-4 w-4" />
+                For Teachers
+              </Link>
+              <Link 
+                href="/teacher/register"
+                className="text-begin-teal hover:text-begin-teal-hover font-semibold text-body transition-colors"
+              >
+                Teacher Dashboard
+              </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -68,6 +77,26 @@ export default function HomePage() {
             >
               See Real Results First
             </Link>
+          </div>
+          
+          {/* Teacher CTA */}
+          <div className="mt-8 p-6 bg-begin-teal/5 border border-begin-teal/20 rounded-2xl max-w-2xl mx-auto">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <GraduationCap className="h-6 w-6 text-begin-teal" />
+              <span className="text-heading font-bold text-begin-blue">Are you a teacher?</span>
+            </div>
+            <p className="text-body text-begin-blue/70 text-center mb-4">
+              Get learning profiles for your students before Day 1
+            </p>
+            <div className="flex justify-center">
+              <Link 
+                href="/teachers"
+                className="btn-begin-secondary inline-flex items-center gap-2"
+              >
+                Learn How It Works
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
           
           <div className="mt-8 text-center">
@@ -181,6 +210,95 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Teacher Section */}
+      <section className="section-begin bg-gradient-to-br from-begin-teal/5 to-begin-cyan/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="bg-begin-teal/20 w-16 h-16 rounded-full flex items-center justify-center">
+                  <GraduationCap className="h-8 w-8 text-begin-teal" />
+                </div>
+                <div>
+                  <h2 className="text-hero font-bold text-begin-blue text-balance">
+                    For Teachers: Know Every Student Before Day 1
+                  </h2>
+                </div>
+              </div>
+              
+              <p className="text-body-lg text-begin-blue/80 mb-8 leading-relaxed">
+                Stop spending the first month figuring out how each student learns best. 
+                Get detailed learning profiles that help you differentiate instruction from the very first day.
+              </p>
+              
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start gap-3">
+                  <div className="bg-begin-teal/20 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-begin-teal font-bold text-sm">✓</span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-begin-blue mb-1">Instant Student Insights</h3>
+                    <p className="text-body text-begin-blue/70">Understand each child&apos;s learning style, motivation, and classroom needs</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="bg-begin-teal/20 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-begin-teal font-bold text-sm">✓</span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-begin-blue mb-1">Parent Partnership</h3>
+                    <p className="text-body text-begin-blue/70">Bridge the gap between home and school with shared understanding</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="bg-begin-teal/20 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-begin-teal font-bold text-sm">✓</span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-begin-blue mb-1">Ready-to-Use Strategies</h3>
+                    <p className="text-body text-begin-blue/70">Get specific classroom techniques matched to each learning profile</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link 
+                  href="/teachers"
+                  className="btn-begin-primary inline-flex items-center gap-3"
+                >
+                  <GraduationCap className="h-5 w-5" />
+                  Learn More for Teachers
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+                <Link 
+                  href="/teacher/register"
+                  className="btn-begin-secondary"
+                >
+                  Teacher Dashboard
+                </Link>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-2xl shadow-xl p-8">
+              <div className="text-center mb-6">
+                <div className="bg-gradient-to-br from-begin-teal to-begin-cyan w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-white text-3xl">📚</span>
+                </div>
+                <h3 className="text-heading-lg font-bold text-begin-blue mb-2">Mrs. Rodriguez</h3>
+                <p className="text-body text-begin-teal font-medium">Kindergarten Teacher</p>
+              </div>
+              
+              <blockquote className="text-body text-begin-blue/90 italic leading-relaxed text-center">
+                &ldquo;Having learning profiles from Day 1 completely changed how I approach my classroom. 
+                I can differentiate instruction from the start instead of spending weeks figuring out each child&apos;s needs.&rdquo;
+              </blockquote>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials */}
       <section className="section-begin bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -207,12 +325,12 @@ export default function HomePage() {
             
             <div className="card-begin bg-begin-cyan/5 border border-begin-cyan/20">
               <p className="text-body text-begin-blue/90 mb-6 italic leading-relaxed">
-                &ldquo;As a kindergarten teacher, having learning profiles from Day 1 completely changed how I approach my classroom. 
-                I can differentiate instruction from the start instead of spending weeks figuring out each child&apos;s needs.&rdquo;
+                &ldquo;I shared my son&apos;s profile with his 4th grade teacher during our meet-and-greet. 
+                She immediately understood his need for movement breaks and set up a flexible seating area. Best school year yet!&rdquo;
               </p>
               <div className="border-t border-begin-cyan/20 pt-4">
-                <div className="font-bold text-begin-blue">Mrs. Rodriguez</div>
-                <div className="text-body text-begin-blue/70">Kindergarten Teacher</div>
+                <div className="font-bold text-begin-blue">Michael T.</div>
+                <div className="text-body text-begin-blue/70">Parent of 4th grader</div>
               </div>
             </div>
           </div>

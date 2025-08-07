@@ -23,6 +23,7 @@ export default function ResultsPage() {
   const [loading, setLoading] = useState(true)
   const [copiedEmail, setCopiedEmail] = useState(false)
   const [enhancedRecommendations, setEnhancedRecommendations] = useState<any>(null)
+  const [viewMode, setViewMode] = useState<'parent' | 'teacher'>('parent')
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -164,6 +165,144 @@ export default function ResultsPage() {
       '8th Grade': 13
     }
     return gradeMap[grade] || 7
+  }
+
+  // Get teacher-specific classroom strategies
+  const getTeacherStrategies = (personalityLabel: string, scores: Record<string, number>, grade: string, childName: string) => {
+    const strategies = {
+      'Creative Collaborator': {
+        classroom: [
+          `Allow ${childName} to express understanding through art, diagrams, or storytelling before writing`,
+          `Provide opportunities for creative project presentations and visual learning displays`,
+          `Use collaborative group work where they can contribute ideas and help design solutions`,
+          `Incorporate hands-on materials and building activities into lessons`
+        ],
+        peerInteraction: [
+          `Partner ${childName} with detail-oriented students to balance creativity with structure`,
+          `Have them lead brainstorming sessions for group projects`,
+          `Use peer teaching opportunities where they explain concepts through creative examples`,
+          `Create mixed-ability groups where they can mentor others through creative problem-solving`
+        ],
+        differentiation: [
+          `Offer multiple formats for assignments (visual, oral, written, hands-on)`,
+          `Provide creative choices in how they demonstrate learning`,
+          `Use project-based learning with open-ended solutions`,
+          `Allow flexible seating and movement during creative work`
+        ],
+        assessment: [
+          `Use portfolio assessments to showcase creative growth over time`,
+          `Allow oral explanations of written work to capture full understanding`,
+          `Provide rubrics that value creativity alongside accuracy`,
+          `Use peer assessment for collaborative projects`
+        ]
+      },
+      'Analytical Thinker': {
+        classroom: [
+          `Provide the "why" behind concepts and connect learning to real-world applications`,
+          `Offer extension activities and deeper investigation opportunities`,
+          `Use inquiry-based learning with open-ended questions`,
+          `Allow processing time before expecting responses or moving forward`
+        ],
+        peerInteraction: [
+          `Pair ${childName} with students who ask good questions to spark discussions`,
+          `Have them explain complex concepts to classmates using logical steps`,
+          `Use debate and discussion formats where they can analyze different viewpoints`,
+          `Create investigation teams where they can lead research projects`
+        ],
+        differentiation: [
+          `Provide additional resources and advanced materials for deeper exploration`,
+          `Offer choice in research topics that align with their interests`,
+          `Use tiered assignments with increasingly complex challenges`,
+          `Allow independent study time for topics they want to investigate`
+        ],
+        assessment: [
+          `Use formative assessments that check understanding of processes, not just answers`,
+          `Provide opportunities to explain their reasoning and thinking steps`,
+          `Offer alternative assessment formats like research projects or investigations`,
+          `Use self-reflection tools to help them analyze their own learning`
+        ]
+      },
+      'Social Connector': {
+        classroom: [
+          `Use think-pair-share and discussion-based learning regularly`,
+          `Create opportunities for ${childName} to help classmates and be a classroom helper`,
+          `Incorporate community connections and real-world social applications`,
+          `Use collaborative learning structures for most activities`
+        ],
+        peerInteraction: [
+          `Make ${childName} a peer mediator or conflict resolution helper`,
+          `Have them welcome new students and be a classroom buddy`,
+          `Use cooperative learning groups where everyone has a specific role`,
+          `Create opportunities for cross-grade tutoring or mentoring`
+        ],
+        differentiation: [
+          `Provide social learning opportunities even for independent work`,
+          `Use group projects that require interdependence and shared responsibility`,
+          `Offer choices in how they share their learning (presentations, teaching others)`,
+          `Connect learning to social issues and community impact`
+        ],
+        assessment: [
+          `Use group assessments and collaborative evaluation methods`,
+          `Allow peer feedback and social learning reflections`,
+          `Provide opportunities to demonstrate learning through teaching others`,
+          `Use community-based projects as authentic assessments`
+        ]
+      },
+      'Independent Explorer': {
+        classroom: [
+          `Provide choices in topics, materials, and learning methods whenever possible`,
+          `Create independent learning stations and self-directed exploration time`,
+          `Use inquiry-based learning where ${childName} can pursue their own questions`,
+          `Offer flexible pacing and allow them to work ahead when ready`
+        ],
+        peerInteraction: [
+          `Use optional peer collaboration - let ${childName} choose when to work with others`,
+          `Have them share discoveries and teach classmates about their independent learning`,
+          `Create expert groups where they can become the class specialist in certain topics`,
+          `Use peer consultation where others come to them for advice in their strength areas`
+        ],
+        differentiation: [
+          `Provide learning menus and choice boards for different learning paths`,
+          `Offer independent study options and self-paced learning modules`,
+          `Use learning contracts where they set their own goals and timelines`,
+          `Allow alternative spaces for focused work (quiet corners, library, hallway)`
+        ],
+        assessment: [
+          `Use self-assessment tools and reflection journals`,
+          `Provide choices in assessment formats and demonstration methods`,
+          `Use goal-setting and progress monitoring that they control`,
+          `Allow portfolio-based assessment showing growth over time`
+        ]
+      },
+      'Confident Builder': {
+        classroom: [
+          `Provide leadership opportunities and chances to help teach concepts to others`,
+          `Use ${childName}'s strengths to build confidence in challenging areas`,
+          `Create success-building activities that allow them to showcase abilities`,
+          `Provide consistent encouragement and recognition of effort and growth`
+        ],
+        peerInteraction: [
+          `Make ${childName} a peer tutor or learning partner for struggling students`,
+          `Have them lead group activities and take on leadership roles in collaborative work`,
+          `Use their confidence to help build classroom community and positive culture`,
+          `Create opportunities for them to mentor younger students or newcomers`
+        ],
+        differentiation: [
+          `Build on existing strengths while gently challenging growth areas`,
+          `Provide graduated challenges that ensure continued success and growth`,
+          `Use strength-based learning to tackle more difficult concepts`,
+          `Offer choice in demonstrating learning through their confident areas`
+        ],
+        assessment: [
+          `Use strength-based assessments that highlight what they do well`,
+          `Provide opportunities for peer assessment and leadership in evaluation`,
+          `Use growth-focused feedback that builds on success and identifies next steps`,
+          `Create authentic assessments where they can use their natural abilities`
+        ]
+      }
+    }
+    
+    return strategies[personalityLabel as keyof typeof strategies] || strategies['Creative Collaborator']
   }
 
   // Get specific daily activities for this child
@@ -475,6 +614,7 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
   }
 
   const dailyActivities = getDailyActivities(profileData.personalityLabel, profileData.scores, profileData.grade, profileData.childName)
+  const teacherStrategies = getTeacherStrategies(profileData.personalityLabel, profileData.scores, profileData.grade, profileData.childName)
   const teacherComm = getTeacherCommunication(profileData.personalityLabel, profileData.scores, profileData.childName, profileData.grade)
   const beginRecommendations = getBeginRecommendations(profileData.personalityLabel, profileData.scores, profileData.grade, profileData.childName)
   const developmentPlan = getDevelopmentPlan(profileData.personalityLabel, profileData.scores, profileData.childName)
@@ -504,6 +644,32 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
       </header>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* View Toggle */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-white p-1 rounded-xl shadow-sm border border-gray-200">
+            <button
+              onClick={() => setViewMode('parent')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                viewMode === 'parent'
+                  ? 'bg-begin-teal text-white shadow-sm'
+                  : 'text-gray-600 hover:text-begin-teal'
+              }`}
+            >
+              For Parents
+            </button>
+            <button
+              onClick={() => setViewMode('teacher')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                viewMode === 'teacher'
+                  ? 'bg-begin-teal text-white shadow-sm'
+                  : 'text-gray-600 hover:text-begin-teal'
+              }`}
+            >
+              For Teachers
+            </button>
+          </div>
+        </div>
+        
         {/* Profile Header */}
         <div className="card-begin p-8 mb-8">
           <div className="text-center mb-8">
@@ -547,19 +713,21 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
           </div>
         </div>
 
-        {/* Immediate Action Plan */}
-        <div className="card-begin p-8 mt-8">
-          <div className="text-center mb-8">
-            <div className="bg-begin-teal/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Target className="h-8 w-8 text-begin-teal" />
-            </div>
-            <h2 className="text-begin-heading font-bold text-begin-blue mb-2">
-              Your Action Plan: What to Do TODAY
-            </h2>
-            <p className="text-gray-600">
-              Specific activities you can start right now to support {profileData.childName}'s learning
-            </p>
-          </div>
+        {viewMode === 'parent' ? (
+          <>
+            {/* Immediate Action Plan - Parent View */}
+            <div className="card-begin p-8 mt-8">
+              <div className="text-center mb-8">
+                <div className="bg-begin-teal/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Target className="h-8 w-8 text-begin-teal" />
+                </div>
+                <h2 className="text-begin-heading font-bold text-begin-blue mb-2">
+                  Your Action Plan: What to Do TODAY
+                </h2>
+                <p className="text-gray-600">
+                  Specific activities you can start right now to support {profileData.childName}'s learning
+                </p>
+              </div>
           
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Today's Activities */}
@@ -597,10 +765,194 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Teacher Communication Toolkit */}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Teacher Classroom Strategies */}
+            <div className="card-begin p-8 mt-8">
+              <div className="text-center mb-8">
+                <div className="bg-begin-teal/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <School className="h-8 w-8 text-begin-teal" />
+                </div>
+                <h2 className="text-begin-heading font-bold text-begin-blue mb-2">
+                  Classroom Implementation Strategies
+                </h2>
+                <p className="text-gray-600">
+                  Research-based approaches to support {profileData.childName} in your classroom
+                </p>
+              </div>
+              
+              <div className="grid lg:grid-cols-2 gap-8">
+                {/* Immediate Classroom Strategies */}
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                      <Lightbulb className="h-4 w-4" />
+                    </div>
+                    <h3 className="text-xl font-bold text-blue-800">Immediate Classroom Strategies</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {teacherStrategies.classroom.map((strategy, index) => (
+                      <div key={index} className="flex items-start gap-3 p-3 bg-white/70 rounded-xl">
+                        <CheckCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-gray-800">{strategy}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Peer Interaction Strategies */}
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                      <Users className="h-4 w-4" />
+                    </div>
+                    <h3 className="text-xl font-bold text-green-800">Peer Interaction Recommendations</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {teacherStrategies.peerInteraction.map((strategy, index) => (
+                      <div key={index} className="flex items-start gap-3 p-3 bg-white/70 rounded-xl">
+                        <Users className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-gray-800">{strategy}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid lg:grid-cols-2 gap-8 mt-8">
+                {/* Differentiated Instruction */}
+                <div className="bg-gradient-to-br from-purple-50 to-violet-50 p-6 rounded-2xl border border-purple-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                      <Brain className="h-4 w-4" />
+                    </div>
+                    <h3 className="text-xl font-bold text-purple-800">Differentiated Instruction</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {teacherStrategies.differentiation.map((strategy, index) => (
+                      <div key={index} className="flex items-start gap-3 p-3 bg-white/70 rounded-xl">
+                        <Brain className="h-5 w-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-gray-800">{strategy}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Assessment Strategies */}
+                <div className="bg-gradient-to-br from-orange-50 to-yellow-50 p-6 rounded-2xl border border-orange-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                      <Award className="h-4 w-4" />
+                    </div>
+                    <h3 className="text-xl font-bold text-orange-800">Assessment Strategies</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {teacherStrategies.assessment.map((strategy, index) => (
+                      <div key={index} className="flex items-start gap-3 p-3 bg-white/70 rounded-xl">
+                        <Award className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-gray-800">{strategy}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Group Work Recommendations for Teachers */}
+            <div className="card-begin p-8 mt-8">
+              <div className="text-center mb-8">
+                <div className="bg-begin-cyan/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="h-8 w-8 text-begin-cyan" />
+                </div>
+                <h2 className="text-begin-heading font-bold text-begin-blue mb-2">
+                  Group Work & Collaboration Guidelines
+                </h2>
+                <p className="text-gray-600">
+                  How to structure group activities to maximize {profileData.childName}'s contribution and learning
+                </p>
+              </div>
+              
+              <div className="grid lg:grid-cols-3 gap-6">
+                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-2xl border border-blue-200">
+                  <h3 className="text-lg font-bold text-blue-800 mb-4 flex items-center gap-2">
+                    <Target className="h-5 w-5" />
+                    Optimal Group Size
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="bg-white/70 p-3 rounded-xl">
+                      <p className="text-sm font-medium text-gray-800 mb-1">
+                        {profileData.personalityLabel === 'Social Connector' 
+                          ? '4-5 students - thrives in larger collaborative groups'
+                          : profileData.personalityLabel === 'Independent Explorer'
+                          ? '2-3 students - prefers smaller, focused groups or independent work with optional collaboration'
+                          : '3-4 students - balanced group size for effective collaboration'}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        {profileData.personalityLabel === 'Creative Collaborator'
+                          ? 'Mix creative and detail-oriented students for balanced projects'
+                          : profileData.personalityLabel === 'Analytical Thinker'
+                          ? 'Include students with different thinking styles to spark discussions'
+                          : profileData.personalityLabel === 'Social Connector'
+                          ? 'Include quieter students who can benefit from their social leadership'
+                          : 'Allow choice in group participation when possible'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-200">
+                  <h3 className="text-lg font-bold text-green-800 mb-4 flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5" />
+                    Ideal Role Assignment
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="bg-white/70 p-3 rounded-xl">
+                      <p className="text-sm font-medium text-gray-800 mb-1">
+                        {profileData.personalityLabel === 'Creative Collaborator'
+                          ? 'Creative Director or Visual Designer - leads brainstorming and creative solutions'
+                          : profileData.personalityLabel === 'Analytical Thinker'
+                          ? 'Researcher or Quality Controller - analyzes information and ensures accuracy'
+                          : profileData.personalityLabel === 'Social Connector'
+                          ? 'Team Leader or Communication Manager - facilitates discussion and keeps group on track'
+                          : profileData.personalityLabel === 'Independent Explorer'
+                          ? 'Specialist or Independent Researcher - focuses on specific aspects with autonomy'
+                          : 'Project Manager or Presenter - organizes work and shares results confidently'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-purple-50 to-violet-50 p-6 rounded-2xl border border-purple-200">
+                  <h3 className="text-lg font-bold text-purple-800 mb-4 flex items-center gap-2">
+                    <Clock className="h-5 w-5" />
+                    Structure & Timing
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="bg-white/70 p-3 rounded-xl">
+                      <p className="text-sm font-medium text-gray-800 mb-1">
+                        {profileData.personalityLabel === 'Analytical Thinker'
+                          ? 'Provide planning time before group work begins - they need to process and prepare'
+                          : profileData.personalityLabel === 'Independent Explorer'
+                          ? 'Include individual work time within group projects - balance collaboration with independence'
+                          : 'Use structured protocols like think-pair-share to ensure everyone contributes'}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Regular check-ins help {profileData.childName} stay engaged and contribute effectively
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        
+        {/* Common sections for both views */}
+        
+        {viewMode === 'parent' && (
+          /* Teacher Communication Toolkit - Parent View Only */
         <div className="card-begin p-8 mt-8">
           <div className="text-center mb-8">
             <div className="bg-begin-cyan/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -674,6 +1026,7 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
             </div>
           </div>
         </div>
+        )}
 
         {/* Begin Product Recommendations */}
         <div className="card-begin p-8 mt-8">
@@ -880,27 +1233,30 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
           </div>
         </div>
 
-        {/* Real Examples Section */}
+        {/* Real Examples Section - Different content for Parent vs Teacher */}
         <div className="card-begin p-8 mt-8">
           <div className="text-center mb-8">
             <div className="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lightbulb className="h-8 w-8 text-yellow-600" />
             </div>
             <h2 className="text-begin-heading font-bold text-begin-blue mb-2">
-              Real Examples: Put This Into Action
+              {viewMode === 'parent' ? 'Real Examples: Put This Into Action' : 'Classroom Implementation Examples'}
             </h2>
             <p className="text-gray-600">
-              See exactly how other families like yours have used these insights
+              {viewMode === 'parent' 
+                ? 'See exactly how other families like yours have used these insights'
+                : 'Real classroom scenarios showing how to apply these strategies with similar learners'}
             </p>
           </div>
           
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Home Example */}
-            <div className="bg-gradient-to-br from-orange-50 to-yellow-50 p-6 rounded-2xl border border-orange-200">
-              <div className="flex items-center gap-3 mb-4">
-                <Home className="h-6 w-6 text-orange-600" />
-                <h3 className="text-lg font-bold text-orange-800">At Home This Weekend</h3>
-              </div>
+          {viewMode === 'parent' ? (
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Home Example */}
+              <div className="bg-gradient-to-br from-orange-50 to-yellow-50 p-6 rounded-2xl border border-orange-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <Home className="h-6 w-6 text-orange-600" />
+                  <h3 className="text-lg font-bold text-orange-800">At Home This Weekend</h3>
+                </div>
               
               <div className="space-y-4">
                 <div className="bg-white/70 p-4 rounded-xl">
@@ -965,7 +1321,101 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                 </div>
               </div>
             </div>
-          </div>
+          ) : (
+            /* Teacher Examples */
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Lesson Planning Example */}
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <Book className="h-6 w-6 text-blue-600" />
+                  <h3 className="text-lg font-bold text-blue-800">Lesson Adaptation Example</h3>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="bg-white/70 p-4 rounded-xl">
+                    <p className="text-sm font-medium text-gray-800 mb-2">
+                      Standard Lesson: Writing a persuasive paragraph
+                    </p>
+                    <div className="bg-blue-100 p-3 rounded-lg">
+                      <p className="text-sm font-medium text-blue-800 mb-2">Adapted for {profileData.childName}:</p>
+                      <p className="text-sm text-gray-700">
+                        {profileData.personalityLabel === 'Creative Collaborator' 
+                          ? `Start with creating a visual argument (poster, comic, diagram) before writing. Let them present their visual to a partner for feedback, then translate the visual argument into written form. Provide sentence frames that connect to their creative ideas.`
+                          : profileData.personalityLabel === 'Analytical Thinker'
+                          ? `Begin with research time to investigate multiple perspectives on the topic. Provide a structured analysis framework (pros/cons, cause/effect) before writing. Allow them to include data, examples, and logical reasoning chains in their paragraph.`
+                          : profileData.personalityLabel === 'Social Connector'
+                          ? `Start with a debate or discussion with classmates about the topic. Let them interview others for opinions and quotes to include. Structure the writing as a letter to someone they know, making the audience real and personal.`
+                          : `Provide 2-3 topic choices and let them select based on personal interest. Offer options for final format (traditional paragraph, infographic with text, recorded presentation). Allow them to work in their preferred space and at their own pace.`}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/70 p-4 rounded-xl">
+                    <p className="text-sm font-medium text-gray-800 mb-2">Expected Outcome:</p>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Higher engagement and effort quality</li>
+                      <li>• Better demonstration of true understanding</li>
+                      <li>• Increased confidence in writing tasks</li>
+                      <li>• More authentic voice in their writing</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Classroom Management Example */}
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <Users className="h-6 w-6 text-green-600" />
+                  <h3 className="text-lg font-bold text-green-800">Classroom Management Tips</h3>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="bg-white/70 p-4 rounded-xl">
+                    <p className="text-sm font-medium text-gray-800 mb-2">
+                      When {profileData.childName} seems off-task or disengaged:
+                    </p>
+                    <div className="bg-green-100 p-3 rounded-lg">
+                      <ul className="text-sm text-gray-700 space-y-2">
+                        {profileData.personalityLabel === 'Creative Collaborator' ? [
+                          '• Check if they can express their thinking through drawing or building first',
+                          '• Offer a brief creative break (doodling, fidget tools) before returning to task',
+                          '• Connect the activity to a creative project or visual element',
+                          '• Pair them with someone for collaborative problem-solving'
+                        ] : profileData.personalityLabel === 'Analytical Thinker' ? [
+                          '• Provide the bigger picture context - how does this fit into larger learning?',
+                          '• Offer additional challenge questions or extension materials',
+                          '• Give them time to process and think before expecting participation',
+                          '• Connect the concept to real-world applications they can investigate'
+                        ] : profileData.personalityLabel === 'Social Connector' ? [
+                          '• Incorporate peer interaction or discussion into the activity',
+                          '• Give them a helper role - let them support a classmate',
+                          '• Connect the learning to social issues or community impact',
+                          '• Provide opportunities to share their thinking with others'
+                        ] : [
+                          '• Offer choices in how they complete the task',
+                          '• Provide a quiet space or alternative seating option',
+                          '• Allow self-pacing and breaks when needed',
+                          '• Check in privately rather than in front of the class'
+                        ].map((tip, i) => <li key={i}>{tip}</li>)}
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/70 p-4 rounded-xl">
+                    <p className="text-sm font-medium text-gray-800 mb-2">Prevention Strategies:</p>
+                    <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                      <ul className="text-sm text-gray-700 space-y-1">
+                        <li>• Build on their strengths in daily lessons</li>
+                        <li>• Provide advance notice of schedule changes</li>
+                        <li>• Use their learning style as a classroom resource</li>
+                        <li>• Celebrate their unique contributions regularly</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8 mt-8">
@@ -1081,10 +1531,12 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
                 
                 <h3 className="font-bold text-begin-blue mb-2 mt-4">Growth Area:</h3>
                 <p className="text-sm text-gray-700">
-                  {Object.entries(profileData.scores)
-                    .sort(([,a], [,b]) => a - b)[0][0]} 
-                  ({Object.entries(profileData.scores)
-                    .sort(([,a], [,b]) => (Number(a) || 0) - (Number(b) || 0))[0][1] ? (Number(Object.entries(profileData.scores).sort(([,a], [,b]) => (Number(a) || 0) - (Number(b) || 0))[0][1]) || 0).toFixed(1) : '0.0'}/5)
+                  {(() => {
+                    const sortedScores = Object.entries(profileData.scores).sort(([,a], [,b]) => (Number(a) || 0) - (Number(b) || 0));
+                    const lowestCategory = sortedScores[0][0];
+                    const lowestScore = (Number(sortedScores[0][1]) || 0).toFixed(1);
+                    return `${lowestCategory} (${lowestScore}/5)`;
+                  })()}
                 </p>
               </div>
             </div>
