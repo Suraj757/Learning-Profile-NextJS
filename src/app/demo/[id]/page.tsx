@@ -360,7 +360,7 @@ export default function SampleProfilePage() {
                           />
                         </div>
                         <span className="text-sm font-medium text-gray-700">
-                          {score.toFixed(1)}/5.0
+                          {(Number(score) || 0).toFixed(1)}/5.0
                         </span>
                       </div>
                     </div>

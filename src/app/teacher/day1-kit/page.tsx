@@ -188,15 +188,15 @@ function identifyAtRiskStudents(assignments: any[]) {
         const solutions = []
         
         if (confidence < 2.5) {
-          issues.push(`Low confidence scores (${confidence.toFixed(1)}/5)`)
+          issues.push(`Low confidence scores (${(Number(confidence) || 0).toFixed(1)}/5)`)
           solutions.push('Schedule 1-on-1 confidence building sessions')
         }
         if (collaboration < 2.5) {
-          issues.push(`Struggling with collaboration (${collaboration.toFixed(1)}/5)`)
+          issues.push(`Struggling with collaboration (${(Number(collaboration) || 0).toFixed(1)}/5)`)
           solutions.push('Pair with strong collaborative partner')
         }
         if (content < 2.5) {
-          issues.push(`Content mastery concerns (${content.toFixed(1)}/5)`)
+          issues.push(`Content mastery concerns (${(Number(content) || 0).toFixed(1)}/5)`)
           solutions.push('Provide additional scaffolding and support')
         }
         

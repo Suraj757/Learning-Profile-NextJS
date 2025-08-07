@@ -460,10 +460,10 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
     )
   }
 
-  // Prepare data for radar chart
+  // Prepare data for radar chart with safe score conversion
   const radarData = Object.entries(profileData.scores).map(([category, score]) => ({
     category: category.replace(' ', '\n'), // Break long category names
-    score: score,
+    score: Number(score) || 0,
     fullMark: 5
   }))
 

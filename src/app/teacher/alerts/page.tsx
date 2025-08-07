@@ -58,23 +58,23 @@ function analyzeAtRiskStudents(assignments: any[]): AtRiskStudent[] {
       
       // Identify specific risk factors
       if (confidence < 2.5) {
-        riskFactors.push(`Low confidence scores (${confidence.toFixed(1)}/5)`)
+        riskFactors.push(`Low confidence scores (${(Number(confidence) || 0).toFixed(1)}/5)`)
         suggestions.push('Schedule 1-on-1 confidence building sessions')
       }
       if (collaboration < 2.5) {
-        riskFactors.push(`Struggling with collaboration (${collaboration.toFixed(1)}/5)`)
+        riskFactors.push(`Struggling with collaboration (${(Number(collaboration) || 0).toFixed(1)}/5)`)
         suggestions.push('Pair with strong collaborative partner')
       }
       if (content < 2.5) {
-        riskFactors.push(`Content mastery concerns (${content.toFixed(1)}/5)`)
+        riskFactors.push(`Content mastery concerns (${(Number(content) || 0).toFixed(1)}/5)`)
         suggestions.push('Provide additional scaffolding and support')
       }
       if (criticalThinking < 2.5) {
-        riskFactors.push(`Critical thinking needs development (${criticalThinking.toFixed(1)}/5)`)
+        riskFactors.push(`Critical thinking needs development (${(Number(criticalThinking) || 0).toFixed(1)}/5)`)
         suggestions.push('Use scaffolded questioning techniques')
       }
       if (communication < 2.5) {
-        riskFactors.push(`Communication skills need support (${communication.toFixed(1)}/5)`)
+        riskFactors.push(`Communication skills need support (${(Number(communication) || 0).toFixed(1)}/5)`)
         suggestions.push('Provide multiple ways to express understanding')
       }
       
@@ -432,10 +432,10 @@ export default function AtRiskAlertsPage() {
                             <div key={key} className="flex items-center space-x-2">
                               <span className="text-xs text-gray-500 capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
                               <div className="flex items-center space-x-1">
-                                <span className="text-sm font-medium">{trend.current.toFixed(1)}</span>
+                                <span className="text-sm font-medium">{(Number(trend.current) || 0).toFixed(1)}</span>
                                 <TrendingDown className={`h-3 w-3 ${trend.change < 0 ? 'text-red-500' : 'text-green-500'}`} />
                                 <span className={`text-xs ${trend.change < 0 ? 'text-red-500' : 'text-green-500'}`}>
-                                  {trend.change > 0 ? '+' : ''}{trend.change.toFixed(1)}
+                                  {(Number(trend.change) || 0) > 0 ? '+' : ''}{(Number(trend.change) || 0).toFixed(1)}
                                 </span>
                               </div>
                             </div>
