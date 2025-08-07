@@ -4,10 +4,22 @@ export interface Scores {
   [key: string]: number
 }
 
-export function calculateScores(responses: Record<number, number>, ageGroup: AgeGroup | string = '5+'): Scores {
+export function calculateScores(responses: Record<number, number | string | string[]>, ageGroup: AgeGroup | string = '5+'): Scores {
   const scores: Scores = {}
   const validAgeGroup = (ageGroup === '3-4' || ageGroup === '4-5' || ageGroup === '5+') ? ageGroup as AgeGroup : '5+'
   const questions = getQuestionsForAge(validAgeGroup)
+  
+  // Validate responses input
+  if (!responses || typeof responses !== 'object') {
+    console.warn('Invalid responses object provided to calculateScores:', responses)
+    return {}
+  }
+  
+  console.log(`Calculating scores for age group: ${validAgeGroup}`, {
+    totalQuestions: questions.length,
+    responseCount: Object.keys(responses).length,
+    ageGroup: validAgeGroup
+  })
   
   CATEGORIES.forEach(category => {
     // Skip non-scoring categories
@@ -17,6 +29,7 @@ export function calculateScores(responses: Record<number, number>, ageGroup: Age
       categoryQuestions.forEach(question => {
         const responseValue = responses[question.id]
         if (responseValue !== undefined) {
+          // Handle different response types (arrays for interests, strings for other categories)
           scores[`${category}_${question.id}`] = responseValue
         }
       })
@@ -29,7 +42,7 @@ export function calculateScores(responses: Record<number, number>, ageGroup: Age
     
     categoryQuestions.forEach(question => {
       const responseValue = responses[question.id]
-      if (responseValue !== undefined) {
+      if (responseValue !== undefined && typeof responseValue === 'number') {
         if (validAgeGroup === '3-4' || validAgeGroup === '4-5') {
           // For multiple choice questions, use the score from the option
           const options = getOptionsForAgeAndQuestion(validAgeGroup, question.id)
@@ -37,12 +50,20 @@ export function calculateScores(responses: Record<number, number>, ageGroup: Age
           if (selectedOption) {
             categoryScore += selectedOption.score
             totalPossibleScore += 5 // Max score for any option
+          } else {
+            console.warn(`No option found for question ${question.id}, value ${responseValue} in age group ${validAgeGroup}`)
+            // Use response value as fallback if option not found
+            categoryScore += Math.min(5, Math.max(1, responseValue))
+            totalPossibleScore += 5
           }
         } else {
           // For Likert scale (5+ age group), use the response value directly
-          categoryScore += responseValue
+          const normalizedValue = Math.min(5, Math.max(1, responseValue))
+          categoryScore += normalizedValue
           totalPossibleScore += 5 // Max Likert scale value
         }
+      } else if (responseValue !== undefined) {
+        console.warn(`Invalid response value for question ${question.id}:`, responseValue, typeof responseValue)
       }
     })
     

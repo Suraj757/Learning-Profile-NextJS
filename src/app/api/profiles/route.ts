@@ -58,12 +58,41 @@ export async function POST(request: NextRequest) {
         grade_level: grade
       }
 
-      // Try to include age_group, but handle cases where the column doesn't exist
+      // Enhanced error handling and data validation
       let insertData = { ...baseData }
       
-      // First attempt: try with age_group column
+      // Validate responses structure for age-specific questions
       try {
-        insertData.age_group = age_group || '5+'
+        const responsesStr = JSON.stringify(responses)
+        const parsedResponses = JSON.parse(responsesStr)
+        
+        // Ensure all array/object responses are properly serialized
+        Object.keys(parsedResponses).forEach(key => {
+          const value = parsedResponses[key]
+          if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+            // Already in correct format for JSONB
+          }
+        })
+        
+        insertData.raw_responses = parsedResponses
+      } catch (responseError) {
+        console.error('Error processing responses:', responseError)
+        return NextResponse.json(
+          { 
+            error: 'Invalid response data format',
+            details: 'Assessment responses could not be processed. Please try completing the assessment again.'
+          },
+          { status: 400 }
+        )
+      }
+      
+      // First attempt: try WITHOUT age_group column (for compatibility)
+      try {
+        console.log('Attempting to save profile without age_group column (compatibility mode)...', {
+          child_name: insertData.child_name,
+          responseCount: Object.keys(responses).length
+        })
+        
         const { data: profileData, error: profileError } = await supabase
           .from('assessment_results')
           .insert([insertData])
@@ -71,67 +100,109 @@ export async function POST(request: NextRequest) {
           .single()
 
         if (profileError) {
-          // Check if error is due to missing age_group column
+          // Check if error is due to missing age_group column (legacy schema)
           if (profileError.code === '42703' || profileError.message?.includes('age_group')) {
-            console.log('age_group column not found, retrying without it...')
+            console.log('Legacy schema detected - age_group column not found, retrying without it...')
             
-            // Retry without age_group column
-            delete insertData.age_group
+            // Retry without age_group column for legacy schema compatibility
+            const legacyData = { ...baseData }
+            delete legacyData.age_group
+            
             const { data: retryData, error: retryError } = await supabase
               .from('assessment_results')
-              .insert([insertData])
+              .insert([legacyData])
               .select()
               .single()
 
             if (retryError) {
-              console.error('Error saving profile (retry without age_group):', {
+              console.error('Error saving profile (legacy schema retry):', {
                 error: retryError,
                 message: retryError.message,
                 details: retryError.details,
                 hint: retryError.hint,
-                code: retryError.code
+                code: retryError.code,
+                insertData: legacyData
               })
+              
+              // More specific error handling
+              let userMessage = 'Failed to save profile'
+              let userDetails = 'Please try again or contact support if the issue persists.'
+              
+              if (retryError.code === '23502') {
+                userMessage = 'Missing required assessment information'
+                userDetails = 'Some required fields are missing. Please complete all assessment questions and try again.'
+              } else if (retryError.code === '23505') {
+                userMessage = 'Duplicate assessment detected'
+                userDetails = 'This assessment appears to have already been submitted. Please contact support if you need to update it.'
+              } else if (retryError.message?.includes('JSON')) {
+                userMessage = 'Assessment data format error'
+                userDetails = 'There was an issue with the assessment responses. Please try completing the assessment again.'
+              }
+              
               return NextResponse.json(
                 { 
-                  error: `Failed to save profile: ${retryError.message || 'Database error'}`,
-                  details: 'The database may need to be updated with the latest schema. Please contact support if this issue persists.'
+                  error: userMessage,
+                  details: userDetails,
+                  debugInfo: process.env.NODE_ENV === 'development' ? {
+                    code: retryError.code,
+                    message: retryError.message
+                  } : undefined
                 },
                 { status: 500 }
               )
             }
             
-            // Add age_group to successful response for consistency
+            // Success with legacy schema - add age_group to response for consistency
             profile = { ...retryData, age_group: age_group || '5+' }
+            console.log('Profile saved successfully with legacy schema')
           } else {
-            // Other database error
-            console.error('Error saving profile:', {
+            // Other database error with modern schema
+            console.error('Error saving profile (modern schema):', {
               error: profileError,
               message: profileError.message,
               details: profileError.details,
               hint: profileError.hint,
-              code: profileError.code
+              code: profileError.code,
+              insertData
             })
             
-            // Provide more specific error messages based on error type
+            // Enhanced error categorization
             let userMessage = 'Failed to save profile'
-            if (profileError.code === '23505') {
-              userMessage = 'A profile with this information already exists'
-            } else if (profileError.code === '23502') {
+            let userDetails = 'Please try again or contact support if the issue persists.'
+            
+            if (profileError.code === '23502') {
+              const missingField = profileError.message?.match(/column "(\w+)"/)?.[1]
               userMessage = 'Missing required information for profile creation'
-            } else if (profileError.message) {
-              userMessage = `Database error: ${profileError.message}`
+              userDetails = missingField ? 
+                `The field "${missingField}" is required but missing. Please check your assessment responses.` :
+                'Some required information is missing. Please complete all assessment questions and try again.'
+            } else if (profileError.code === '23505') {
+              userMessage = 'A profile with this information already exists'
+              userDetails = 'This assessment appears to have already been submitted. Please contact support if you need to update it.'
+            } else if (profileError.code === '42601' || profileError.message?.includes('JSON')) {
+              userMessage = 'Assessment data format error'
+              userDetails = 'There was an issue processing your assessment responses. Please try completing the assessment again.'
+            } else if (profileError.code === '23514') {
+              userMessage = 'Invalid assessment data'
+              userDetails = 'Some assessment responses are outside the expected range. Please try completing the assessment again.'
             }
             
             return NextResponse.json(
               { 
                 error: userMessage,
-                details: 'Please try again or contact support if the issue persists.'
+                details: userDetails,
+                debugInfo: process.env.NODE_ENV === 'development' ? {
+                  code: profileError.code,
+                  message: profileError.message,
+                  hint: profileError.hint
+                } : undefined
               },
               { status: 500 }
             )
           }
         } else {
           profile = profileData
+          console.log('Profile saved successfully with modern schema')
         }
       } catch (unexpectedError) {
         console.error('Unexpected error during profile save:', unexpectedError)
