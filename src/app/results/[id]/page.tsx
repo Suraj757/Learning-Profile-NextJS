@@ -7,6 +7,19 @@ import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Responsi
 import EnhancedContentRecommendations from '@/components/content/EnhancedContentRecommendations'
 import { beginContentService } from '@/lib/content-recommendation-service'
 
+// Helper function to extract motivators, interests, and school experience from raw responses
+function extractAdditionalData(rawResponses: Record<string, any>) {
+  if (!rawResponses) return {}
+  
+  return {
+    interests: Array.isArray(rawResponses['22']) ? rawResponses['22'] : [],
+    engagementStyle: rawResponses['23'] || null,
+    learningModality: rawResponses['24'] || null,
+    socialPreference: rawResponses['25'] || null,
+    schoolExperience: rawResponses['26'] || null
+  }
+}
+
 interface ProfileData {
   id: string
   childName: string
@@ -15,6 +28,12 @@ interface ProfileData {
   personalityLabel: string
   description: string
   createdAt: string
+  rawResponses?: Record<string, any>
+  interests?: string[]
+  engagementStyle?: string
+  learningModality?: string
+  socialPreference?: string
+  schoolExperience?: string
 }
 
 export default function ResultsPage() {
@@ -39,6 +58,7 @@ export default function ResultsPage() {
             const localProfile = localStorage.getItem(`profile_${params.id}`)
             if (localProfile) {
               const profile = JSON.parse(localProfile)
+              const additionalData = extractAdditionalData(profile.raw_responses)
               const transformedProfile: ProfileData = {
                 id: profile.id,
                 childName: profile.child_name,
@@ -46,7 +66,9 @@ export default function ResultsPage() {
                 scores: profile.scores,
                 personalityLabel: profile.personality_label,
                 description: profile.description || 'A unique learner with special strengths and talents.',
-                createdAt: profile.created_at || new Date().toISOString()
+                createdAt: profile.created_at || new Date().toISOString(),
+                rawResponses: profile.raw_responses,
+                ...additionalData
               }
               setProfileData(transformedProfile)
               setLoading(false)
@@ -57,6 +79,7 @@ export default function ResultsPage() {
             const latestProfile = sessionStorage.getItem('latestProfile')
             if (latestProfile) {
               const data = JSON.parse(latestProfile)
+              const additionalData = extractAdditionalData(data.rawResponses)
               const transformedProfile: ProfileData = {
                 id: data.id,
                 childName: data.childName,
@@ -64,7 +87,9 @@ export default function ResultsPage() {
                 scores: data.scores,
                 personalityLabel: data.personalityLabel,
                 description: data.description,
-                createdAt: data.createdAt || new Date().toISOString()
+                createdAt: data.createdAt || new Date().toISOString(),
+                rawResponses: data.rawResponses,
+                ...additionalData
               }
               setProfileData(transformedProfile)
               setLoading(false)
@@ -77,6 +102,7 @@ export default function ResultsPage() {
           
           if (response.ok) {
             const { profile } = await response.json()
+            const additionalData = extractAdditionalData(profile.raw_responses)
             // Transform sample profile to match interface
             const transformedProfile: ProfileData = {
               id: profile.id,
@@ -85,7 +111,9 @@ export default function ResultsPage() {
               scores: profile.scores,
               personalityLabel: profile.personality_label,
               description: profile.description || 'A unique learner with special strengths and talents.',
-              createdAt: profile.created_at || new Date().toISOString()
+              createdAt: profile.created_at || new Date().toISOString(),
+              rawResponses: profile.raw_responses,
+              ...additionalData
             }
             setProfileData(transformedProfile)
             setLoading(false)
@@ -99,6 +127,7 @@ export default function ResultsPage() {
         const { profile } = await response.json()
         
         // Transform the API response to match our interface
+        const additionalData = extractAdditionalData(profile.raw_responses)
         const transformedProfile: ProfileData = {
           id: profile.id,
           childName: profile.child_name,
@@ -106,7 +135,9 @@ export default function ResultsPage() {
           scores: profile.scores,
           personalityLabel: profile.personality_label,
           description: profile.description || 'A unique learner with special strengths and talents.',
-          createdAt: profile.created_at || new Date().toISOString()
+          createdAt: profile.created_at || new Date().toISOString(),
+          rawResponses: profile.raw_responses,
+          ...additionalData
         }
         
         setProfileData(transformedProfile)
@@ -712,6 +743,96 @@ P.S. I'm happy to share the full learning profile report if you'd find it helpfu
             </p>
           </div>
         </div>
+
+        {/* Student Interests & Motivators Section */}
+        {(profileData.interests?.length || profileData.engagementStyle || profileData.learningModality || profileData.socialPreference || profileData.schoolExperience) && (
+          <div className="card-begin p-8 mt-8">
+            <div className="text-center mb-8">
+              <div className="bg-gradient-to-br from-purple-500 to-pink-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart className="h-8 w-8 text-white" />
+              </div>
+              <h2 className="text-begin-heading font-bold text-begin-blue mb-2">
+                What Makes {profileData.childName} Tick
+              </h2>
+              <p className="text-gray-600">
+                Understanding their interests, motivators, and school readiness helps you support their unique learning journey
+              </p>
+            </div>
+            
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Interests Section */}
+              {profileData.interests && profileData.interests.length > 0 && (
+                <div className="bg-gradient-to-br from-pink-50 to-purple-50 p-6 rounded-2xl border border-pink-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-pink-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold">
+                      ❤️
+                    </div>
+                    <h3 className="text-xl font-bold text-pink-800">Favorite Topics & Interests</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {profileData.interests.map((interest, index) => (
+                      <span key={index} className="bg-pink-100 text-pink-800 px-3 py-2 rounded-full text-sm font-medium">
+                        {interest}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="text-sm text-pink-700 mt-4 italic">
+                    Use these topics to capture {profileData.childName}'s attention and make learning more engaging!
+                  </p>
+                </div>
+              )}
+              
+              {/* Learning Preferences Section */}
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold">
+                    🧠
+                  </div>
+                  <h3 className="text-xl font-bold text-blue-800">How {profileData.childName} Learns Best</h3>
+                </div>
+                <div className="space-y-4">
+                  {profileData.engagementStyle && (
+                    <div className="bg-white/70 p-4 rounded-xl">
+                      <p className="text-sm font-medium text-blue-800 mb-2">Engagement Style:</p>
+                      <p className="text-sm text-blue-700">{profileData.engagementStyle}</p>
+                    </div>
+                  )}
+                  {profileData.learningModality && (
+                    <div className="bg-white/70 p-4 rounded-xl">
+                      <p className="text-sm font-medium text-blue-800 mb-2">Learning Preference:</p>
+                      <p className="text-sm text-blue-700">{profileData.learningModality}</p>
+                    </div>
+                  )}
+                  {profileData.socialPreference && (
+                    <div className="bg-white/70 p-4 rounded-xl">
+                      <p className="text-sm font-medium text-blue-800 mb-2">Social Learning Style:</p>
+                      <p className="text-sm text-blue-700">{profileData.socialPreference}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* School Experience Section */}
+              {profileData.schoolExperience && (
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-200 lg:col-span-2">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-green-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold">
+                      🏫
+                    </div>
+                    <h3 className="text-xl font-bold text-green-800">School Readiness Background</h3>
+                  </div>
+                  <div className="bg-white/70 p-4 rounded-xl">
+                    <p className="text-sm font-medium text-green-800 mb-2">Previous Experience:</p>
+                    <p className="text-sm text-green-700">{profileData.schoolExperience}</p>
+                    <p className="text-sm text-green-600 mt-3 italic">
+                      This background helps you understand {profileData.childName}'s comfort level with school routines and expectations.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {viewMode === 'parent' ? (
           <>
