@@ -117,6 +117,7 @@ function StudentCardsContent() {
   const [viewMode, setViewMode] = useState<'grid' | 'cards'>('cards')
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStyle, setFilterStyle] = useState<string>('all')
+  const [sectionFilter, setSectionFilter] = useState<string>('all')
   const [selectedCard, setSelectedCard] = useState<StudentCardData | null>(null)
   
   const searchParams = useSearchParams()
@@ -451,6 +452,23 @@ function StudentCardsContent() {
                   </select>
                 </div>
                 
+                <div className="flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-begin-blue/70" />
+                  <select
+                    value={sectionFilter}
+                    onChange={(e) => setSectionFilter(e.target.value)}
+                    className="border border-begin-gray rounded-card px-3 py-2 focus:outline-none focus:ring-2 focus:ring-begin-teal focus:border-transparent"
+                  >
+                    <option value="all">Show All Sections</option>
+                    <option value="strengths">Strengths Only</option>
+                    <option value="quick-wins">Quick Wins Only</option>
+                    <option value="interests">Interests Only</option>
+                    <option value="challenges">Challenges Only</option>
+                    <option value="learning-prefs">Learning Preferences Only</option>
+                    <option value="emergency">Emergency Plans Only</option>
+                  </select>
+                </div>
+                
                 <div className="flex items-center bg-begin-gray rounded-card p-1">
                   <button
                     onClick={() => setViewMode('cards')}
@@ -474,6 +492,7 @@ function StudentCardsContent() {
                   Showing {filteredCards.length} of {studentCards.length} students
                   {searchTerm && ` matching "${searchTerm}"`}
                   {filterStyle !== 'all' && ` with ${filterStyle} learning style`}
+                  {sectionFilter !== 'all' && ` showing ${sectionFilter.replace('-', ' ')} only`}
                 </p>
               </div>
             )}
@@ -510,6 +529,7 @@ function StudentCardsContent() {
                       card={card}
                       onPrint={() => handlePrintCard(card)}
                       onEmailParent={() => handleEmailParent(card)}
+                      sectionFilter={sectionFilter}
                     />
                   ))}
                 </div>
@@ -588,7 +608,7 @@ function StudentCardsContent() {
           )}
 
           {/* Teacher Tips - Hidden in Print */}
-          <div className="mt-12 grid md:grid-cols-2 gap-6 print:hidden">
+          <div className="mt-12 grid md:grid-cols-3 gap-6 print:hidden">
             <div className="card-begin bg-begin-teal/5 border border-begin-teal/20">
               <h3 className="text-heading font-bold text-begin-blue mb-4 flex items-center gap-2">
                 <Heart className="h-5 w-5 text-begin-teal" />
@@ -614,6 +634,20 @@ function StudentCardsContent() {
                 <p>• Use cards to form balanced learning groups</p>
                 <p>• Reference during lesson planning for differentiation</p>
                 <p>• Update notes as you discover what works</p>
+              </div>
+            </div>
+
+            <div className="card-begin bg-purple-50 border border-purple-200">
+              <h3 className="text-heading font-bold text-begin-blue mb-4 flex items-center gap-2">
+                <Eye className="h-5 w-5 text-purple-600" />
+                Section Filtering
+              </h3>
+              <div className="space-y-3 text-sm text-begin-blue/80">
+                <p>• <strong>Strengths Only:</strong> Quick class overview of what each student does well</p>
+                <p>• <strong>Quick Wins:</strong> Fast strategies when students need immediate support</p>
+                <p>• <strong>Interests:</strong> Engagement hooks for lesson planning</p>
+                <p>• <strong>Challenges:</strong> Potential roadblocks to watch for</p>
+                <p>• <strong>Emergency Plans:</strong> Crisis intervention strategies</p>
               </div>
             </div>
           </div>

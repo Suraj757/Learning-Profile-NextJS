@@ -40,9 +40,10 @@ interface StudentCardProps {
   }
   onPrint: () => void
   onEmailParent: () => void
+  sectionFilter?: string
 }
 
-export default function StudentCard({ card, onPrint, onEmailParent }: StudentCardProps) {
+export default function StudentCard({ card, onPrint, onEmailParent, sectionFilter = 'all' }: StudentCardProps) {
   const styleColors = {
     Creative: {
       bg: 'from-blue-500 to-blue-600',
@@ -132,23 +133,25 @@ export default function StudentCard({ card, onPrint, onEmailParent }: StudentCar
       </div>
 
       {/* Top Strengths */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <Target className={`h-5 w-5 ${colors.icon}`} />
-          <h3 className="font-bold text-begin-blue">TOP STRENGTHS</h3>
+      {(sectionFilter === 'all' || sectionFilter === 'strengths') && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Target className={`h-5 w-5 ${colors.icon}`} />
+            <h3 className="font-bold text-begin-blue">TOP STRENGTHS</h3>
+          </div>
+          <div className="space-y-2">
+            {card.strengths.slice(0, 3).map((strength, index) => (
+              <div key={index} className="flex items-start gap-2">
+                <div className={`w-2 h-2 ${colors.dot} rounded-full mt-2 flex-shrink-0`}></div>
+                <p className="text-begin-blue text-sm leading-relaxed">{strength}</p>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="space-y-2">
-          {card.strengths.slice(0, 3).map((strength, index) => (
-            <div key={index} className="flex items-start gap-2">
-              <div className={`w-2 h-2 ${colors.dot} rounded-full mt-2 flex-shrink-0`}></div>
-              <p className="text-begin-blue text-sm leading-relaxed">{strength}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
 
       {/* Student Interests */}
-      {Array.isArray(card.interests) && card.interests.length > 0 && (
+      {(sectionFilter === 'all' || sectionFilter === 'interests') && Array.isArray(card.interests) && card.interests.length > 0 && (
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <Heart className="h-5 w-5 text-pink-500" />
@@ -166,7 +169,7 @@ export default function StudentCard({ card, onPrint, onEmailParent }: StudentCar
       )}
 
       {/* Learning Preferences */}
-      {(card.engagementStyle || card.learningModality || card.socialPreference) && (
+      {(sectionFilter === 'all' || sectionFilter === 'learning-prefs') && (card.engagementStyle || card.learningModality || card.socialPreference) && (
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <Brain className="h-5 w-5 text-indigo-500" />
@@ -196,52 +199,58 @@ export default function StudentCard({ card, onPrint, onEmailParent }: StudentCar
       )}
 
       {/* Potential Challenges */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <AlertTriangle className="h-5 w-5 text-amber-500" />
-          <h3 className="font-bold text-begin-blue">POTENTIAL CHALLENGES</h3>
+      {(sectionFilter === 'all' || sectionFilter === 'challenges') && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            <h3 className="font-bold text-begin-blue">POTENTIAL CHALLENGES</h3>
+          </div>
+          <div className="space-y-2">
+            {card.challenges.slice(0, 2).map((challenge, index) => (
+              <div key={index} className="flex items-start gap-2">
+                <div className="w-2 h-2 bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-begin-blue text-sm leading-relaxed">{challenge}</p>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="space-y-2">
-          {card.challenges.slice(0, 2).map((challenge, index) => (
-            <div key={index} className="flex items-start gap-2">
-              <div className="w-2 h-2 bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
-              <p className="text-begin-blue text-sm leading-relaxed">{challenge}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
 
       {/* Quick Wins */}
-      <div className="mb-6 bg-green-50 border border-green-200 rounded-card p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Zap className="h-5 w-5 text-green-600" />
-          <h3 className="font-bold text-green-800">QUICK WINS (Try These First!)</h3>
+      {(sectionFilter === 'all' || sectionFilter === 'quick-wins') && (
+        <div className="mb-6 bg-green-50 border border-green-200 rounded-card p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Zap className="h-5 w-5 text-green-600" />
+            <h3 className="font-bold text-green-800">QUICK WINS (Try These First!)</h3>
+          </div>
+          <div className="space-y-2">
+            {card.quick_wins.slice(0, 2).map((win, index) => (
+              <div key={index} className="flex items-start gap-2">
+                <span className="bg-green-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  {index + 1}
+                </span>
+                <p className="text-green-800 text-sm font-medium leading-relaxed">{win}</p>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="space-y-2">
-          {card.quick_wins.slice(0, 2).map((win, index) => (
-            <div key={index} className="flex items-start gap-2">
-              <span className="bg-green-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
-                {index + 1}
-              </span>
-              <p className="text-green-800 text-sm font-medium leading-relaxed">{win}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
 
       {/* Parent Insight */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <MessageCircle className="h-5 w-5 text-begin-teal" />
-          <h3 className="font-bold text-begin-blue">PARENT INSIGHT</h3>
+      {sectionFilter === 'all' && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <MessageCircle className="h-5 w-5 text-begin-teal" />
+            <h3 className="font-bold text-begin-blue">PARENT INSIGHT</h3>
+          </div>
+          <div className="bg-begin-teal/5 border-l-4 border-begin-teal p-3 rounded-r-card">
+            <p className="text-begin-blue text-sm italic leading-relaxed">"{card.parent_insight}"</p>
+          </div>
         </div>
-        <div className="bg-begin-teal/5 border-l-4 border-begin-teal p-3 rounded-r-card">
-          <p className="text-begin-blue text-sm italic leading-relaxed">"{card.parent_insight}"</p>
-        </div>
-      </div>
+      )}
 
       {/* School Experience */}
-      {card.schoolExperience && (
+      {sectionFilter === 'all' && card.schoolExperience && (
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <Brain className="h-5 w-5 text-emerald-500" />
@@ -255,17 +264,19 @@ export default function StudentCard({ card, onPrint, onEmailParent }: StudentCar
       )}
 
       {/* Emergency Backup Plan */}
-      <div className="bg-red-50 border border-red-200 rounded-card p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Heart className="h-5 w-5 text-red-600" />
-          <h3 className="font-bold text-red-800">EMERGENCY BACKUP PLAN</h3>
+      {(sectionFilter === 'all' || sectionFilter === 'emergency') && (
+        <div className="bg-red-50 border border-red-200 rounded-card p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Heart className="h-5 w-5 text-red-600" />
+            <h3 className="font-bold text-red-800">EMERGENCY BACKUP PLAN</h3>
+          </div>
+          <div className="bg-red-100 border border-red-200 rounded p-3">
+            <p className="text-red-800 text-sm font-medium">
+              <span className="font-bold">When struggling:</span> {card.emergency_backup}
+            </p>
+          </div>
         </div>
-        <div className="bg-red-100 border border-red-200 rounded p-3">
-          <p className="text-red-800 text-sm font-medium">
-            <span className="font-bold">When struggling:</span> {card.emergency_backup}
-          </p>
-        </div>
-      </div>
+      )}
 
       {/* Card Footer - Reference Info */}
       <div className="mt-4 pt-4 border-t border-begin-gray/30">
