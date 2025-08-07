@@ -4,7 +4,7 @@ import { calculateScores, getPersonalityLabel, generateDescription } from '@/lib
 
 export async function POST(request: NextRequest) {
   try {
-    const { child_name, grade, responses, assignment_token } = await request.json()
+    const { child_name, grade, age_group, responses, assignment_token } = await request.json()
 
     if (!child_name || !grade || !responses) {
       return NextResponse.json(
@@ -13,8 +13,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Calculate scores and generate profile
-    const scores = calculateScores(responses)
+    // Calculate scores and generate profile with age-specific support
+    const scores = calculateScores(responses, age_group)
     const personality_label = getPersonalityLabel(scores)
     const description = generateDescription(scores)
 
@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
         id: Math.random().toString(36).substring(2, 15),
         child_name,
         age: 0,
+        age_group: age_group || '5+',
         scores,
         personality_label,
         raw_responses: responses,
@@ -48,7 +49,8 @@ export async function POST(request: NextRequest) {
         .from('assessment_results')
         .insert([{
           child_name,
-          age: 0, // We don't collect age anymore, using grade instead
+          age: 0, // Legacy field, kept for compatibility
+          age_group: age_group || '5+',
           scores,
           personality_label,
           raw_responses: responses,

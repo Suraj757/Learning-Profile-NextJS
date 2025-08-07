@@ -25,6 +25,7 @@ export default function AssessmentCompletePage() {
         // Get stored data
         const name = sessionStorage.getItem('childName')
         const gradeLevel = sessionStorage.getItem('grade')
+        const ageGroupValue = sessionStorage.getItem('ageGroup')
         const responses = sessionStorage.getItem('assessmentResponses')
         const assignmentToken = sessionStorage.getItem('assignmentToken')
 
@@ -37,7 +38,7 @@ export default function AssessmentCompletePage() {
 
         // Process the responses locally for immediate display
         const parsedResponses = JSON.parse(responses)
-        const scores = calculateScores(parsedResponses)
+        const scores = calculateScores(parsedResponses, ageGroupValue || 'Unknown')
         const personalityLabel = getPersonalityLabel(scores)
         const description = generateDescription(scores)
 
@@ -53,6 +54,7 @@ export default function AssessmentCompletePage() {
               body: JSON.stringify({
                 child_name: name,
                 grade: gradeLevel,
+                age_group: ageGroupValue,
                 responses: parsedResponses,
                 assignment_token: assignmentToken // Include assignment token for teacher tracking
               })

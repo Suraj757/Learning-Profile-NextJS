@@ -6,6 +6,7 @@ import { BookOpen, ArrowRight, Clock, Users, School, Star } from 'lucide-react'
 
 function AssessmentStartContent() {
   const [childName, setChildName] = useState('')
+  const [ageGroup, setAgeGroup] = useState('')
   const [grade, setGrade] = useState('')
   const [assignmentToken, setAssignmentToken] = useState('')
   const [isTeacherReferred, setIsTeacherReferred] = useState(false)
@@ -29,10 +30,11 @@ function AssessmentStartContent() {
   }, [searchParams])
 
   const handleStart = () => {
-    if (childName.trim() && grade) {
+    if (childName.trim() && ageGroup) {
       // Store child info in sessionStorage
       sessionStorage.setItem('childName', childName)
-      sessionStorage.setItem('grade', grade)
+      sessionStorage.setItem('ageGroup', ageGroup)
+      sessionStorage.setItem('grade', grade || getGradeFromAgeGroup(ageGroup))
       
       // Store assignment token if from teacher
       if (assignmentToken) {
@@ -40,6 +42,16 @@ function AssessmentStartContent() {
       }
       
       router.push('/assessment/question/1')
+    }
+  }
+  
+  // Helper function to get a default grade from age group
+  const getGradeFromAgeGroup = (age: string) => {
+    switch (age) {
+      case '3-4': return 'Pre-K'
+      case '4-5': return 'Kindergarten'
+      case '5+': return '1st Grade'
+      default: return 'Kindergarten'
     }
   }
 
@@ -72,11 +84,14 @@ function AssessmentStartContent() {
     }
   }
 
-  const quickFillForm = (childName: string, grade: string) => {
-    setChildName(childName)
-    setGrade(grade)
-  }
+  // Removed quickFillForm as we're now using inline handlers
 
+  const ageGroups = [
+    { value: '3-4', label: '3-4 years old', description: 'Preschool age, exploring and learning through play' },
+    { value: '4-5', label: '4-5 years old', description: 'Pre-K to Kindergarten, developing school readiness' },
+    { value: '5+', label: '5+ years old', description: 'Elementary age, engaged in formal learning' }
+  ]
+  
   const grades = [
     'Pre-K', 'Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', 
     '4th Grade', '5th Grade', '6th Grade', '7th Grade', '8th Grade'
@@ -115,22 +130,22 @@ function AssessmentStartContent() {
                 <h4 className="font-semibold text-yellow-800 mb-2">Quick Form Fill</h4>
                 <div className="space-y-2">
                   <button
-                    onClick={() => quickFillForm('Emma', '3rd Grade')}
+                    onClick={() => { setChildName('Emma'); setAgeGroup('5+'); setGrade('3rd Grade'); }}
                     className="w-full text-left px-3 py-2 bg-yellow-100 hover:bg-yellow-200 rounded text-sm"
                   >
-                    👧 Emma (3rd Grade)
+                    👧 Emma (5+ years, 3rd Grade)
                   </button>
                   <button
-                    onClick={() => quickFillForm('Alex', '5th Grade')}
+                    onClick={() => { setChildName('Alex'); setAgeGroup('4-5'); setGrade('Kindergarten'); }}
                     className="w-full text-left px-3 py-2 bg-yellow-100 hover:bg-yellow-200 rounded text-sm"
                   >
-                    👦 Alex (5th Grade)
+                    👦 Alex (4-5 years, Kindergarten)
                   </button>
                   <button
-                    onClick={() => quickFillForm('Maya', 'Kindergarten')}
+                    onClick={() => { setChildName('Maya'); setAgeGroup('3-4'); setGrade('Pre-K'); }}
                     className="w-full text-left px-3 py-2 bg-yellow-100 hover:bg-yellow-200 rounded text-sm"
                   >
-                    👶 Maya (Kindergarten)
+                    👶 Maya (3-4 years, Pre-K)
                   </button>
                 </div>
               </div>
@@ -241,8 +256,8 @@ function AssessmentStartContent() {
             </div>
             <div className="text-center p-4 bg-begin-teal/5 rounded-2xl transform hover:scale-105 transition-transform duration-200">
               <BookOpen className="h-8 w-8 text-begin-teal mx-auto mb-2" />
-              <h3 className="font-semibold text-begin-teal mb-1">24 Smart Questions 📚</h3>
-              <p className="text-sm text-gray-600">Backed by learning science</p>
+              <h3 className="font-semibold text-begin-teal mb-1">{ageGroup === '3-4' ? '21' : ageGroup === '4-5' ? '21' : '24'} Smart Questions 📚</h3>
+              <p className="text-sm text-gray-600">Age-appropriate and backed by learning science</p>
             </div>
             <div className="text-center p-4 bg-begin-cyan/10 rounded-2xl transform hover:scale-105 transition-transform duration-200">
               <Users className="h-8 w-8 text-begin-cyan mx-auto mb-2" />
@@ -269,24 +284,61 @@ function AssessmentStartContent() {
             </div>
 
             <div>
-              <label htmlFor="grade" className="block text-begin-heading font-semibold text-begin-blue mb-2">
-                Current Grade Level
+              <label htmlFor="ageGroup" className="block text-begin-heading font-semibold text-begin-blue mb-2">
+                Child&apos;s Age Group
               </label>
-              <select
-                id="grade"
-                value={grade}
-                onChange={(e) => setGrade(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-begin-teal focus:border-transparent text-begin-body"
-                required
-              >
-                <option value="">Select grade level</option>
-                {grades.map((gradeOption) => (
-                  <option key={gradeOption} value={gradeOption}>
-                    {gradeOption}
-                  </option>
+              <div className="space-y-3">
+                {ageGroups.map((group) => (
+                  <label key={group.value} className={`block p-4 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${
+                    ageGroup === group.value 
+                      ? 'border-begin-teal bg-begin-teal/10 text-begin-teal' 
+                      : 'border-gray-200 hover:border-begin-teal/50 hover:bg-begin-teal/5'
+                  }`}>
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        name="ageGroup"
+                        value={group.value}
+                        checked={ageGroup === group.value}
+                        onChange={(e) => setAgeGroup(e.target.value)}
+                        className="sr-only"
+                      />
+                      <div className="flex-1">
+                        <div className="font-semibold">{group.label}</div>
+                        <div className="text-sm text-gray-500 mt-1">{group.description}</div>
+                      </div>
+                      {ageGroup === group.value && (
+                        <div className="w-5 h-5 bg-begin-teal rounded-full flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        </div>
+                      )}
+                    </div>
+                  </label>
                 ))}
-              </select>
+              </div>
             </div>
+
+            {/* Optional grade selection for additional context */}
+            {ageGroup && (
+              <div>
+                <label htmlFor="grade" className="block text-begin-heading font-semibold text-begin-blue mb-2">
+                  Current Grade Level <span className="text-sm font-normal text-gray-500">(optional)</span>
+                </label>
+                <select
+                  id="grade"
+                  value={grade}
+                  onChange={(e) => setGrade(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-begin-teal focus:border-transparent text-begin-body"
+                >
+                  <option value="">Select grade level (optional)</option>
+                  {grades.map((gradeOption) => (
+                    <option key={gradeOption} value={gradeOption}>
+                      {gradeOption}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {isTeacherReferred ? (
               <div className="bg-begin-teal/5 p-6 rounded-2xl border border-begin-teal/20">
@@ -341,9 +393,9 @@ function AssessmentStartContent() {
             <div className="flex justify-center pt-4">
               <button
                 onClick={handleStart}
-                disabled={!childName.trim() || !grade}
+                disabled={!childName.trim() || !ageGroup}
                 className={`btn-begin-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 transform transition-all duration-200 shadow-lg text-lg px-8 py-4 ${
-                  childName.trim() && grade 
+                  childName.trim() && ageGroup 
                     ? 'hover:scale-105 active:scale-95 hover:shadow-xl animate-pulse ring-2 ring-begin-blue/20' 
                     : ''
                 }`}
@@ -358,14 +410,14 @@ function AssessmentStartContent() {
             </div>
 
             {/* Visual Progress Indicator */}
-            {(childName.trim() || grade) && (
+            {(childName.trim() || ageGroup) && (
               <div className="flex justify-center mt-4">
                 <div className="flex items-center gap-2 text-sm text-begin-blue/70">
                   <div className={`w-3 h-3 rounded-full ${childName.trim() ? 'bg-begin-teal' : 'bg-gray-200'}`} />
                   <span>Name</span>
-                  <div className={`w-3 h-3 rounded-full ${grade ? 'bg-begin-teal' : 'bg-gray-200'}`} />
-                  <span>Grade</span>
-                  {childName.trim() && grade && (
+                  <div className={`w-3 h-3 rounded-full ${ageGroup ? 'bg-begin-teal' : 'bg-gray-200'}`} />
+                  <span>Age</span>
+                  {childName.trim() && ageGroup && (
                     <>
                       <ArrowRight className="h-3 w-3 text-begin-teal ml-2" />
                       <span className="text-begin-teal font-medium">Ready to start! ✨</span>

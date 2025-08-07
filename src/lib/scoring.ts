@@ -1,18 +1,58 @@
-import { CATEGORIES, QUESTIONS } from './questions'
+import { CATEGORIES, getQuestionsForAge, getOptionsForAgeAndQuestion, type AgeGroup } from './questions'
 
 export interface Scores {
   [key: string]: number
 }
 
-export function calculateScores(responses: Record<number, number>): Scores {
+export function calculateScores(responses: Record<number, number>, ageGroup: AgeGroup | string = '5+'): Scores {
   const scores: Scores = {}
+  const validAgeGroup = (ageGroup === '3-4' || ageGroup === '4-5' || ageGroup === '5+') ? ageGroup as AgeGroup : '5+'
+  const questions = getQuestionsForAge(validAgeGroup)
   
   CATEGORIES.forEach(category => {
-    const categoryQuestions = QUESTIONS.filter(q => q.category === category)
-    const categoryResponses = categoryQuestions.map(q => responses[q.id] || 0)
-    const sum = categoryResponses.reduce((acc, score) => acc + score, 0)
-    const average = sum / categoryQuestions.length
-    scores[category] = Math.round(average * 100) / 100 // Round to 2 decimal places
+    // Skip non-scoring categories
+    if (category === 'Interests' || category === 'Motivation' || category === 'School Experience') {
+      // Store raw responses for these categories instead of scores
+      const categoryQuestions = questions.filter(q => q.category === category)
+      categoryQuestions.forEach(question => {
+        const responseValue = responses[question.id]
+        if (responseValue !== undefined) {
+          scores[`${category}_${question.id}`] = responseValue
+        }
+      })
+      return
+    }
+    
+    const categoryQuestions = questions.filter(q => q.category === category)
+    let categoryScore = 0
+    let totalPossibleScore = 0
+    
+    categoryQuestions.forEach(question => {
+      const responseValue = responses[question.id]
+      if (responseValue !== undefined) {
+        if (validAgeGroup === '3-4' || validAgeGroup === '4-5') {
+          // For multiple choice questions, use the score from the option
+          const options = getOptionsForAgeAndQuestion(validAgeGroup, question.id)
+          const selectedOption = options.find(opt => opt.value === responseValue)
+          if (selectedOption) {
+            categoryScore += selectedOption.score
+            totalPossibleScore += 5 // Max score for any option
+          }
+        } else {
+          // For Likert scale (5+ age group), use the response value directly
+          categoryScore += responseValue
+          totalPossibleScore += 5 // Max Likert scale value
+        }
+      }
+    })
+    
+    // Calculate average score (normalized to 1-5 scale)
+    if (totalPossibleScore > 0) {
+      const normalizedScore = (categoryScore / totalPossibleScore) * 5
+      scores[category] = Math.round(normalizedScore * 100) / 100 // Round to 2 decimal places
+    } else {
+      scores[category] = 0
+    }
   })
   
   return scores

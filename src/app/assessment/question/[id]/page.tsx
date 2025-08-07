@@ -3,7 +3,20 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, ArrowLeft, ArrowRight, CheckCircle, Sparkles, Star, Heart } from 'lucide-react'
-import { QUESTIONS, PARENT_SCALE, PROGRESS_MESSAGES, CATEGORY_METADATA } from '@/lib/questions'
+import { 
+  getQuestionsForAge, 
+  getOptionsForAgeAndQuestion, 
+  getAgeGroupFromGrade,
+  getProgressMessages, 
+  usesMultipleChoice,
+  PARENT_SCALE, 
+  CATEGORY_METADATA,
+  INTEREST_OPTIONS,
+  ENGAGEMENT_OPTIONS,
+  MODALITY_OPTIONS,
+  SOCIAL_OPTIONS,
+  type AgeGroup 
+} from '@/lib/questions'
 import ProgressIndicator from '@/components/ProgressIndicator'
 import ProgressRecoveryModal from '@/components/ProgressRecoveryModal'
 import { 
@@ -21,7 +34,10 @@ export default function QuestionPage() {
   const questionId = parseInt(params.id as string)
   const [childName, setChildName] = useState('')
   const [grade, setGrade] = useState('')
+  const [ageGroup, setAgeGroup] = useState<AgeGroup>('5+')
   const [selectedValue, setSelectedValue] = useState<number | null>(null)
+  const [selectedValues, setSelectedValues] = useState<number[]>([]) // For checkbox questions
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]) // For interest checkboxes
   const [responses, setResponses] = useState<Record<number, number>>({})
   const [showDebugPanel, setShowDebugPanel] = useState(false)
   const [assignmentToken, setAssignmentToken] = useState('')
@@ -37,11 +53,16 @@ export default function QuestionPage() {
   
   const autoSaver = useRef<ProgressAutoSaver | null>(null)
 
-  const question = QUESTIONS.find(q => q.id === questionId)
-  const totalQuestions = QUESTIONS.length
+  // Get age-specific questions and options
+  const questions = getQuestionsForAge(ageGroup)
+  const question = questions.find(q => q.id === questionId)
+  const totalQuestions = questions.length
   const progress = (questionId / totalQuestions) * 100
   const categoryInfo = question ? CATEGORY_METADATA[question.category] : null
-  const progressMessage = PROGRESS_MESSAGES.find(p => p.at === questionId)
+  const progressMessages = getProgressMessages(totalQuestions)
+  const progressMessage = progressMessages.find(p => p.at === questionId)
+  const questionOptions = getOptionsForAgeAndQuestion(ageGroup, questionId)
+  const isMultipleChoice = usesMultipleChoice(ageGroup)
   
   // Celebrate milestones
   const [showCelebration, setShowCelebration] = useState(false)
@@ -54,9 +75,13 @@ export default function QuestionPage() {
     }
   }, [progressMessage])
 
-  // Auto-scroll to top when question changes for better mobile UX
+  // Auto-scroll to top when question changes for better mobile UX and reset selections
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
+    // Clear selections when changing questions
+    setSelectedValue(null)
+    setSelectedValues([])
+    setSelectedInterests([])
   }, [questionId])
 
   useEffect(() => {
@@ -67,6 +92,7 @@ export default function QuestionPage() {
     const initializeSession = async () => {
       const name = sessionStorage.getItem('childName')
       const gradeValue = sessionStorage.getItem('grade')
+      const ageGroupValue = sessionStorage.getItem('ageGroup') as AgeGroup
       const token = sessionStorage.getItem('assignmentToken')
       
       if (!name) {
@@ -76,6 +102,7 @@ export default function QuestionPage() {
       
       setChildName(name)
       setGrade(gradeValue || '')
+      setAgeGroup(ageGroupValue || getAgeGroupFromGrade(gradeValue || ''))
       setAssignmentToken(token || '')
       
       // CRITICAL FIX: Load existing responses from sessionStorage first
@@ -86,7 +113,18 @@ export default function QuestionPage() {
         
         // Set the current question's response if it exists
         if (parsedResponses[questionId]) {
-          setSelectedValue(parsedResponses[questionId])
+          const response = parsedResponses[questionId]
+          if (question?.questionType === 'checkbox') {
+            if (question.category === 'Interests' && Array.isArray(response)) {
+              setSelectedInterests(response)
+            } else if (Array.isArray(response)) {
+              setSelectedValues(response)
+            } else {
+              setSelectedValues([response])
+            }
+          } else {
+            setSelectedValue(response)
+          }
         }
       }
       
@@ -111,7 +149,18 @@ export default function QuestionPage() {
         
         // Set current question's response if it exists
         if (progress.responses[questionId]) {
-          setSelectedValue(progress.responses[questionId])
+          const response = progress.responses[questionId]
+          if (question?.questionType === 'checkbox') {
+            if (question.category === 'Interests' && Array.isArray(response)) {
+              setSelectedInterests(response)
+            } else if (Array.isArray(response)) {
+              setSelectedValues(response)
+            } else {
+              setSelectedValues([response])
+            }
+          } else {
+            setSelectedValue(response)
+          }
         }
       } else {
         // Try local storage fallback
@@ -127,7 +176,18 @@ export default function QuestionPage() {
           }
           
           if (localProgress.responses[questionId]) {
-            setSelectedValue(localProgress.responses[questionId])
+            const response = localProgress.responses[questionId]
+            if (question?.questionType === 'checkbox') {
+              if (question.category === 'Interests' && Array.isArray(response)) {
+                setSelectedInterests(response)
+              } else if (Array.isArray(response)) {
+                setSelectedValues(response)
+              } else {
+                setSelectedValues([response])
+              }
+            } else {
+              setSelectedValue(response)
+            }
           }
         } else {
           // Check if there might be progress on another device
@@ -160,10 +220,22 @@ export default function QuestionPage() {
   }, [questionId, router])
 
   const handleNext = async () => {
-    if (selectedValue === null) return
+    let responseToSave: number | number[] | string[] | null = null
+    
+    if (question?.questionType === 'checkbox') {
+      if (question.category === 'Interests') {
+        responseToSave = selectedInterests.length > 0 ? selectedInterests : null
+      } else {
+        responseToSave = selectedValues.length > 0 ? selectedValues : null
+      }
+    } else {
+      responseToSave = selectedValue
+    }
+    
+    if (responseToSave === null) return
     
     // Save response
-    const updatedResponses = { ...responses, [questionId]: selectedValue }
+    const updatedResponses = { ...responses, [questionId]: responseToSave }
     setResponses(updatedResponses)
     sessionStorage.setItem('assessmentResponses', JSON.stringify(updatedResponses))
     
@@ -185,25 +257,63 @@ export default function QuestionPage() {
       router.push(`/assessment/question/${questionId - 1}`)
     }
   }
+  
+  // Handle checkbox selections for interests
+  const handleInterestToggle = (interest: string) => {
+    setSelectedInterests(prev => {
+      if (prev.includes(interest)) {
+        return prev.filter(i => i !== interest)
+      } else if (prev.length < 5) { // Limit to 5 selections
+        return [...prev, interest]
+      }
+      return prev
+    })
+  }
+  
+  // Handle checkbox selections for other questions
+  const handleCheckboxToggle = (value: number) => {
+    setSelectedValues(prev => {
+      if (prev.includes(value)) {
+        return prev.filter(v => v !== value)
+      } else {
+        return [...prev, value]
+      }
+    })
+  }
 
   // Auto-save progress when response changes
   useEffect(() => {
-    if (selectedValue !== null && autoSaver.current) {
-      const updatedResponses = { ...responses, [questionId]: selectedValue }
+    let responseToSave: number | number[] | string[] | null = null
+    
+    if (question?.questionType === 'checkbox') {
+      if (question.category === 'Interests') {
+        responseToSave = selectedInterests.length > 0 ? selectedInterests : null
+      } else {
+        responseToSave = selectedValues.length > 0 ? selectedValues : null
+      }
+    } else {
+      responseToSave = selectedValue
+    }
+    
+    if (responseToSave !== null && autoSaver.current) {
+      const updatedResponses = { ...responses, [questionId]: responseToSave }
       
       autoSaver.current.saveWithDebounce({
         session_id: sessionId,
         child_name: childName,
         grade: grade,
+        age_group: ageGroup,
         responses: updatedResponses,
         current_question: questionId,
         assignment_token: assignmentToken || undefined
       })
     }
-  }, [selectedValue, sessionId, childName, grade, responses, questionId, assignmentToken])
+  }, [selectedValue, selectedValues, selectedInterests, sessionId, childName, grade, ageGroup, responses, questionId, assignmentToken, question])
 
-  // Keyboard navigation
+  // Keyboard navigation - only for Likert scale
   useEffect(() => {
+    if (isMultipleChoice) return // No keyboard shortcuts for multiple choice
+    
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'ArrowLeft' && questionId > 1) {
         handlePrevious()
@@ -219,7 +329,7 @@ export default function QuestionPage() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [questionId, selectedValue])
+  }, [questionId, selectedValue, isMultipleChoice])
   
   // Save progress immediately (for navigation)
   const saveProgressNow = async (updatedResponses: Record<number, number>, nextQuestion: number) => {
@@ -232,6 +342,7 @@ export default function QuestionPage() {
       session_id: sessionId,
       child_name: childName,
       grade: grade,
+      age_group: ageGroup,
       responses: updatedResponses,
       current_question: nextQuestion,
       assignment_token: assignmentToken || undefined
@@ -261,6 +372,7 @@ export default function QuestionPage() {
       const progress = progressResult.progress
       setChildName(progress.child_name)
       setGrade(progress.grade)
+      setAgeGroup(progress.age_group || getAgeGroupFromGrade(progress.grade))
       setResponses(progress.responses)
       setLastSaved(progress.last_saved)
       setExpiresAt(progress.expires_at)
@@ -269,6 +381,7 @@ export default function QuestionPage() {
       // Update session storage
       sessionStorage.setItem('childName', progress.child_name)
       sessionStorage.setItem('grade', progress.grade)
+      sessionStorage.setItem('ageGroup', progress.age_group || getAgeGroupFromGrade(progress.grade))
       sessionStorage.setItem('assessmentResponses', JSON.stringify(progress.responses))
       if (progress.assignment_token) {
         sessionStorage.setItem('assignmentToken', progress.assignment_token)
@@ -281,14 +394,37 @@ export default function QuestionPage() {
   
   // Debug function to auto-complete the quiz
   const autoCompleteQuiz = (profileType: 'creative' | 'analytical' | 'collaborative' | 'confident') => {
-    const testResponses = {
-      creative: { 1: 5, 2: 4, 3: 5, 4: 3, 5: 5, 6: 4, 7: 3, 8: 4, 9: 5, 10: 4, 11: 3, 12: 5, 13: 4, 14: 3, 15: 4, 16: 5, 17: 4, 18: 3, 19: 4, 20: 5, 21: 4, 22: 3, 23: 4, 24: 5 },
-      analytical: { 1: 3, 2: 5, 3: 2, 4: 5, 5: 3, 6: 5, 7: 4, 8: 5, 9: 3, 10: 4, 11: 5, 12: 3, 13: 5, 14: 4, 15: 5, 16: 3, 17: 5, 18: 4, 19: 5, 20: 3, 21: 5, 22: 4, 23: 5, 24: 3 },
-      collaborative: { 1: 4, 2: 3, 3: 5, 4: 4, 5: 4, 6: 3, 7: 5, 8: 3, 9: 4, 10: 5, 11: 3, 12: 4, 13: 3, 14: 5, 15: 3, 16: 4, 17: 3, 18: 5, 19: 3, 20: 4, 21: 3, 22: 5, 23: 3, 24: 4 },
-      confident: { 1: 4, 2: 4, 3: 4, 4: 4, 5: 4, 6: 4, 7: 4, 8: 4, 9: 4, 10: 4, 11: 4, 12: 4, 13: 4, 14: 4, 15: 4, 16: 4, 17: 4, 18: 4, 19: 4, 20: 4, 21: 4, 22: 4, 23: 4, 24: 4 }
+    const baseResponses = {
+      creative: { 1: 5, 2: 4, 3: 5, 4: 3, 5: 5, 6: 4, 7: 3, 8: 4, 9: 5, 10: 4, 11: 3, 12: 5, 13: 4, 14: 3, 15: 4, 16: 5, 17: 4, 18: 3, 19: 4, 20: 5, 21: 4 },
+      analytical: { 1: 3, 2: 5, 3: 2, 4: 5, 5: 3, 6: 5, 7: 4, 8: 5, 9: 3, 10: 4, 11: 5, 12: 3, 13: 5, 14: 4, 15: 5, 16: 3, 17: 5, 18: 4, 19: 5, 20: 3, 21: 5 },
+      collaborative: { 1: 4, 2: 3, 3: 5, 4: 4, 5: 4, 6: 3, 7: 5, 8: 3, 9: 4, 10: 5, 11: 3, 12: 4, 13: 3, 14: 5, 15: 3, 16: 4, 17: 3, 18: 5, 19: 3, 20: 4, 21: 3 },
+      confident: { 1: 4, 2: 4, 3: 4, 4: 4, 5: 4, 6: 4, 7: 4, 8: 4, 9: 4, 10: 4, 11: 4, 12: 4, 13: 4, 14: 4, 15: 4, 16: 4, 17: 4, 18: 4, 19: 4, 20: 4, 21: 4 }
     }
-
-    const selectedResponses = testResponses[profileType]
+    
+    // Add sample responses for the new questions
+    const additionalResponses: Record<string, any> = {}
+    
+    // Add interest selections (question varies by age group)
+    const interestQuestionId = ageGroup === '5+' ? 25 : 22
+    additionalResponses[interestQuestionId] = ['Animals', 'Science', 'Art', 'Sports', 'Music'] // Sample interests
+    
+    // Add engagement style (varies by age group)
+    const engagementQuestionId = ageGroup === '5+' ? 26 : 23
+    additionalResponses[engagementQuestionId] = 2 // Hands-on activities
+    
+    // Add modality preference
+    const modalityQuestionId = ageGroup === '5+' ? 27 : 24
+    additionalResponses[modalityQuestionId] = ageGroup === '5+' ? 4 : 1 // Visual for 5+, movement for younger
+    
+    // Add social preference
+    const socialQuestionId = ageGroup === '5+' ? 28 : 25
+    additionalResponses[socialQuestionId] = 2 // Collaborative
+    
+    // Add school experience
+    const schoolQuestionId = ageGroup === '5+' ? 29 : 26
+    additionalResponses[schoolQuestionId] = 3 // Some experience
+    
+    const selectedResponses = { ...baseResponses[profileType], ...additionalResponses }
     setResponses(selectedResponses)
     sessionStorage.setItem('assessmentResponses', JSON.stringify(selectedResponses))
     
@@ -405,7 +541,7 @@ export default function QuestionPage() {
             <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium ${categoryInfo?.lightColor} ${categoryInfo?.color.replace('bg-', 'text-')} shadow-sm`}>
               <span className="text-lg">{categoryInfo?.emoji}</span>
               <span>{question.category}</span>
-              <span className="text-xs opacity-75">({questionId}/24)</span>
+              <span className="text-xs opacity-75">({questionId}/{totalQuestions})</span>
             </div>
           </div>
 
@@ -432,50 +568,184 @@ export default function QuestionPage() {
             </div>
           </div>
 
-          {/* Enhanced Response Options with Keyboard Shortcuts */}
+          {/* Enhanced Response Options */}
           <div className="space-y-3 mb-8">
-            {PARENT_SCALE.map((option, index) => (
-              <button
-                key={option.value}
-                onClick={() => setSelectedValue(option.value)}
-                className={`w-full p-4 rounded-2xl border-2 transition-all duration-300 text-left transform hover:scale-[1.02] hover:shadow-md ${
-                  selectedValue === option.value
-                    ? 'border-begin-teal bg-gradient-to-r from-begin-teal/10 to-begin-cyan/10 text-begin-teal shadow-lg scale-[1.02]'
-                    : 'border-gray-200 hover:border-begin-teal/50 hover:bg-begin-teal/5'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">{option.emoji}</span>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold">{option.label}</span>
-                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-mono">
-                          {option.value}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-0.5">{option.description}</p>
-                    </div>
+            {question?.questionType === 'checkbox' ? (
+              // Checkbox options (for Interests and other multi-select questions)
+              <div className="space-y-3">
+                {question.category === 'Interests' ? (
+                  // Interest checkboxes with custom layout
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {question.options?.map((interest) => (
+                      <button
+                        key={interest}
+                        onClick={() => handleInterestToggle(interest)}
+                        disabled={!selectedInterests.includes(interest) && selectedInterests.length >= 5}
+                        className={`p-3 rounded-xl border-2 transition-all duration-300 text-sm font-medium transform hover:scale-105 ${
+                          selectedInterests.includes(interest)
+                            ? 'border-begin-teal bg-gradient-to-r from-begin-teal/10 to-begin-cyan/10 text-begin-teal shadow-md scale-105'
+                            : selectedInterests.length >= 5
+                              ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                              : 'border-gray-200 hover:border-begin-teal/50 hover:bg-begin-teal/5'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className={`w-4 h-4 border-2 rounded flex items-center justify-center ${
+                            selectedInterests.includes(interest)
+                              ? 'border-begin-teal bg-begin-teal'
+                              : 'border-gray-300'
+                          }`}>
+                            {selectedInterests.includes(interest) && (
+                              <CheckCircle className="h-3 w-3 text-white" />
+                            )}
+                          </div>
+                          <span>{interest}</span>
+                        </div>
+                      </button>
+                    ))}
                   </div>
-                  {selectedValue === option.value && (
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-begin-teal rounded-full flex items-center justify-center animate-pulse">
-                        <CheckCircle className="h-4 w-4 text-white" />
+                ) : (
+                  // Other checkbox questions
+                  question.options?.map((option, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleCheckboxToggle(index)}
+                      className={`w-full p-4 rounded-2xl border-2 transition-all duration-300 text-left transform hover:scale-[1.02] hover:shadow-md ${
+                        selectedValues.includes(index)
+                          ? 'border-begin-teal bg-gradient-to-r from-begin-teal/10 to-begin-cyan/10 text-begin-teal shadow-lg scale-[1.02]'
+                          : 'border-gray-200 hover:border-begin-teal/50 hover:bg-begin-teal/5'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-5 h-5 border-2 rounded flex items-center justify-center ${
+                          selectedValues.includes(index)
+                            ? 'border-begin-teal bg-begin-teal'
+                            : 'border-gray-300'
+                        }`}>
+                          {selectedValues.includes(index) && (
+                            <CheckCircle className="h-3 w-3 text-white" />
+                          )}
+                        </div>
+                        <span className="font-medium">{option}</span>
+                      </div>
+                    </button>
+                  ))
+                )}
+                {question.category === 'Interests' && (
+                  <p className="text-sm text-gray-500 text-center mt-2">
+                    {selectedInterests.length}/5 selected
+                  </p>
+                )}
+              </div>
+            ) : question?.questionType === 'multipleChoice' && question.options ? (
+              // Multiple choice with custom options (for Motivation questions)
+              question.options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedValue(index)}
+                  className={`w-full p-4 rounded-2xl border-2 transition-all duration-300 text-left transform hover:scale-[1.02] hover:shadow-md ${
+                    selectedValue === index
+                      ? 'border-begin-teal bg-gradient-to-r from-begin-teal/10 to-begin-cyan/10 text-begin-teal shadow-lg scale-[1.02]'
+                      : 'border-gray-200 hover:border-begin-teal/50 hover:bg-begin-teal/5'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                        {selectedValue === index && (
+                          <div className="w-3 h-3 bg-begin-teal rounded-full" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <span className="font-medium">{option}</span>
                       </div>
                     </div>
-                  )}
-                </div>
-              </button>
-            ))}
+                    {selectedValue === index && (
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-5 w-5 text-begin-teal" />
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))
+            ) : isMultipleChoice ? (
+              // Standard Multiple Choice Options for younger ages (6C questions)
+              questionOptions.map((option, index) => (
+                <button
+                  key={option.value}
+                  onClick={() => setSelectedValue(option.value)}
+                  className={`w-full p-4 rounded-2xl border-2 transition-all duration-300 text-left transform hover:scale-[1.02] hover:shadow-md ${
+                    selectedValue === option.value
+                      ? 'border-begin-teal bg-gradient-to-r from-begin-teal/10 to-begin-cyan/10 text-begin-teal shadow-lg scale-[1.02]'
+                      : 'border-gray-200 hover:border-begin-teal/50 hover:bg-begin-teal/5'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                        {selectedValue === option.value && (
+                          <div className="w-3 h-3 bg-begin-teal rounded-full" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <span className="font-medium">{option.text}</span>
+                      </div>
+                    </div>
+                    {selectedValue === option.value && (
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-5 w-5 text-begin-teal" />
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))
+            ) : (
+              // Likert Scale for 5+ age group (6C questions)
+              PARENT_SCALE.map((option, index) => (
+                <button
+                  key={option.value}
+                  onClick={() => setSelectedValue(option.value)}
+                  className={`w-full p-4 rounded-2xl border-2 transition-all duration-300 text-left transform hover:scale-[1.02] hover:shadow-md ${
+                    selectedValue === option.value
+                      ? 'border-begin-teal bg-gradient-to-r from-begin-teal/10 to-begin-cyan/10 text-begin-teal shadow-lg scale-[1.02]'
+                      : 'border-gray-200 hover:border-begin-teal/50 hover:bg-begin-teal/5'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">{option.emoji}</span>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold">{option.label}</span>
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-mono">
+                            {option.value}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5">{option.description}</p>
+                      </div>
+                    </div>
+                    {selectedValue === option.value && (
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 bg-begin-teal rounded-full flex items-center justify-center animate-pulse">
+                          <CheckCircle className="h-4 w-4 text-white" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))
+            )}
           </div>
 
-          {/* Keyboard Shortcuts Help */}
-          <div className="text-center mb-4">
-            <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-xs">
-              <span>💡 Pro tip:</span>
-              <span>Press 1-5 to select • ← → arrows to navigate</span>
+          {/* Keyboard Shortcuts Help - only show for Likert scale */}
+          {!isMultipleChoice && (
+            <div className="text-center mb-4">
+              <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-xs">
+                <span>💡 Pro tip:</span>
+                <span>Press 1-5 to select • ← → arrows to navigate</span>
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
 
@@ -535,9 +805,29 @@ export default function QuestionPage() {
 
             <button
               onClick={handleNext}
-              disabled={selectedValue === null}
+              disabled={(() => {
+                if (question?.questionType === 'checkbox') {
+                  if (question.category === 'Interests') {
+                    return selectedInterests.length === 0
+                  } else {
+                    return selectedValues.length === 0
+                  }
+                } else {
+                  return selectedValue === null
+                }
+              })()}
               className={`btn-begin-primary disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transform transition-all duration-200 text-sm px-6 py-3 font-semibold ${
-                selectedValue !== null ? 'hover:scale-105 shadow-lg hover:shadow-xl animate-pulse ring-2 ring-begin-teal/20' : ''
+                (() => {
+                  if (question?.questionType === 'checkbox') {
+                    if (question.category === 'Interests') {
+                      return selectedInterests.length > 0 ? 'hover:scale-105 shadow-lg hover:shadow-xl animate-pulse ring-2 ring-begin-teal/20' : ''
+                    } else {
+                      return selectedValues.length > 0 ? 'hover:scale-105 shadow-lg hover:shadow-xl animate-pulse ring-2 ring-begin-teal/20' : ''
+                    }
+                  } else {
+                    return selectedValue !== null ? 'hover:scale-105 shadow-lg hover:shadow-xl animate-pulse ring-2 ring-begin-teal/20' : ''
+                  }
+                })()
               } ${
                 questionId === totalQuestions ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600' : ''
               }`}
