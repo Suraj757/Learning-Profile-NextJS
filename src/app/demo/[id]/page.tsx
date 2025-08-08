@@ -15,6 +15,17 @@ interface SampleProfileData {
   personality_label: string
   description: string
   created_at: string
+  interests?: string[]
+  engagementStyle?: string
+  learningModality?: string
+  socialPreference?: string
+  schoolExperience?: string
+  primaryMotivators?: string[]
+  learningDrivers?: string[]
+  challengeResponse?: string
+  recognitionPreference?: string
+  stressIndicators?: string[]
+  optimalConditions?: string[]
   sample_data: {
     backstory: string
     parentQuote: string
@@ -204,6 +215,191 @@ export default function SampleProfilePage() {
             </p>
           </div>
         </div>
+
+        {/* Student Interests & Motivators Section */}
+        <div className="grid lg:grid-cols-3 gap-8 mb-8">
+          {/* Interests */}
+          <div className="card-begin p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-purple-100 p-2 rounded-lg">
+                <Star className="h-5 w-5 text-purple-600" />
+              </div>
+              <h3 className="text-lg font-bold text-begin-blue">Top Interests</h3>
+            </div>
+            <div className="space-y-2">
+              {profileData.interests?.map((interest, index) => (
+                <div key={index} className="flex items-center gap-2 p-2 bg-purple-50 rounded-lg">
+                  <Sparkles className="h-4 w-4 text-purple-600" />
+                  <span className="text-sm font-medium text-gray-800">{interest}</span>
+                </div>
+              )) || <p className="text-sm text-gray-600 italic">Interests data coming soon...</p>}
+            </div>
+          </div>
+
+          {/* Learning Style */}
+          <div className="card-begin p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-green-100 p-2 rounded-lg">
+                <Lightbulb className="h-5 w-5 text-green-600" />
+              </div>
+              <h3 className="text-lg font-bold text-begin-blue">Learning Style</h3>
+            </div>
+            <div className="space-y-3">
+              <div className="p-3 bg-green-50 rounded-lg">
+                <h4 className="text-xs font-semibold text-green-800 mb-1">Engagement Style</h4>
+                <p className="text-sm text-gray-800">{profileData.engagementStyle || 'Learning style data coming soon...'}</p>
+              </div>
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <h4 className="text-xs font-semibold text-blue-800 mb-1">Learning Modality</h4>
+                <p className="text-sm text-gray-800">{profileData.learningModality || 'Learning modality data coming soon...'}</p>
+              </div>
+              <div className="p-3 bg-orange-50 rounded-lg">
+                <h4 className="text-xs font-semibold text-orange-800 mb-1">Social Preference</h4>
+                <p className="text-sm text-gray-800">{profileData.socialPreference || 'Social preference data coming soon...'}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* School Readiness */}
+          <div className="card-begin p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-cyan-100 p-2 rounded-lg">
+                <School className="h-5 w-5 text-cyan-600" />
+              </div>
+              <h3 className="text-lg font-bold text-begin-blue">School Experience</h3>
+            </div>
+            <div className="p-3 bg-cyan-50 rounded-lg">
+              <p className="text-sm text-gray-800">{profileData.schoolExperience || 'School experience data coming soon...'}</p>
+            </div>
+            <div className="mt-4 p-3 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-lg border border-cyan-200">
+              <h4 className="text-xs font-semibold text-cyan-800 mb-2">Teacher's First Day Insight:</h4>
+              <p className="text-xs text-gray-700">
+                {profileData.schoolExperience?.includes('first time') 
+                  ? `${profileData.child_name} may need extra support with school routines and classroom expectations.`
+                  : profileData.schoolExperience?.includes('less than 6 months')
+                  ? `${profileData.child_name} is still adjusting to school structure and may benefit from consistent routines.`
+                  : profileData.schoolExperience?.includes('6 months to 1 year')
+                  ? `${profileData.child_name} has some school experience and understands basic classroom expectations.`
+                  : `${profileData.child_name} is comfortable with school routines and ready for academic challenges.`
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Enhanced Motivators & Learning Drivers */}
+        {(profileData.primaryMotivators || profileData.learningDrivers || profileData.challengeResponse) && (
+          <div className="card-begin p-8 mb-8">
+            <div className="text-center mb-6">
+              <div className="bg-gradient-to-r from-purple-100 to-pink-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Target className="h-8 w-8 text-purple-600" />
+              </div>
+              <h2 className="text-begin-heading font-bold text-begin-blue mb-2">
+                What Motivates {profileData.child_name}
+              </h2>
+              <p className="text-gray-600">
+                Deep insights into what drives their learning and engagement
+              </p>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Primary Motivators & Learning Drivers */}
+              <div className="space-y-6">
+                {profileData.primaryMotivators && profileData.primaryMotivators.length > 0 && (
+                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-2xl border border-purple-200">
+                    <h3 className="text-lg font-bold text-purple-800 mb-4 flex items-center gap-2">
+                      <Sparkles className="h-5 w-5" />
+                      Primary Motivators
+                    </h3>
+                    <div className="space-y-2">
+                      {profileData.primaryMotivators.map((motivator, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 bg-white/70 rounded-xl">
+                          <Star className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-800">{motivator}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {profileData.learningDrivers && profileData.learningDrivers.length > 0 && (
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-200">
+                    <h3 className="text-lg font-bold text-green-800 mb-4 flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5" />
+                      Learning Drivers
+                    </h3>
+                    <div className="space-y-2">
+                      {profileData.learningDrivers.map((driver, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 bg-white/70 rounded-xl">
+                          <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-800">{driver}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Challenge Response & Recognition */}
+              <div className="space-y-6">
+                {profileData.challengeResponse && (
+                  <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-2xl border border-blue-200">
+                    <h3 className="text-lg font-bold text-blue-800 mb-4 flex items-center gap-2">
+                      <Target className="h-5 w-5" />
+                      Challenge Response
+                    </h3>
+                    <p className="text-sm text-gray-800 leading-relaxed">{profileData.challengeResponse}</p>
+                  </div>
+                )}
+
+                {profileData.recognitionPreference && (
+                  <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-6 rounded-2xl border border-yellow-200">
+                    <h3 className="text-lg font-bold text-yellow-800 mb-4 flex items-center gap-2">
+                      <Award className="h-5 w-5" />
+                      Recognition Preference
+                    </h3>
+                    <p className="text-sm text-gray-800 leading-relaxed">{profileData.recognitionPreference}</p>
+                  </div>
+                )}
+
+                {profileData.stressIndicators && profileData.stressIndicators.length > 0 && (
+                  <div className="bg-gradient-to-br from-orange-50 to-red-50 p-6 rounded-2xl border border-orange-200">
+                    <h3 className="text-lg font-bold text-orange-800 mb-4 flex items-center gap-2">
+                      <AlertCircle className="h-5 w-5" />
+                      Stress Indicators
+                    </h3>
+                    <div className="space-y-2">
+                      {profileData.stressIndicators.map((indicator, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 bg-white/70 rounded-xl">
+                          <AlertTriangle className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-800">{indicator}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Optimal Conditions */}
+            {profileData.optimalConditions && profileData.optimalConditions.length > 0 && (
+              <div className="mt-8 bg-gradient-to-r from-begin-teal/10 to-begin-cyan/10 p-6 rounded-2xl border border-begin-teal/30">
+                <h3 className="text-lg font-bold text-begin-blue mb-4 flex items-center gap-2">
+                  <Lightbulb className="h-5 w-5" />
+                  Optimal Learning Conditions for {profileData.child_name}
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {profileData.optimalConditions.map((condition, index) => (
+                    <div key={index} className="flex items-start gap-3 p-4 bg-white/60 rounded-xl">
+                      <CheckCircle className="h-5 w-5 text-begin-teal mt-0.5 flex-shrink-0" />
+                      <span className="text-sm text-gray-800 font-medium">{condition}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Sample-Specific Insights */}
         <div className="grid lg:grid-cols-2 gap-8 mb-8">

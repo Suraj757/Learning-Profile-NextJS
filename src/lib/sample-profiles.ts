@@ -23,6 +23,13 @@ export interface SampleProfile {
   rawResponses?: Record<string, any>
   isPublic?: boolean
   shareToken?: string
+  // Enhanced motivator and driver data
+  primaryMotivators?: string[]
+  learningDrivers?: string[]
+  challengeResponse?: string
+  recognitionPreference?: string
+  stressIndicators?: string[]
+  optimalConditions?: string[]
 }
 
 // Diverse sample profiles representing different learning styles and backgrounds
@@ -63,6 +70,12 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
     learningModality: 'Visual demonstrations and watching examples',
     socialPreference: 'Collaborative group activities',
     schoolExperience: 'They have been in daycare/preschool for 2+ years and are comfortable with school routines',
+    primaryMotivators: ['Helping others succeed', 'Creative expression', 'Social connection', 'Making things beautiful'],
+    learningDrivers: ['Peer collaboration', 'Artistic projects', 'Storytelling opportunities', 'Hands-on activities'],
+    challengeResponse: 'Seeks help from peers and adults; persists when working with others',
+    recognitionPreference: 'Public celebration of group achievements and creative work',
+    stressIndicators: ['Withdraws from independent work', 'Becomes overly concerned about others\' emotions', 'Rushes through tasks to help others'],
+    optimalConditions: ['Collaborative workspace', 'Art supplies readily available', 'Opportunities to mentor others', 'Visual instructions and examples'],
     rawResponses: {
       '22': ['Pets', 'Art & Drawing', 'Fairytales', 'Music', 'Helping Others'],
       '23': 'Hands-on building and crafts',
@@ -110,6 +123,12 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
     learningModality: 'Independent exploration and figuring things out alone',
     socialPreference: 'Working independently',
     schoolExperience: 'They have been in daycare/preschool for 2+ years and are comfortable with school routines',
+    primaryMotivators: ['Mastery and expertise', 'Intellectual challenge', 'Discovery and research', 'Solving complex problems'],
+    learningDrivers: ['In-depth research opportunities', 'Technology integration', 'Complex problem-solving tasks', 'Independent investigation time'],
+    challengeResponse: 'Dives deeper into research; sometimes needs encouragement to share findings',
+    recognitionPreference: 'Private acknowledgment of expertise; opportunities to teach others',
+    stressIndicators: ['Becomes overly perfectionistic', 'Reluctant to participate in group discussions', 'May isolate when feeling intellectually unchallenged'],
+    optimalConditions: ['Access to reference materials and technology', 'Quiet workspace for concentration', 'Opportunities for deep dive projects', 'Time to process before sharing'],
     rawResponses: {
       '22': ['How Things Work', 'Robots', 'Space & Planets', 'Computers', 'Dinosaurs'],
       '23': 'Digital games and apps',
@@ -157,6 +176,12 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
     learningModality: 'Story-based and imaginative explanations',
     socialPreference: 'One-on-one time with adults',
     schoolExperience: 'They have been in daycare/preschool for less than 6 months',
+    primaryMotivators: ['Helping others feel included', 'Building relationships', 'Caring for others', 'Creating harmony'],
+    learningDrivers: ['Social-emotional learning opportunities', 'Role-playing activities', 'Stories with moral lessons', 'Collaborative helping projects'],
+    challengeResponse: 'Seeks adult support and reassurance; thrives with gentle encouragement',
+    recognitionPreference: 'Private praise for kindness; public recognition for helping others',
+    stressIndicators: ['Becomes overly worried about others\' feelings', 'May neglect own needs', 'Difficulty with conflict situations'],
+    optimalConditions: ['Warm, supportive environment', 'Clear social expectations', 'Opportunities to help classmates', 'Story-based learning connections'],
     rawResponses: {
       '22': ['Helping Others', 'Family & Friends', 'Animals', 'Stories & Books', 'Cooking'],
       '23': 'Pretend play and imaginative activities',
@@ -204,6 +229,12 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
     learningModality: 'Independent exploration and figuring things out alone',
     socialPreference: 'Working independently',
     schoolExperience: 'They have been in daycare/preschool for 1-2 years',
+    primaryMotivators: ['Creating and building', 'Solving challenging puzzles', 'Independence and autonomy', 'Innovative problem-solving'],
+    learningDrivers: ['Hands-on engineering projects', 'Open-ended building challenges', 'Trial-and-error exploration', 'Real-world application opportunities'],
+    challengeResponse: 'Persists independently; may become frustrated with time constraints or collaboration requirements',
+    recognitionPreference: 'Recognition for innovative solutions and persistence; showcase opportunities for projects',
+    stressIndicators: ['Becomes frustrated with interruptions', 'May rush others in group work', 'Reluctant to follow others\' plans'],
+    optimalConditions: ['Access to building materials and tools', 'Extended work periods', 'Minimal interruptions', 'Opportunities to showcase innovations'],
     rawResponses: {
       '22': ['How Things Work', 'Robots', 'Building & Construction', 'Puzzles', 'Inventions'],
       '23': 'Hands-on building and crafts',
@@ -251,6 +282,12 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
     learningModality: 'Visual demonstrations and watching examples',
     socialPreference: 'Collaborative group activities',
     schoolExperience: 'They have been in daycare/preschool for 6 months to 1 year',
+    primaryMotivators: ['Achievement and success', 'Positive energy and enthusiasm', 'Encouraging others', 'Active participation'],
+    learningDrivers: ['Movement integration', 'Visual and kinesthetic activities', 'Goal-setting opportunities', 'Team challenges and competitions'],
+    challengeResponse: 'Maintains optimistic attitude; tries multiple approaches; encourages peers to keep trying',
+    recognitionPreference: 'Public celebration of effort and improvement; team-based recognition',
+    stressIndicators: ['May minimize own struggles to stay positive', 'Can become overly competitive', 'May rush to help others before completing own work'],
+    optimalConditions: ['Movement breaks incorporated', 'Clear visual guides and examples', 'Collaborative learning opportunities', 'Regular celebration of progress'],
     rawResponses: {
       '22': ['Sports', 'Art & Drawing', 'Music', 'Helping Others', 'Games & Puzzles'],
       '23': 'Movement-based activities (dancing, running, jumping)',
@@ -298,6 +335,12 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
     learningModality: 'Independent exploration and figuring things out alone',
     socialPreference: 'Playing alongside others (parallel play)',
     schoolExperience: 'They have been in daycare/preschool for 2+ years and are comfortable with school routines',
+    primaryMotivators: ['Creative problem-solving', 'Innovative thinking', 'Designing solutions', 'Analytical challenges'],
+    learningDrivers: ['Design thinking projects', 'Technology-based creativity', 'Complex problem scenarios', 'Time for reflection and processing'],
+    challengeResponse: 'Takes time to think through problems; prefers to work through solutions before sharing',
+    recognitionPreference: 'Recognition for creative solutions and innovative thinking; portfolio showcases',
+    stressIndicators: ['May become overwhelmed in fast-paced environments', 'Reluctant to share incomplete ideas', 'Needs processing time before responding'],
+    optimalConditions: ['Quiet thinking space', 'Access to design tools and technology', 'Time for reflection', 'Opportunities to share finished work'],
     rawResponses: {
       '22': ['Computers', 'Puzzles & Brain Teasers', 'How Things Work', 'Building & Construction', 'Art & Drawing'],
       '23': 'Digital games and apps',
@@ -345,6 +388,12 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
     learningModality: 'Story-based and imaginative explanations',
     socialPreference: 'One-on-one time with adults',
     schoolExperience: 'This is their first time in a structured learning environment',
+    primaryMotivators: ['Curiosity and wonder', 'Learning fascinating facts', 'Imaginative exploration', 'Building knowledge'],
+    learningDrivers: ['Story-based learning', 'Hands-on exploration', 'Visual and imaginative explanations', 'Gentle encouragement and support'],
+    challengeResponse: 'Needs time and support to build confidence; responds well to patient encouragement',
+    recognitionPreference: 'Gentle, private encouragement; opportunities to share knowledge with trusted adults',
+    stressIndicators: ['May withdraw in large groups', 'Becomes quiet when overwhelmed', 'Needs extra time to warm up to new situations'],
+    optimalConditions: ['Small group or one-on-one instruction', 'Story-based connections to content', 'Gentle introduction to new concepts', 'Safe space to ask questions'],
     rawResponses: {
       '22': ['Wild Animals', 'Space & Planets', 'Stories & Books', 'Dinosaurs', 'How Things Work'],
       '23': 'Pretend play and imaginative activities',
@@ -392,6 +441,12 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
     learningModality: 'Step-by-step verbal instructions',
     socialPreference: 'Collaborative group activities',
     schoolExperience: 'They have been in daycare/preschool for 2+ years and are comfortable with school routines',
+    primaryMotivators: ['Making a positive impact', 'Leading and inspiring others', 'Building team success', 'Creating inclusive environments'],
+    learningDrivers: ['Leadership opportunities', 'Service learning projects', 'Team-based challenges', 'Discussion and collaboration'],
+    challengeResponse: 'Focuses on helping team overcome challenges; seeks win-win solutions',
+    recognitionPreference: 'Recognition for leadership and positive impact on others; team achievement celebrations',
+    stressIndicators: ['May take on too much responsibility', 'Concerned when team members struggle', 'Sometimes neglects personal academic needs'],
+    optimalConditions: ['Opportunities to lead and facilitate', 'Collaborative learning environment', 'Service learning connections', 'Clear communication and feedback'],
     rawResponses: {
       '22': ['Sports', 'Leadership & Teamwork', 'Helping Others', 'Community & Social Issues', 'Games & Strategy'],
       '23': 'Collaborative group activities',
@@ -401,6 +456,112 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
     },
     isPublic: true,
     shareToken: 'diego-sample-2024'
+  },
+
+  {
+    id: 'lily-emerging-leader',
+    childName: 'Lily',
+    age: 4,
+    grade: 'Pre-K',
+    scores: {
+      'Communication': 3.8,
+      'Collaboration': 4.1,
+      'Content': 3.2,
+      'Critical Thinking': 3.5,
+      'Creative Innovation': 4.4,
+      'Confidence': 3.9
+    },
+    personalityLabel: 'Emerging Creative Leader',
+    description: 'Lily shows early leadership qualities through her creative ideas and natural ability to engage others in imaginative play and activities.',
+    createdAt: '2024-02-25T10:15:00Z',
+    backstory: 'Lily is the youngest in her family but often leads the play among her older siblings and neighborhood friends. She loves to organize "shows" in the backyard and create elaborate storylines for her dolls and action figures.',
+    parentQuote: "Lily has this amazing ability to get other kids excited about her ideas. She\'ll say \'Let\'s pretend we\'re explorers!\' and suddenly everyone is on an adventure. She\'s starting to show real confidence in new situations too.",
+    teacherInsight: 'Lily demonstrates emerging leadership through her creative initiatives and ability to engage peers in imaginative play. She shows strong potential for collaborative learning and responds well to opportunities to share her ideas with the class.',
+    realWorldExample: 'During free play time, Lily organized a "restaurant" in the dramatic play area. She assigned roles to classmates, created a menu with pictures and scribbles, and helped everyone stay engaged in the activity for the entire play period.',
+    strengths: [
+      'Natural storyteller and creative thinker',
+      'Emerging leadership through play organization',
+      'Enthusiastic about trying new activities',
+      'Good at including others in her play'
+    ],
+    growthAreas: [
+      'Developing patience for structured learning activities',
+      'Building attention span for longer tasks',
+      'Learning to follow others\' lead sometimes'
+    ],
+    interests: ['Fairytales', 'Dress-Up & Pretend Play', 'Music', 'Animals', 'Art & Drawing'],
+    engagementStyle: 'Pretend play and imaginative activities',
+    learningModality: 'Visual demonstrations and watching examples',
+    socialPreference: 'Collaborative group activities',
+    schoolExperience: 'They have been in daycare/preschool for 6 months to 1 year',
+    primaryMotivators: ['Creative storytelling', 'Leading imaginative play', 'Making others happy', 'Trying new activities'],
+    learningDrivers: ['Dramatic play opportunities', 'Art and craft projects', 'Music and movement', 'Story-based learning'],
+    challengeResponse: 'Uses creativity to make challenges more fun; seeks help through play scenarios',
+    recognitionPreference: 'Celebration of creative ideas and leadership in play; opportunities to perform or share',
+    stressIndicators: ['Becomes silly or disruptive when overstimulated', 'May dominate play without realizing it', 'Difficulty sitting still for long periods'],
+    optimalConditions: ['Opportunities for creative expression', 'Movement integrated into learning', 'Dramatic play materials available', 'Recognition for leadership in play'],
+    rawResponses: {
+      '22': ['Fairytales', 'Dress-Up & Pretend Play', 'Music', 'Animals', 'Art & Drawing'],
+      '23': 'Pretend play and imaginative activities',
+      '24': 'Visual demonstrations and watching examples',
+      '25': 'Collaborative group activities',
+      '26': 'They have been in daycare/preschool for 6 months to 1 year'
+    },
+    isPublic: true,
+    shareToken: 'lily-sample-2024'
+  },
+
+  {
+    id: 'jamal-systematic-thinker',
+    childName: 'Jamal',
+    age: 13,
+    grade: '8th Grade',
+    scores: {
+      'Communication': 4.1,
+      'Collaboration': 3.7,
+      'Content': 4.6,
+      'Critical Thinking': 4.9,
+      'Creative Innovation': 3.8,
+      'Confidence': 4.2
+    },
+    personalityLabel: 'Systematic Critical Thinker',
+    description: 'Jamal approaches problems methodically and excels at breaking down complex concepts into logical steps, showing exceptional analytical reasoning skills.',
+    createdAt: '2024-03-01T09:30:00Z',
+    backstory: 'Jamal loves debate club, strategy games, and has become the family\'s unofficial tech support. He approaches everything systematically, from organizing his room to planning his homework schedule. He wants to become an engineer or computer scientist.',
+    parentQuote: "Jamal thinks about everything so logically. When his little sister was struggling with math homework, he didn\'t just give her answers - he created a step-by-step system that she could follow. He sees patterns and solutions that adults miss.",
+    teacherInsight: 'Jamal excels at analytical thinking and loves complex problem-solving challenges. He benefits from opportunities to explain his reasoning process and works well when given time to think through problems thoroughly before sharing solutions.',
+    realWorldExample: 'For a civics project on local government issues, Jamal researched the city budget, interviewed three city council members, created a detailed analysis of budget allocation problems, and proposed a systematic solution with supporting data.',
+    strengths: [
+      'Exceptional analytical and logical reasoning',
+      'Strong research and investigation skills',
+      'Methodical approach to complex problems',
+      'Ability to explain complex concepts clearly'
+    ],
+    growthAreas: [
+      'Embracing creative and open-ended approaches',
+      'Developing comfort with ambiguous situations',
+      'Building patience for less structured group work'
+    ],
+    interests: ['Computers', 'How Things Work', 'Games & Strategy', 'Space & Planets', 'Community & Social Issues'],
+    engagementStyle: 'Digital games and apps',
+    learningModality: 'Independent exploration and figuring things out alone',
+    socialPreference: 'Playing alongside others (parallel play)',
+    schoolExperience: 'They have been in daycare/preschool for 2+ years and are comfortable with school routines',
+    primaryMotivators: ['Logical problem-solving', 'Understanding complex systems', 'Achieving mastery', 'Systematic improvement'],
+    learningDrivers: ['Complex analytical projects', 'Technology integration', 'Research opportunities', 'Systematic skill building'],
+    challengeResponse: 'Breaks challenges into manageable steps; persists through systematic analysis',
+    recognitionPreference: 'Recognition for thorough analysis and logical solutions; opportunities to mentor others',
+    stressIndicators: ['Becomes frustrated with disorganized group work', 'May overthink simple tasks', 'Reluctant to share incomplete analysis'],
+    optimalConditions: ['Access to research tools and technology', 'Structured project guidelines', 'Time for thorough analysis', 'Opportunities to present systematic solutions'],
+    rawResponses: {
+      '25': ['Computers', 'How Things Work', 'Games & Strategy', 'Space & Planets', 'Community & Social Issues'],
+      '26': 'Digital games and apps',
+      '27': 'Independent exploration and figuring things out alone',
+      '28': 'Playing alongside others (parallel play)',
+      '29': 'They have been in daycare/preschool for 2+ years and are comfortable with school routines'
+    },
+    isPublic: true,
+    shareToken: 'jamal-sample-2024'
   }
 ]
 
@@ -448,7 +609,11 @@ export const getShowcaseProfiles = () => ({
   creative: SAMPLE_PROFILES.find(p => p.id === 'emma-creative-collaborator')!,
   developing: SAMPLE_PROFILES.find(p => p.id === 'maya-developing-communicator')!,
   independent: SAMPLE_PROFILES.find(p => p.id === 'aiden-independent-explorer')!,
-  social: SAMPLE_PROFILES.find(p => p.id === 'sofia-social-connector')!
+  social: SAMPLE_PROFILES.find(p => p.id === 'sofia-social-connector')!,
+  confident: SAMPLE_PROFILES.find(p => p.id === 'zara-confident-builder')!,
+  innovative: SAMPLE_PROFILES.find(p => p.id === 'kai-thoughtful-innovator')!,
+  emergingLeader: SAMPLE_PROFILES.find(p => p.id === 'lily-emerging-leader')!,
+  systematicThinker: SAMPLE_PROFILES.find(p => p.id === 'jamal-systematic-thinker')!
 })
 
 export default SAMPLE_PROFILES

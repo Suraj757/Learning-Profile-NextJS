@@ -35,6 +35,21 @@ export async function GET(
       is_public: responseProfile.isPublic || true,
       share_token: responseProfile.shareToken || responseProfile.id,
       
+      // Interests and motivators data
+      interests: responseProfile.interests,
+      engagementStyle: responseProfile.engagementStyle,
+      learningModality: responseProfile.learningModality,
+      socialPreference: responseProfile.socialPreference,
+      schoolExperience: responseProfile.schoolExperience,
+      
+      // Enhanced motivator data
+      primaryMotivators: responseProfile.primaryMotivators,
+      learningDrivers: responseProfile.learningDrivers,
+      challengeResponse: responseProfile.challengeResponse,
+      recognitionPreference: responseProfile.recognitionPreference,
+      stressIndicators: responseProfile.stressIndicators,
+      optimalConditions: responseProfile.optimalConditions,
+      
       // Additional sample-specific data
       sample_data: {
         backstory: responseProfile.backstory,
