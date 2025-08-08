@@ -1,50 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SignJWT } from 'jose'
+import bcrypt from 'bcryptjs'
+import { getUserByEmail } from '@/lib/auth/user-storage'
 
-// Simple password hash check (in production, use proper bcrypt)
-function simpleHashCheck(password: string, expectedPassword: string): boolean {
-  // For demo purposes, allow simple password matching
-  // In production, this would use bcrypt.compare()
-  return password === expectedPassword || password.length >= 6
-}
-
-// Demo user database (in production, query real database)
-const DEMO_USERS = {
-  'demo@teacher.edu': {
-    id: 'teacher_demo_001',
-    email: 'demo@teacher.edu',
-    name: 'Demo Teacher',
-    userType: 'teacher' as const,
-    password: 'demo123',
-    isActive: true,
-    isVerified: true,
-    permissions: {
-      canViewStudentProfiles: true,
-      canCreateAssessments: true,
-      canViewClassroomAnalytics: true,
-      canExportStudentData: true,
-      canInviteParents: true,
-      classroomIds: ['classroom_001', 'classroom_002'],
-      schoolId: 'demo_school'
-    }
-  },
-  'demo@parent.com': {
-    id: 'parent_demo_001',
-    email: 'demo@parent.com',
-    name: 'Demo Parent',
-    userType: 'parent' as const,
-    password: 'demo123',
-    isActive: true,
-    isVerified: true,
-    permissions: {
-      canViewOwnChildData: true,
-      canExportChildData: true,
-      canDeleteChildData: true,
-      canManageConsent: true,
-      childIds: ['student_001']
-    }
+// Password verification function
+async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  try {
+    return await bcrypt.compare(password, hash)
+  } catch (error) {
+    console.error('Password verification error:', error)
+    return false
   }
 }
+
+// Simple password check for demo users (legacy)
+function simpleHashCheck(password: string, expectedPassword: string): boolean {
+  // For demo purposes, allow simple password matching
+  return password === expectedPassword
+}
+
+// Shared user storage is now imported from @/lib/auth/user-storage
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'demo-secret-key-change-in-production'
@@ -61,8 +36,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Find user (in production, query database)
-    const user = DEMO_USERS[email as keyof typeof DEMO_USERS]
+    // Find user (check both registered and demo users)
+    const user = getUserByEmail(email)
     
     if (!user || user.userType !== userType) {
       return NextResponse.json(
@@ -71,8 +46,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check password (in production, use bcrypt)
-    const passwordValid = simpleHashCheck(password, user.password)
+    // Check if user needs to set up password (existing users)
+    if (user.needsPasswordSetup) {
+      return NextResponse.json(
+        { 
+          error: 'Password setup required',
+          needsPasswordSetup: true,
+          userId: user.id,
+          email: user.email
+        },
+        { status: 401 }
+      )
+    }
+
+    // Verify password
+    let passwordValid = false
+    
+    if (user.passwordHash) {
+      // Use bcrypt for registered users
+      passwordValid = await verifyPassword(password, user.passwordHash)
+    } else if (user.password) {
+      // Use simple check for demo users
+      passwordValid = simpleHashCheck(password, user.password)
+    }
     
     if (!passwordValid) {
       return NextResponse.json(

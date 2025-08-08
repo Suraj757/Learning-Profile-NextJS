@@ -2,23 +2,74 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { BookOpen, ArrowRight, Users, School, Mail, User } from 'lucide-react'
-import { createTeacher, getTeacherByEmail } from '@/lib/supabase'
-import { useTeacherAuth, isValidEmail } from '@/lib/teacher-auth'
+import { BookOpen, ArrowRight, Users, School, Mail, User, Lock, Eye, EyeOff, CheckCircle, AlertTriangle } from 'lucide-react'
+
+// Password strength indicator component
+function PasswordStrengthIndicator({ password }: { password: string }) {
+  const checks = {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /\d/.test(password)
+  }
+  
+  const strength = Object.values(checks).filter(Boolean).length
+  const strengthText = ['Weak', 'Fair', 'Good', 'Strong'][Math.max(0, strength - 1)]
+  const strengthColor = ['text-red-500', 'text-yellow-500', 'text-blue-500', 'text-green-500'][Math.max(0, strength - 1)]
+  
+  if (!password) return null
+  
+  return (
+    <div className="mt-2 space-y-1">
+      <div className="flex items-center space-x-2">
+        <div className="flex space-x-1">
+          {[1, 2, 3, 4].map((i) => (
+            <div 
+              key={i}
+              className={`h-1 w-6 rounded ${i <= strength ? strengthColor.replace('text-', 'bg-') : 'bg-gray-200'}`}
+            />
+          ))}
+        </div>
+        <span className={`text-xs ${strengthColor}`}>{strengthText}</span>
+      </div>
+      <div className="text-xs text-gray-600 space-y-1">
+        <div className={`flex items-center space-x-1 ${checks.length ? 'text-green-600' : 'text-gray-400'}`}>
+          <CheckCircle className="h-3 w-3" />
+          <span>At least 8 characters</span>
+        </div>
+        <div className={`flex items-center space-x-1 ${checks.uppercase ? 'text-green-600' : 'text-gray-400'}`}>
+          <CheckCircle className="h-3 w-3" />
+          <span>One uppercase letter</span>
+        </div>
+        <div className={`flex items-center space-x-1 ${checks.lowercase ? 'text-green-600' : 'text-gray-400'}`}>
+          <CheckCircle className="h-3 w-3" />
+          <span>One lowercase letter</span>
+        </div>
+        <div className={`flex items-center space-x-1 ${checks.number ? 'text-green-600' : 'text-gray-400'}`}>
+          <CheckCircle className="h-3 w-3" />
+          <span>One number</span>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function TeacherRegisterPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     school: '',
-    grade_level: ''
+    gradeLevel: '',
+    password: '',
+    confirmPassword: ''
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [isLogin, setIsLogin] = useState(false)
+  const [errors, setErrors] = useState<string[]>([])
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const router = useRouter()
-  const { login } = useTeacherAuth()
 
   const gradeOptions = [
     'Pre-K', 'Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', 
@@ -29,68 +80,43 @@ export default function TeacherRegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setErrors([])
     setLoading(true)
 
     try {
-      if (!isValidEmail(formData.email)) {
-        throw new Error('Please enter a valid email address')
+      // Call our new registration API
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
+
+      if (!result.success) {
+        setErrors(result.errors || ['Registration failed'])
+        return
       }
 
-      if (!formData.name.trim()) {
-        throw new Error('Please enter your full name')
-      }
-
-      console.log('Processing teacher registration:', formData.email)
+      setSuccess(result.message || 'Registration successful!')
       
-      try {
-        // Try to check if teacher already exists
-        const existingTeacher = await getTeacherByEmail(formData.email)
-        
-        if (existingTeacher) {
-          console.log('Found existing teacher:', existingTeacher)
-          setSuccess(`Welcome back, ${existingTeacher.name}! Logging you in...`)
-          login(existingTeacher)
-          setTimeout(() => router.push('/teacher/dashboard'), 1000)
-          return
-        }
-      } catch (dbError: any) {
-        console.log('Database check failed, will create offline account:', dbError.message)
-      }
+      // Clear form on success
+      setFormData({
+        name: '',
+        email: '',
+        school: '',
+        gradeLevel: '',
+        password: '',
+        confirmPassword: ''
+      })
 
-      try {
-        // Try to create new teacher in database
-        console.log('Creating new teacher in database')
-        const newTeacher = await createTeacher({
-          email: formData.email,
-          name: formData.name,
-          school: formData.school || undefined,
-          grade_level: formData.grade_level || undefined
-        })
-        
-        console.log('Created new teacher:', newTeacher)
-        setSuccess(`Account created successfully! Welcome, ${newTeacher.name}!`)
-        login(newTeacher)
-        setTimeout(() => router.push('/teacher/onboarding'), 1000)
-      } catch (dbError: any) {
-        console.log('Database creation failed, creating offline account:', dbError.message)
-        
-        // Create offline teacher account if database is unavailable
-        const offlineTeacher = {
-          id: Date.now(), // Use timestamp as unique ID
-          email: formData.email,
-          name: formData.name,
-          school: formData.school || undefined,
-          grade_level: formData.grade_level || undefined,
-          ambassador_status: false,
-          created_at: new Date().toISOString(),
-          isOfflineAccount: true
-        }
-        
-        console.log('Created offline teacher account:', offlineTeacher)
-        setSuccess(`Account created successfully! Welcome, ${offlineTeacher.name}! (Offline mode)`)
-        login(offlineTeacher)
-        setTimeout(() => router.push('/teacher/onboarding?offline=true'), 1000)
-      }
+      // Redirect to login after 3 seconds
+      setTimeout(() => {
+        router.push('/auth/login?message=registration_success')
+      }, 3000)
+
     } catch (err: any) {
       console.error('Teacher registration error:', err)
       setError(err.message || 'Something went wrong. Please try again.')
@@ -106,6 +132,7 @@ export default function TeacherRegisterPage() {
     }))
     // Clear messages when user starts typing
     if (error) setError('')
+    if (errors.length > 0) setErrors([])
     if (success) setSuccess('')
   }
 
@@ -255,6 +282,19 @@ export default function TeacherRegisterPage() {
             </div>
           )}
 
+          {errors.length > 0 && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-card">
+              <div className="text-red-800 text-sm">
+                <p className="font-medium mb-2">Please fix the following issues:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  {errors.map((err, index) => (
+                    <li key={index}>{err}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+
           {success && (
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-card">
               <p className="text-green-800 text-sm font-medium">{success}</p>
@@ -313,13 +353,13 @@ export default function TeacherRegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="grade_level" className="block text-heading font-semibold text-begin-blue mb-2">
+              <label htmlFor="gradeLevel" className="block text-heading font-semibold text-begin-blue mb-2">
                 Grade Level (Optional)
               </label>
               <select
-                id="grade_level"
-                name="grade_level"
-                value={formData.grade_level}
+                id="gradeLevel"
+                name="gradeLevel"
+                value={formData.gradeLevel}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-begin-gray rounded-card focus:ring-2 focus:ring-begin-teal focus:border-transparent text-body"
               >
@@ -330,6 +370,71 @@ export default function TeacherRegisterPage() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Password Fields */}
+            <div className="space-y-4 pt-4 border-t border-begin-gray/30">
+              <h4 className="font-semibold text-begin-blue text-lg">Create Your Password</h4>
+              
+              <div>
+                <label htmlFor="password" className="block text-heading font-semibold text-begin-blue mb-2">
+                  <Lock className="h-5 w-5 inline mr-2" />
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 pr-12 border border-begin-gray rounded-card focus:ring-2 focus:ring-begin-teal focus:border-transparent text-body"
+                    placeholder="Create a strong password"
+                    required
+                    minLength={8}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+                <PasswordStrengthIndicator password={formData.password} />
+              </div>
+
+              <div>
+                <label htmlFor="confirmPassword" className="block text-heading font-semibold text-begin-blue mb-2">
+                  <Lock className="h-5 w-5 inline mr-2" />
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 pr-12 border border-begin-gray rounded-card focus:ring-2 focus:ring-begin-teal focus:border-transparent text-body"
+                    placeholder="Confirm your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+                {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <AlertTriangle className="h-4 w-4 mr-1" />
+                    Passwords do not match
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="bg-begin-cyan/5 p-6 rounded-card">
@@ -346,7 +451,7 @@ export default function TeacherRegisterPage() {
             <div className="flex justify-center pt-4">
               <button
                 type="submit"
-                disabled={loading || !formData.email || !formData.name}
+                disabled={loading || !formData.email || !formData.name || !formData.password || formData.password !== formData.confirmPassword}
                 className="btn-begin-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
               >
                 {loading ? (
