@@ -23,6 +23,7 @@ import { getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
 import type { Classroom, ProfileAssignment } from '@/lib/supabase'
 import DelightfulLoading from '@/components/loading/DelightfulLoading'
 import { createDemoDataForTeacher, getDemoReportsData } from '@/lib/demo-data'
+import { getOnboardingStatus, OnboardingStatus } from '@/lib/teacher-onboarding'
 
 function TeacherDashboardContent() {
   const { teacher, loading: authLoading, isAuthenticated } = useTeacherAuth()
@@ -30,11 +31,12 @@ function TeacherDashboardContent() {
   const [assignments, setAssignments] = useState<ProfileAssignment[]>([])
   const [loading, setLoading] = useState(true)
   const [showWelcome, setShowWelcome] = useState(false)
+  const [onboardingState, setOnboardingState] = useState<{ shouldShow: OnboardingStatus; reason: string; suggestions: string[] } | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    if (searchParams.get('welcome') === 'true') {
+    if (searchParams.get('welcome') === 'true' || searchParams.get('onboarding') === 'completed') {
       setShowWelcome(true)
     }
   }, [searchParams])
@@ -80,6 +82,21 @@ function TeacherDashboardContent() {
       } else {
         setClassrooms(classroomsData || [])
         setAssignments(assignmentsData || [])
+      }
+      
+      // Check onboarding status
+      if (teacher) {
+        const onboardingStatus = getOnboardingStatus(
+          teacher, 
+          classroomsData || [], 
+          assignmentsData || [],
+          searchParams
+        )
+        setOnboardingState({
+          shouldShow: onboardingStatus.shouldShow,
+          reason: onboardingStatus.reason,
+          suggestions: onboardingStatus.suggestions
+        })
       }
     } catch (error) {
       console.error('Error loading dashboard data:', error)
@@ -209,6 +226,64 @@ function TeacherDashboardContent() {
               >
                 ×
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Smart Onboarding Banner */}
+      {onboardingState && onboardingState.shouldShow === 'suggested' && (
+        <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="bg-white/20 rounded-full p-2">
+                  <Zap className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-1">Get More Value from Learning Profiles</h3>
+                  <p className="text-sm opacity-90">{onboardingState.reason}</p>
+                  {onboardingState.suggestions.length > 0 && (
+                    <p className="text-xs opacity-75 mt-1">💡 {onboardingState.suggestions[0]}</p>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/teacher/onboarding?tour=true"
+                  className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-card text-sm font-medium transition-colors flex items-center gap-2"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Take Tour
+                </Link>
+                <button
+                  onClick={() => setOnboardingState(null)}
+                  className="text-white/80 hover:text-white p-1"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Required Onboarding Redirect */}
+      {onboardingState && onboardingState.shouldShow === 'required' && (
+        <div className="bg-begin-teal text-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="text-center">
+              <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <Heart className="h-8 w-8" />
+              </div>
+              <h2 className="text-xl font-bold mb-2">Welcome! Let's Get You Started</h2>
+              <p className="mb-4 opacity-90">{onboardingState.reason}</p>
+              <Link
+                href="/teacher/onboarding"
+                className="btn-begin-primary bg-white text-begin-teal hover:bg-begin-gray/10"
+              >
+                Start 5-Minute Setup
+              </Link>
             </div>
           </div>
         </div>

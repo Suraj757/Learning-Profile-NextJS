@@ -17,12 +17,14 @@ import {
 } from 'lucide-react'
 import { useTeacherAuth } from '@/lib/teacher-auth'
 import AuthRequired from '@/components/teacher/AuthRequired'
+import { markOnboardingCompleted, markOnboardingSkipped, getOnboardingStatus } from '@/lib/teacher-onboarding'
 
 export default function TeacherOnboarding() {
   const { teacher } = useTeacherAuth()
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [completedSteps, setCompletedSteps] = useState<number[]>([])
+  const [isCompleting, setIsCompleting] = useState(false)
 
   const markStepComplete = (step: number) => {
     if (!completedSteps.includes(step)) {
@@ -33,11 +35,53 @@ export default function TeacherOnboarding() {
   const nextStep = () => {
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1)
+    } else {
+      // Last step completed - mark onboarding as done
+      completeOnboarding()
     }
   }
 
   const goToStep = (step: number) => {
     setCurrentStep(step)
+  }
+
+  const completeOnboarding = async () => {
+    if (!teacher || isCompleting) return
+    
+    setIsCompleting(true)
+    const success = await markOnboardingCompleted(teacher.id)
+    
+    if (success) {
+      // Update local teacher data
+      const updatedTeacher = {
+        ...teacher,
+        onboarding_completed: true,
+        onboarding_completed_at: new Date().toISOString()
+      }
+      localStorage.setItem('teacher_session', JSON.stringify(updatedTeacher))
+    }
+    
+    // Redirect to dashboard with success message
+    router.push('/teacher/dashboard?onboarding=completed')
+  }
+
+  const skipOnboarding = async () => {
+    if (!teacher) return
+    
+    const success = await markOnboardingSkipped(teacher.id)
+    
+    if (success) {
+      // Update local teacher data
+      const updatedTeacher = {
+        ...teacher,
+        onboarding_skipped: true,
+        onboarding_skipped_at: new Date().toISOString()
+      }
+      localStorage.setItem('teacher_session', JSON.stringify(updatedTeacher))
+    }
+    
+    // Redirect to dashboard
+    router.push('/teacher/dashboard')
   }
 
   const steps = [
@@ -416,12 +460,13 @@ export default function TeacherOnboarding() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <Link 
-              href="/teacher/dashboard"
-              className="btn-begin-primary flex-1 flex items-center justify-center gap-2"
+            <button
+              onClick={completeOnboarding}
+              disabled={isCompleting}
+              className="btn-begin-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              Go to Dashboard <BookOpen className="h-4 w-4" />
-            </Link>
+              {isCompleting ? 'Completing...' : 'Complete Tour'} <BookOpen className="h-4 w-4" />
+            </button>
             <Link 
               href="/teacher/help"
               className="btn-begin-secondary flex items-center justify-center gap-2"
@@ -510,12 +555,12 @@ export default function TeacherOnboarding() {
 
           {/* Skip Option */}
           <div className="mt-8 text-center">
-            <Link 
-              href="/teacher/dashboard"
+            <button
+              onClick={skipOnboarding}
               className="text-begin-blue/60 hover:text-begin-blue text-sm underline"
             >
               Skip onboarding and go to dashboard
-            </Link>
+            </button>
           </div>
         </div>
       </div>

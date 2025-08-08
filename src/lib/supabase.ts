@@ -137,6 +137,10 @@ export interface Teacher {
   grade_level?: string
   ambassador_status: boolean
   created_at: string
+  onboarding_completed?: boolean
+  onboarding_completed_at?: string
+  onboarding_skipped?: boolean
+  onboarding_skipped_at?: string
   isOfflineDemo?: boolean
   isOfflineAccount?: boolean
 }

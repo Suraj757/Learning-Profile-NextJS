@@ -171,7 +171,8 @@ export default function TeacherRegisterPage() {
                     }
                     
                     login(demoTeacher)
-                    router.push('/teacher/dashboard?welcome=true')
+                    // Demo teachers should also see onboarding for the full experience
+                    router.push('/teacher/onboarding?demo=true')
                   } catch (error) {
                     console.error('Demo teacher creation failed:', error)
                     // Fallback to offline demo
@@ -186,7 +187,8 @@ export default function TeacherRegisterPage() {
                       isOfflineDemo: true
                     }
                     login(offlineDemoTeacher)
-                    router.push('/teacher/dashboard?welcome=true&demo=offline')
+                    // Demo teachers should see onboarding too
+                    router.push('/teacher/onboarding?demo=true&offline=true')
                   } finally {
                     setLoading(false)
                   }
