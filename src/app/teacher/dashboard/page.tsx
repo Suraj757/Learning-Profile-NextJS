@@ -194,7 +194,14 @@ function TeacherDashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-heading-lg font-bold mb-2">Welcome to Begin Learning Profiles!</h2>
-                <p className="text-body opacity-90">Get started by creating your first classroom and inviting parents to complete learning profiles.</p>
+                <p className="text-body opacity-90 mb-3">Get started by creating your first classroom and inviting parents to complete learning profiles.</p>
+                <Link 
+                  href="/teacher/onboarding"
+                  className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-card text-sm font-medium transition-colors"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Take the 5-Minute Tour
+                </Link>
               </div>
               <button 
                 onClick={() => setShowWelcome(false)}

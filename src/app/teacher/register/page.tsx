@@ -70,7 +70,7 @@ export default function TeacherRegisterPage() {
         console.log('Created new teacher:', newTeacher)
         setSuccess(`Account created successfully! Welcome, ${newTeacher.name}!`)
         login(newTeacher)
-        setTimeout(() => router.push('/teacher/dashboard?welcome=true'), 1000)
+        setTimeout(() => router.push('/teacher/onboarding'), 1000)
       } catch (dbError: any) {
         console.log('Database creation failed, creating offline account:', dbError.message)
         
@@ -89,7 +89,7 @@ export default function TeacherRegisterPage() {
         console.log('Created offline teacher account:', offlineTeacher)
         setSuccess(`Account created successfully! Welcome, ${offlineTeacher.name}! (Offline mode)`)
         login(offlineTeacher)
-        setTimeout(() => router.push('/teacher/dashboard?welcome=true&offline=true'), 1000)
+        setTimeout(() => router.push('/teacher/onboarding?offline=true'), 1000)
       }
     } catch (err: any) {
       console.error('Teacher registration error:', err)
