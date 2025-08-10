@@ -55,15 +55,13 @@ function PasswordStrengthIndicator({ password }: { password: string }) {
 }
 
 export default function TeacherRegisterPage() {
-  const [isLoginMode, setIsLoginMode] = useState(false) // Toggle between login and register
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     school: '',
     gradeLevel: '',
     password: '',
-    confirmPassword: '',
-    userType: 'teacher'
+    confirmPassword: ''
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -86,78 +84,41 @@ export default function TeacherRegisterPage() {
     setLoading(true)
 
     try {
-      if (isLoginMode) {
-        // Handle login
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password,
-            userType: formData.userType
-          }),
-        })
+      // Call our new registration API
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
 
-        const result = await response.json()
+      const result = await response.json()
 
-        if (!result.success) {
-          if (result.needsPasswordSetup) {
-            // Redirect to password setup
-            router.push(`/auth/setup-password?email=${encodeURIComponent(formData.email)}`)
-            return
-          }
-          setError(result.error || 'Login failed')
-          return
-        }
-
-        setSuccess('Login successful! Redirecting to dashboard...')
-        
-        // Redirect to teacher dashboard after 1 second
-        setTimeout(() => {
-          router.push('/teacher/dashboard')
-        }, 1000)
-
-      } else {
-        // Handle registration
-        const response = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        })
-
-        const result = await response.json()
-
-        if (!result.success) {
-          setErrors(result.errors || ['Registration failed'])
-          return
-        }
-
-        setSuccess(result.message || 'Registration successful!')
-        
-        // Clear form on success
-        setFormData({
-          name: '',
-          email: '',
-          school: '',
-          gradeLevel: '',
-          password: '',
-          confirmPassword: '',
-          userType: 'teacher'
-        })
-
-        // Redirect to login after 3 seconds
-        setTimeout(() => {
-          setSuccess('Registration successful! You can now log in.')
-          setIsLoginMode(true)
-        }, 2000)
+      if (!result.success) {
+        setErrors(result.errors || ['Registration failed'])
+        return
       }
 
+      setSuccess(result.message || 'Registration successful!')
+      
+      // Clear form on success
+      setFormData({
+        name: '',
+        email: '',
+        school: '',
+        gradeLevel: '',
+        password: '',
+        confirmPassword: ''
+      })
+
+      // Redirect to login after 3 seconds
+      setTimeout(() => {
+        router.push('/auth/login?message=registration_success')
+      }, 3000)
+
     } catch (err: any) {
-      console.error('Teacher auth error:', err)
+      console.error('Teacher registration error:', err)
       setError(err.message || 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
@@ -202,46 +163,14 @@ export default function TeacherRegisterPage() {
               <School className="h-10 w-10 text-begin-teal" />
             </div>
             <h1 className="text-hero font-bold text-begin-blue mb-4">
-              {isLoginMode ? 'Teacher Login' : 'Teacher Dashboard Access'}
+              Teacher Dashboard Access
             </h1>
             <p className="text-body-lg text-begin-blue/80 max-w-2xl mx-auto mb-6">
-              {isLoginMode 
-                ? 'Welcome back! Sign in to access your classroom dashboard.'
-                : 'Manage your classroom learning profiles, assign assessments to parents, and track student progress all in one place.'
-              }
+              Manage your classroom learning profiles, assign assessments to parents, and track student progress all in one place.
             </p>
-
-            {/* Login/Register Toggle */}
-            <div className="flex justify-center mb-6">
-              <div className="bg-gray-100 p-1 rounded-lg flex">
-                <button
-                  type="button"
-                  onClick={() => setIsLoginMode(false)}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    !isLoginMode 
-                      ? 'bg-white text-begin-blue shadow-sm' 
-                      : 'text-gray-600 hover:text-gray-800'
-                  }`}
-                >
-                  Create Account
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsLoginMode(true)}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isLoginMode 
-                      ? 'bg-white text-begin-blue shadow-sm' 
-                      : 'text-gray-600 hover:text-gray-800'
-                  }`}
-                >
-                  Sign In
-                </button>
-              </div>
-            </div>
             
-            {/* Quick Demo Access - Only show in registration mode */}
-            {!isLoginMode && (
-              <div className="bg-gradient-to-r from-begin-cyan to-begin-teal text-white p-6 rounded-card mb-8">
+            {/* Quick Demo Access */}
+            <div className="bg-gradient-to-r from-begin-cyan to-begin-teal text-white p-6 rounded-card mb-8">
               <h3 className="font-bold text-lg mb-2">🚀 Try It Now!</h3>
               <p className="text-sm mb-4 opacity-90">
                 Want to see the teacher dashboard immediately? No signup required.
@@ -326,24 +255,6 @@ export default function TeacherRegisterPage() {
                 </div>
               </div>
             </div>
-          )}
-
-          {/* Demo User Login Section - Only show in login mode */}
-          {isLoginMode && (
-            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-card mb-8 border border-blue-200">
-              <h3 className="font-bold text-lg text-blue-800 mb-2">🧪 Demo Account</h3>
-              <p className="text-sm text-blue-700 mb-4">
-                Try the demo account for instant access without creating your own account.
-              </p>
-              <div className="bg-white/70 p-4 rounded-lg">
-                <p className="text-xs text-blue-600 mb-2">Demo credentials:</p>
-                <div className="space-y-1 text-sm font-mono">
-                  <div>Email: <span className="font-bold">demo@teacher.edu</span></div>
-                  <div>Password: <span className="font-bold">demo123</span></div>
-                </div>
-              </div>
-            </div>
-          )}
           </div>
 
           {/* Features Preview */}
@@ -408,69 +319,62 @@ export default function TeacherRegisterPage() {
               />
             </div>
 
-            {/* Registration-only fields */}
-            {!isLoginMode && (
-              <>
-                <div>
-                  <label htmlFor="name" className="block text-heading font-semibold text-begin-blue mb-2">
-                    <User className="h-5 w-5 inline mr-2" />
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-begin-gray rounded-card focus:ring-2 focus:ring-begin-teal focus:border-transparent text-body"
-                    placeholder="Enter your full name"
-                    required
-                  />
-                </div>
+            <div>
+              <label htmlFor="name" className="block text-heading font-semibold text-begin-blue mb-2">
+                <User className="h-5 w-5 inline mr-2" />
+                Full Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-begin-gray rounded-card focus:ring-2 focus:ring-begin-teal focus:border-transparent text-body"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
 
-                <div>
-                  <label htmlFor="school" className="block text-heading font-semibold text-begin-blue mb-2">
-                    <School className="h-5 w-5 inline mr-2" />
-                    School Name (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    id="school"
-                    name="school"
-                    value={formData.school}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-begin-gray rounded-card focus:ring-2 focus:ring-begin-teal focus:border-transparent text-body"
-                    placeholder="Enter your school name"
-                  />
-                </div>
+            <div>
+              <label htmlFor="school" className="block text-heading font-semibold text-begin-blue mb-2">
+                <School className="h-5 w-5 inline mr-2" />
+                School Name (Optional)
+              </label>
+              <input
+                type="text"
+                id="school"
+                name="school"
+                value={formData.school}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-begin-gray rounded-card focus:ring-2 focus:ring-begin-teal focus:border-transparent text-body"
+                placeholder="Enter your school name"
+              />
+            </div>
 
-                <div>
-                  <label htmlFor="gradeLevel" className="block text-heading font-semibold text-begin-blue mb-2">
-                    Grade Level (Optional)
-                  </label>
-                  <select
-                    id="gradeLevel"
-                    name="gradeLevel"
-                    value={formData.gradeLevel}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-begin-gray rounded-card focus:ring-2 focus:ring-begin-teal focus:border-transparent text-body"
-                  >
-                    <option value="">Select grade level</option>
-                    {gradeOptions.map((grade) => (
-                      <option key={grade} value={grade}>
-                        {grade}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </>
-            )}
+            <div>
+              <label htmlFor="gradeLevel" className="block text-heading font-semibold text-begin-blue mb-2">
+                Grade Level (Optional)
+              </label>
+              <select
+                id="gradeLevel"
+                name="gradeLevel"
+                value={formData.gradeLevel}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-begin-gray rounded-card focus:ring-2 focus:ring-begin-teal focus:border-transparent text-body"
+              >
+                <option value="">Select grade level</option>
+                {gradeOptions.map((grade) => (
+                  <option key={grade} value={grade}>
+                    {grade}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             {/* Password Fields */}
             <div className="space-y-4 pt-4 border-t border-begin-gray/30">
-              <h4 className="font-semibold text-begin-blue text-lg">
-                {isLoginMode ? 'Enter Your Password' : 'Create Your Password'}
-              </h4>
+              <h4 className="font-semibold text-begin-blue text-lg">Create Your Password</h4>
               
               <div>
                 <label htmlFor="password" className="block text-heading font-semibold text-begin-blue mb-2">
@@ -497,78 +401,67 @@ export default function TeacherRegisterPage() {
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
-                {!isLoginMode && <PasswordStrengthIndicator password={formData.password} />}
+                <PasswordStrengthIndicator password={formData.password} />
               </div>
 
-              {/* Confirm Password - Only in registration mode */}
-              {!isLoginMode && (
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-heading font-semibold text-begin-blue mb-2">
-                    <Lock className="h-5 w-5 inline mr-2" />
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 pr-12 border border-begin-gray rounded-card focus:ring-2 focus:ring-begin-teal focus:border-transparent text-body"
-                      placeholder="Confirm your password"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    >
-                      {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                  </div>
-                  {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                    <p className="text-red-500 text-sm mt-1 flex items-center">
-                      <AlertTriangle className="h-4 w-4 mr-1" />
-                      Passwords do not match
-                    </p>
-                  )}
+              <div>
+                <label htmlFor="confirmPassword" className="block text-heading font-semibold text-begin-blue mb-2">
+                  <Lock className="h-5 w-5 inline mr-2" />
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 pr-12 border border-begin-gray rounded-card focus:ring-2 focus:ring-begin-teal focus:border-transparent text-body"
+                    placeholder="Confirm your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
                 </div>
-              )}
+                {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <AlertTriangle className="h-4 w-4 mr-1" />
+                    Passwords do not match
+                  </p>
+                )}
+              </div>
             </div>
 
-            {/* Benefits section - Only show in registration mode */}
-            {!isLoginMode && (
-              <div className="bg-begin-cyan/5 p-6 rounded-card">
-                <h4 className="font-semibold text-begin-blue mb-2">What you'll get:</h4>
-                <ul className="text-sm text-begin-blue/80 space-y-1">
-                  <li>• Send assessment links directly to parents via email</li>
-                  <li>• Track which students have completed their learning profiles</li>
-                  <li>• View and compare learning styles across your classroom</li>
-                  <li>• Export detailed reports for parent-teacher conferences</li>
-                  <li>• Access Begin product recommendations for each student</li>
-                </ul>
-              </div>
-            )}
+            <div className="bg-begin-cyan/5 p-6 rounded-card">
+              <h4 className="font-semibold text-begin-blue mb-2">What you'll get:</h4>
+              <ul className="text-sm text-begin-blue/80 space-y-1">
+                <li>• Send assessment links directly to parents via email</li>
+                <li>• Track which students have completed their learning profiles</li>
+                <li>• View and compare learning styles across your classroom</li>
+                <li>• Export detailed reports for parent-teacher conferences</li>
+                <li>• Access Begin product recommendations for each student</li>
+              </ul>
+            </div>
 
             <div className="flex justify-center pt-4">
               <button
                 type="submit"
-                disabled={
-                  loading || 
-                  !formData.email || 
-                  !formData.password || 
-                  (!isLoginMode && (!formData.name || formData.password !== formData.confirmPassword))
-                }
+                disabled={loading || !formData.email || !formData.name || !formData.password || formData.password !== formData.confirmPassword}
                 className="btn-begin-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
               >
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    {isLoginMode ? 'Signing in...' : 'Setting up...'}
+                    Setting up...
                   </>
                 ) : (
                   <>
-                    {isLoginMode ? 'Sign In to Dashboard' : 'Access Teacher Dashboard'}
+                    Access Teacher Dashboard
                     <ArrowRight className="h-5 w-5" />
                   </>
                 )}
@@ -576,37 +469,9 @@ export default function TeacherRegisterPage() {
             </div>
           </form>
 
-          {/* Add forgot password link for login mode */}
-          {isLoginMode && (
-            <div className="text-center mt-6">
-              <Link 
-                href="/auth/setup-password?email="
-                className="text-sm text-begin-teal hover:text-begin-teal-hover underline"
-              >
-                Forgot your password?
-              </Link>
-            </div>
-          )}
-
           <div className="text-center mt-8 pt-6 border-t border-begin-gray">
             <p className="text-sm text-begin-blue/70">
-              {isLoginMode ? (
-                <>Need to create an account? <button 
-                  type="button" 
-                  onClick={() => setIsLoginMode(false)} 
-                  className="text-begin-teal hover:text-begin-teal-hover font-medium underline"
-                >
-                  Sign up here
-                </button></>
-              ) : (
-                <>Already have an account? <button 
-                  type="button" 
-                  onClick={() => setIsLoginMode(true)} 
-                  className="text-begin-teal hover:text-begin-teal-hover font-medium underline"
-                >
-                  Sign in here
-                </button></>
-              )}
+              Already have an account? Just enter your email above to sign in.
             </p>
           </div>
         </div>
