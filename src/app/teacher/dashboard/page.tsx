@@ -24,6 +24,7 @@ import type { Classroom, ProfileAssignment } from '@/lib/supabase'
 import DelightfulLoading from '@/components/loading/DelightfulLoading'
 import { createDemoDataForTeacher, getDemoReportsData } from '@/lib/demo-data'
 import { getOnboardingStatus, OnboardingStatus } from '@/lib/teacher-onboarding'
+import { getTeacherDatabaseId, migrateTeacherToSupabase } from '@/lib/teacher-migration'
 
 function TeacherDashboardContent() {
   const { teacher, loading: authLoading, isAuthenticated } = useTeacherAuth()
@@ -60,36 +61,23 @@ function TeacherDashboardContent() {
     if (!teacher) return
 
     try {
-      // Check if this is a demo teacher or offline account and create demo data if needed
-      if (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo || teacher.isOfflineAccount) {
-        if (!teacher.isOfflineDemo && !teacher.isOfflineAccount) {
-          // Only create demo data if we have a real database connection
-          await createDemoDataForTeacher(teacher.id)
-        }
-      }
+      // Get the correct teacher database ID (with automatic migration if needed)
+      let teacherId: number | null = null
+      let classroomsData: any[] = []
+      let assignmentsData: any[] = []
 
-      const [classroomsData, assignmentsData] = await Promise.all([
-        getTeacherClassrooms(teacher.id),
-        getTeacherAssignments(teacher.id)
-      ])
-      
-      // If no data found and this is a demo teacher or offline account, use fallback demo data
-      if ((!classroomsData || classroomsData.length === 0) && 
-          (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo || teacher.isOfflineAccount)) {
+      // For demo accounts, use fallback data immediately
+      if (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo || teacher.isOfflineAccount) {
+        console.log('Using demo data for offline/demo account')
         const demoData = getDemoReportsData(teacher.id)
         setClassrooms(demoData.classrooms as any)
         setAssignments(demoData.assignments as any)
-      } else {
-        setClassrooms(classroomsData || [])
-        setAssignments(assignmentsData || [])
-      }
-      
-      // Check onboarding status
-      if (teacher) {
+        
+        // Still check onboarding status with demo data
         const onboardingStatus = getOnboardingStatus(
           teacher, 
-          classroomsData || [], 
-          assignmentsData || [],
+          demoData.classrooms as any, 
+          demoData.assignments as any,
           searchParams
         )
         setOnboardingState({
@@ -97,16 +85,78 @@ function TeacherDashboardContent() {
           reason: onboardingStatus.reason,
           suggestions: onboardingStatus.suggestions
         })
+        return
       }
+
+      // For regular teachers, get database ID
+      try {
+        teacherId = await getTeacherDatabaseId(teacher.email)
+        if (!teacherId) {
+          console.log('Attempting to migrate teacher to database...')
+          const migrationResult = await migrateTeacherToSupabase(teacher.email)
+          if (migrationResult.success) {
+            teacherId = migrationResult.teacherId || null
+          }
+        }
+
+        if (teacherId) {
+          // Fetch real data from database
+          const [dbClassroomsData, dbAssignmentsData] = await Promise.all([
+            getTeacherClassrooms(teacherId),
+            getTeacherAssignments(teacherId)
+          ])
+          
+          classroomsData = dbClassroomsData || []
+          assignmentsData = dbAssignmentsData || []
+
+          // If teacher has no data, create some demo data
+          if (classroomsData.length === 0 && assignmentsData.length === 0) {
+            console.log('Creating demo data for new teacher')
+            await createDemoDataForTeacher(teacherId)
+            
+            // Refetch after creating demo data
+            const [newClassroomsData, newAssignmentsData] = await Promise.all([
+              getTeacherClassrooms(teacherId),
+              getTeacherAssignments(teacherId)
+            ])
+            
+            classroomsData = newClassroomsData || []
+            assignmentsData = newAssignmentsData || []
+          }
+        } else {
+          throw new Error('Could not establish teacher in database')
+        }
+      } catch (dbError) {
+        console.warn('Database operations failed, using demo data fallback:', dbError.message)
+        const demoData = getDemoReportsData(teacher.id)
+        classroomsData = demoData.classrooms as any
+        assignmentsData = demoData.assignments as any
+      }
+
+      // Set the data
+      setClassrooms(classroomsData)
+      setAssignments(assignmentsData)
+      
+      // Check onboarding status
+      const onboardingStatus = getOnboardingStatus(
+        teacher, 
+        classroomsData, 
+        assignmentsData,
+        searchParams
+      )
+      setOnboardingState({
+        shouldShow: onboardingStatus.shouldShow,
+        reason: onboardingStatus.reason,
+        suggestions: onboardingStatus.suggestions
+      })
+
     } catch (error) {
       console.error('Error loading dashboard data:', error)
       
-      // If error and demo teacher or offline account, fall back to demo data
-      if (teacher.email === 'demo@school.edu' || teacher.isOfflineDemo || teacher.isOfflineAccount) {
-        const demoData = getDemoReportsData(teacher.id)
-        setClassrooms(demoData.classrooms as any)
-        setAssignments(demoData.assignments as any)
-      }
+      // Final fallback to demo data
+      const demoData = getDemoReportsData(teacher.id)
+      setClassrooms(demoData.classrooms as any)
+      setAssignments(demoData.assignments as any)
     } finally {
       setLoading(false)
     }

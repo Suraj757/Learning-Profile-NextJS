@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { SignJWT } from 'jose'
 import { userExists, createUser } from '@/lib/auth/user-storage'
+import { createTeacher as createSupabaseTeacher } from '@/lib/supabase'
 
 // Teacher registration interface
 interface TeacherRegistration {
@@ -58,18 +59,37 @@ function validateRegistration(data: TeacherRegistration): { isValid: boolean; er
 
 // Shared user storage is now imported from @/lib/auth/user-storage
 
-// Create new teacher user (in production, save to database)
+// Create new teacher user (save to both auth system and database)
 async function createTeacher(data: TeacherRegistration): Promise<any> {
   // Hash password
   const saltRounds = 12
   const hashedPassword = await bcrypt.hash(data.password, saltRounds)
   
-  // Generate unique user ID
-  const userId = `teacher_${Date.now()}_${Math.random().toString(36).substring(2)}`
+  let supabaseTeacher = null
+  let numericTeacherId = Date.now() // Fallback numeric ID
   
-  // Create teacher object
+  // Try to create teacher in Supabase database first
+  try {
+    supabaseTeacher = await createSupabaseTeacher({
+      email: data.email.toLowerCase(),
+      name: data.name.trim(),
+      school: data.school.trim(),
+      grade_level: data.gradeLevel || ''
+    })
+    numericTeacherId = supabaseTeacher.id
+    console.log('[REGISTRATION] Teacher created in Supabase:', supabaseTeacher.id)
+  } catch (error) {
+    console.warn('[REGISTRATION] Failed to create teacher in Supabase, using auth-only:', error.message)
+    // Continue with auth-only registration
+  }
+  
+  // Generate user ID (use Supabase ID if available, otherwise timestamp)
+  const userId = supabaseTeacher ? supabaseTeacher.id.toString() : `teacher_${numericTeacherId}_${Math.random().toString(36).substring(2)}`
+  
+  // Create teacher object for auth system
   const newTeacher = {
     id: userId,
+    numericId: numericTeacherId, // Store numeric ID for database queries
     email: data.email.toLowerCase(),
     name: data.name.trim(),
     school: data.school.trim(),
@@ -79,6 +99,7 @@ async function createTeacher(data: TeacherRegistration): Promise<any> {
     isActive: true,
     isVerified: false, // Requires email verification
     createdAt: new Date().toISOString(),
+    supabaseCreated: !!supabaseTeacher, // Track whether Supabase record exists
     permissions: {
       canViewStudentProfiles: false, // Activated after verification
       canCreateAssessments: false,   // Activated after verification
@@ -90,14 +111,16 @@ async function createTeacher(data: TeacherRegistration): Promise<any> {
     }
   }
 
-  // Store in shared storage (in production, save to database)
+  // Store in auth system
   createUser(newTeacher.email, newTeacher)
   
-  console.log('[REGISTRATION] New teacher created:', {
+  console.log('[REGISTRATION] Teacher created in auth system:', {
     id: newTeacher.id,
+    numericId: newTeacher.numericId,
     email: newTeacher.email,
     name: newTeacher.name,
-    school: newTeacher.school
+    school: newTeacher.school,
+    supabaseCreated: newTeacher.supabaseCreated
   })
 
   return newTeacher

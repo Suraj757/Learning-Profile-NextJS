@@ -33,8 +33,12 @@ export function useTeacherAuth() {
             setTeacher(sessionData.teacherData)
           } else {
             // Create teacher object from session data
+            const numericId = sessionData.userId.includes('teacher_') 
+              ? parseInt(sessionData.userId.split('_')[1]) || Date.now()
+              : parseInt(sessionData.userId) || Date.now()
+              
             const teacherFromSession: Teacher = {
-              id: parseInt(sessionData.userId) || Date.now(),
+              id: numericId,
               email: sessionData.email,
               name: sessionData.email.split('@')[0], // Fallback name
               school: '',

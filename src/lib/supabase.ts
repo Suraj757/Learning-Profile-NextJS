@@ -253,17 +253,29 @@ export async function createTeacher(data: {
 
 export async function getTeacherByEmail(email: string) {
   if (!supabase) {
-    throw new Error('Supabase not configured')
+    console.warn('Supabase not configured, cannot fetch teacher by email')
+    return null
   }
   
-  const { data, error } = await supabase
-    .from('teachers')
-    .select('*')
-    .eq('email', email)
-    .single()
-  
-  if (error && error.code !== 'PGRST116') throw error
-  return data
+  try {
+    // Handle URL encoding issues with + characters
+    const normalizedEmail = decodeURIComponent(email.toLowerCase())
+    
+    const { data, error } = await supabase
+      .from('teachers')
+      .select('*')
+      .eq('email', normalizedEmail)
+      .single()
+    
+    if (error && error.code !== 'PGRST116') {
+      console.warn('Teacher lookup failed:', error.message)
+      return null
+    }
+    return data
+  } catch (error) {
+    console.warn('Error in getTeacherByEmail:', error.message)
+    return null
+  }
 }
 
 // Classroom Management Functions
@@ -293,17 +305,26 @@ export async function createClassroom(teacherId: number, data: {
 
 export async function getTeacherClassrooms(teacherId: number) {
   if (!supabase) {
-    throw new Error('Supabase not configured')
+    console.warn('Supabase not configured, returning empty classrooms array')
+    return []
   }
   
-  const { data, error } = await supabase
-    .from('classrooms')
-    .select('*')
-    .eq('teacher_id', teacherId)
-    .order('created_at', { ascending: false })
-  
-  if (error) throw error
-  return data
+  try {
+    const { data, error } = await supabase
+      .from('classrooms')
+      .select('*')
+      .eq('teacher_id', teacherId)
+      .order('created_at', { ascending: false })
+    
+    if (error) {
+      console.warn('Failed to fetch teacher classrooms:', error.message)
+      return []
+    }
+    return data || []
+  } catch (error) {
+    console.warn('Error in getTeacherClassrooms:', error.message)
+    return []
+  }
 }
 
 // Student Management Functions
@@ -379,21 +400,26 @@ export async function createProfileAssignment(data: {
 
 export async function getTeacherAssignments(teacherId: number) {
   if (!supabase) {
-    throw new Error('Supabase not configured')
+    console.warn('Supabase not configured, returning empty assignments array')
+    return []
   }
   
-  // First get the assignments
-  const { data: assignments, error: assignmentsError } = await supabase
-    .from('profile_assignments')
-    .select('*')
-    .eq('teacher_id', teacherId)
-    .order('assigned_at', { ascending: false })
-  
-  if (assignmentsError) throw assignmentsError
-  
-  if (!assignments || assignments.length === 0) {
-    return assignments
-  }
+  try {
+    // First get the assignments
+    const { data: assignments, error: assignmentsError } = await supabase
+      .from('profile_assignments')
+      .select('*')
+      .eq('teacher_id', teacherId)
+      .order('assigned_at', { ascending: false })
+    
+    if (assignmentsError) {
+      console.warn('Failed to fetch teacher assignments:', assignmentsError.message)
+      return []
+    }
+    
+    if (!assignments || assignments.length === 0) {
+      return assignments || []
+    }
   
   // Get assessment results for completed assignments that have assessment_id
   const completedAssignments = assignments.filter(a => a.status === 'completed' && a.assessment_id)
@@ -445,7 +471,11 @@ export async function getTeacherAssignments(teacherId: number) {
     }
   }
   
-  return assignments
+  return assignments || []
+  } catch (error) {
+    console.warn('Error in getTeacherAssignments:', error.message)
+    return []
+  }
 }
 
 export async function updateAssignmentStatus(assignmentId: number, status: 'sent' | 'completed', assessmentId?: number) {

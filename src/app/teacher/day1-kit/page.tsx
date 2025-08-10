@@ -43,6 +43,7 @@ import DelightfulLoading from '@/components/loading/DelightfulLoading'
 import EnhancedContentRecommendations from '@/components/content/EnhancedContentRecommendations'
 import { beginContentService } from '@/lib/content-recommendation-service'
 import { getDemoReportsData, createDemoDataForTeacher } from '@/lib/demo-data'
+import { getTeacherDatabaseId, migrateTeacherToSupabase } from '@/lib/teacher-migration'
 
 // Wrapper component to handle async content loading
 function ContentRecommendationsWrapper({ learningProfile, studentName }: { 
@@ -393,20 +394,30 @@ function Day1KitContent() {
       let classroomsData: any[] = []
       let assignmentsData: any[] = []
       
-      // Verify teacher exists in database
+      // Get the correct teacher database ID (with automatic migration if needed)
+      let teacherId: number | null = null
       try {
-        console.log('🔍 Looking up teacher in database by email:', teacher.email)
-        const dbTeacher = await getTeacherByEmail(teacher.email)
-        console.log('📋 Database teacher lookup result:', dbTeacher ? `Found ID: ${dbTeacher.id}` : 'Not found')
+        console.log('🔍 Getting teacher database ID for:', teacher.email)
+        teacherId = await getTeacherDatabaseId(teacher.email)
+        console.log('📋 Teacher database ID result:', teacherId)
         
-        if (!dbTeacher) {
-          console.log('❌ Teacher not found in database, using demo data')
-          throw new Error('Teacher not found in database')
+        if (!teacherId) {
+          console.log('⚠️ Could not get teacher database ID, trying to migrate...')
+          const migrationResult = await migrateTeacherToSupabase(teacher.email)
+          if (migrationResult.success) {
+            teacherId = migrationResult.teacherId || null
+            console.log('✅ Teacher migrated successfully, ID:', teacherId)
+          } else {
+            console.log('❌ Teacher migration failed:', migrationResult.error)
+            throw new Error('Could not establish teacher in database')
+          }
         }
         
-        // Use the database teacher ID instead of localStorage ID
-        const teacherId = dbTeacher.id
-        console.log('Using teacher ID from database:', teacherId)
+        if (!teacherId) {
+          throw new Error('Teacher ID is null after all attempts')
+        }
+        
+        console.log('✅ Using teacher ID:', teacherId)
         
         const [dbClassroomsData, dbAssignmentsData] = await Promise.all([
           getTeacherClassrooms(teacherId),
@@ -465,17 +476,13 @@ function Day1KitContent() {
         }
         
       } catch (dbError) {
-        console.log('❌ Database teacher lookup failed:', dbError.message)
-        console.log('⚠️  Trying fallback with original teacher ID')
+        console.log('❌ Database operations failed:', dbError.message)
+        console.log('⚠️ Using fallback demo data')
         
-        // Try to get data with original teacher ID as fallback
-        const [fallbackClassroomsData, fallbackAssignmentsData] = await Promise.all([
-          getTeacherClassrooms(teacher.id),
-          getTeacherAssignments(teacher.id)
-        ])
-        
-        classroomsData = fallbackClassroomsData || []
-        assignmentsData = fallbackAssignmentsData || []
+        // Use demo data as complete fallback
+        const demoData = getDemoReportsData(teacher.id)
+        classroomsData = demoData.classrooms as any
+        assignmentsData = demoData.assignments as any
       }
       
       console.log('📊 Final data status:')
