@@ -17,7 +17,28 @@ export function useTeacherAuth() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check for secure session cookie first
+    console.log('useTeacherAuth: Starting authentication check')
+    
+    // 🚀 CHAMPIONSHIP FIX: Check for bridge session first (immediate login state)
+    const bridgeSession = localStorage.getItem('teacher_session_bridge')
+    console.log('useTeacherAuth: Bridge session check:', !!bridgeSession)
+    
+    if (bridgeSession) {
+      try {
+        const teacherData = JSON.parse(bridgeSession)
+        console.log('useTeacherAuth: Found bridge session, using immediately:', teacherData)
+        setTeacher(teacherData)
+        // Clean up bridge session after use
+        localStorage.removeItem('teacher_session_bridge')
+        setLoading(false)
+        return
+      } catch (error) {
+        console.error('useTeacherAuth: Error parsing bridge session:', error)
+        localStorage.removeItem('teacher_session_bridge')
+      }
+    }
+
+    // Check for secure session cookie
     const sessionCookie = document.cookie
       .split('; ')
       .find(row => row.startsWith('edu-session='))
@@ -104,9 +125,11 @@ export function useTeacherAuth() {
           localStorage.removeItem('teacher_session')
         }
       } else {
-        console.log('No teacher session found')
+        console.log('useTeacherAuth: No teacher session found')
       }
     }
+    
+    console.log('useTeacherAuth: Setting loading to false, teacher state:', !!teacher)
     setLoading(false)
   }, [])
 
@@ -138,6 +161,9 @@ export function useTeacherAuth() {
     
     // Clear localStorage
     localStorage.removeItem('teacher_session')
+    
+    // Clear any bridge sessions
+    localStorage.removeItem('teacher_session_bridge')
   }
 
   return {

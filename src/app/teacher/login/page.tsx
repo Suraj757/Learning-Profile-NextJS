@@ -56,34 +56,64 @@ export default function TeacherLoginPage() {
           router.push(`/auth/setup-password?email=${encodeURIComponent(formData.email)}&userId=${result.userId}`)
           return
         }
+        console.error('Login failed:', result)
         setError(result.error || 'Invalid email or password')
         return
       }
-
-      // On successful login, the secure cookie is already set by the API
-      console.log('Login successful, redirecting to dashboard...')
-      setSuccess(true)
       
-      // Add a small delay to ensure cookie is set and show success message
+      console.log('Login API returned success:', result)
+
+      // 🚀 CHAMPIONSHIP FIX: Explicitly set the session data on client side BEFORE redirect
+      console.log('Login successful! Setting up client session...')
+      setSuccess(true)
+
+      // Validate session data before proceeding
+      if (!result.sessionData || !result.sessionData.teacherData) {
+        console.error('No session data returned from login API:', result)
+        setError('Login succeeded but session data is missing. Please try again.')
+        return
+      }
+
+      // Create the session data locally to bridge the gap
+      const sessionData = {
+        userId: result.sessionData.userId,
+        email: result.sessionData.email,
+        userType: result.sessionData.userType,
+        name: result.sessionData.name,
+        authenticatedAt: result.sessionData.authenticatedAt,
+        expiresAt: result.sessionData.expiresAt,
+        permissions: result.sessionData.permissions,
+        teacherData: result.sessionData.teacherData
+      }
+
+      console.log('Session data created:', sessionData)
+
+      // Store in localStorage as immediate bridge (this gets cleaned up by useTeacherAuth)
+      localStorage.setItem('teacher_session_bridge', JSON.stringify(sessionData.teacherData))
+      console.log('Bridge session stored in localStorage')
+
+      // 🏆 SIMPLE & RELIABLE REDIRECT: Just use window.location for guaranteed success
+      console.log('Login successful! Redirecting to dashboard...')
+      
+      // Test bridge session before redirect
+      const testBridge = localStorage.getItem('teacher_session_bridge')
+      console.log('Bridge session test before redirect:', testBridge)
+      
+      // Use window.location.href for guaranteed redirect - shorter delay
       setTimeout(() => {
-        console.log('Attempting redirect to dashboard...')
-        try {
-          router.push('/teacher/dashboard')
-        } catch (error) {
-          console.error('Router push error:', error)
-          // Fallback to window.location if router fails
-          window.location.href = '/teacher/dashboard'
-        }
-      }, 1000)
+        console.log('Executing redirect to /teacher/dashboard')
+        console.log('Current location before redirect:', window.location.href)
+        window.location.href = '/teacher/dashboard'
+      }, 500)
 
     } catch (err: any) {
       console.error('Teacher login error:', err)
       setError('Something went wrong. Please try again.')
     } finally {
-      // Always set loading to false after a delay to prevent UI issues
-      setTimeout(() => {
+      // Set loading to false but don't interfere with successful redirects
+      if (!success) {
         setLoading(false)
-      }, success ? 1500 : 0)
+      }
     }
   }
 
@@ -172,7 +202,7 @@ export default function TeacherLoginPage() {
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-card">
               <div className="flex items-center gap-2 text-green-800">
                 <CheckCircle className="h-4 w-4 flex-shrink-0" />
-                <p className="text-sm">Login successful! Redirecting to dashboard...</p>
+                <p className="text-sm">Login successful! Taking you to your dashboard...</p>
               </div>
             </div>
           )}
@@ -250,7 +280,7 @@ export default function TeacherLoginPage() {
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    Signing In...
+                    {success ? 'Redirecting...' : 'Signing In...'}
                   </>
                 ) : (
                   <>
