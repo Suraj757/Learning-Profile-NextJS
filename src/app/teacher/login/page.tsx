@@ -11,12 +11,14 @@ export default function TeacherLoginPage() {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccess(false)
     setLoading(true)
 
     try {
@@ -34,11 +36,14 @@ export default function TeacherLoginPage() {
       })
 
       const result = await response.json()
+      
+      console.log('Login API response:', result)
 
       if (!result.success) {
         // Handle specific error cases
         if (result.needsPasswordSetup) {
           // Redirect to password setup for existing users
+          console.log('Redirecting to password setup')
           router.push(`/auth/setup-password?email=${encodeURIComponent(formData.email)}&userId=${result.userId}`)
           return
         }
@@ -47,14 +52,22 @@ export default function TeacherLoginPage() {
       }
 
       // On successful login, the secure cookie is already set by the API
-      // Redirect to teacher dashboard
-      router.push('/teacher/dashboard')
+      console.log('Login successful, redirecting to dashboard...')
+      setSuccess(true)
+      
+      // Add a small delay to ensure cookie is set and show success message
+      setTimeout(() => {
+        router.push('/teacher/dashboard')
+      }, 1000)
 
     } catch (err: any) {
       console.error('Teacher login error:', err)
       setError('Something went wrong. Please try again.')
     } finally {
-      setLoading(false)
+      // Only set loading to false if login failed or there was an error
+      if (!success) {
+        setLoading(false)
+      }
     }
   }
 
@@ -63,8 +76,9 @@ export default function TeacherLoginPage() {
       ...prev,
       [e.target.name]: e.target.value
     }))
-    // Clear error when user starts typing
+    // Clear error and success when user starts typing
     if (error) setError('')
+    if (success) setSuccess(false)
   }
 
   const handleForgotPassword = () => {
@@ -133,6 +147,16 @@ export default function TeacherLoginPage() {
               <div className="flex items-center gap-2 text-red-800">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 <p className="text-sm">{error}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Success Message */}
+          {success && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-card">
+              <div className="flex items-center gap-2 text-green-800">
+                <CheckCircle className="h-4 w-4 flex-shrink-0" />
+                <p className="text-sm">Login successful! Redirecting to dashboard...</p>
               </div>
             </div>
           )}
