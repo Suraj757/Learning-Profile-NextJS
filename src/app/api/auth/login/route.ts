@@ -163,10 +163,26 @@ export async function POST(request: NextRequest) {
       message: 'Login successful'
     })
 
-    // Set secure cookie
+    // Set secure cookie (httpOnly for security)
     const cookieValue = encodeURIComponent(JSON.stringify(sessionData))
     response.cookies.set('edu-session', cookieValue, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60, // 24 hours
+      path: '/'
+    })
+    
+    // ALSO set a client-readable session cookie for auth state
+    const clientSessionData = {
+      userId: sessionData.userId,
+      email: sessionData.email,
+      userType: sessionData.userType,
+      authenticatedAt: sessionData.authenticatedAt,
+      expiresAt: sessionData.expiresAt
+    }
+    response.cookies.set('edu-session-client', encodeURIComponent(JSON.stringify(clientSessionData)), {
+      httpOnly: false, // Client-readable
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 24 * 60 * 60, // 24 hours

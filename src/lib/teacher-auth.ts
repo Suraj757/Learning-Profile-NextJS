@@ -28,8 +28,8 @@ export function useTeacherAuth() {
         const teacherData = JSON.parse(bridgeSession)
         console.log('useTeacherAuth: Found bridge session, using immediately:', teacherData)
         setTeacher(teacherData)
-        // Clean up bridge session after use
-        localStorage.removeItem('teacher_session_bridge')
+        // DON'T clean up bridge session yet - keep it for navigation
+        // Only clean up after cookie is confirmed working
         setLoading(false)
         return
       } catch (error) {
@@ -38,7 +38,67 @@ export function useTeacherAuth() {
       }
     }
 
-    // Check for secure session cookie
+    // Check for client-readable session cookie first
+    const clientSessionCookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('edu-session-client='))
+      ?.split('=')[1]
+      
+    if (clientSessionCookie) {
+      try {
+        const clientSessionData = JSON.parse(decodeURIComponent(clientSessionCookie))
+        console.log('useTeacherAuth: Found client session cookie:', clientSessionData)
+        
+        // Check if session is still valid
+        const now = new Date()
+        const expiresAt = new Date(clientSessionData.expiresAt)
+        
+        if (now > expiresAt) {
+          console.log('useTeacherAuth: Client session expired, clearing cookies')
+          document.cookie = 'edu-session-client=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
+          localStorage.removeItem('teacher_session_bridge')
+        } else {
+          // Valid session exists - but we need to reconstruct teacher state
+          if (!teacher) {
+            console.log('useTeacherAuth: Valid client session but no teacher state, reconstructing from session')
+            // Try to get full teacher data from localStorage bridge first
+            const storedBridge = localStorage.getItem('teacher_session_bridge')
+            if (storedBridge) {
+              try {
+                const bridgeTeacher = JSON.parse(storedBridge)
+                console.log('useTeacherAuth: Reconstructed teacher from bridge:', bridgeTeacher)
+                setTeacher(bridgeTeacher)
+                setLoading(false)
+                return
+              } catch (e) {
+                console.error('useTeacherAuth: Error parsing stored bridge:', e)
+              }
+            }
+            
+            // Fallback: construct minimal teacher from client session
+            const fallbackTeacher = {
+              id: Date.now(), // Will be overridden by numeric ID extraction
+              email: clientSessionData.email,
+              name: clientSessionData.email.split('@')[0],
+              school: '',
+              grade_level: '',
+              ambassador_status: false,
+              created_at: clientSessionData.authenticatedAt,
+              isOfflineDemo: clientSessionData.email.includes('demo')
+            }
+            console.log('useTeacherAuth: Created fallback teacher from client session:', fallbackTeacher)
+            setTeacher(fallbackTeacher)
+          }
+          setLoading(false)
+          return
+        }
+      } catch (error) {
+        console.error('useTeacherAuth: Error parsing client session:', error)
+        document.cookie = 'edu-session-client=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
+      }
+    }
+
+    // Check for secure session cookie (fallback)
     const sessionCookie = document.cookie
       .split('; ')
       .find(row => row.startsWith('edu-session='))
@@ -156,8 +216,9 @@ export function useTeacherAuth() {
   const logout = () => {
     setTeacher(null)
     
-    // Clear secure cookie
+    // Clear both session cookies
     document.cookie = 'edu-session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
+    document.cookie = 'edu-session-client=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
     
     // Clear localStorage
     localStorage.removeItem('teacher_session')
