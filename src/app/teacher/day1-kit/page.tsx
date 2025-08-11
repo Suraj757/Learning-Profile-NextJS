@@ -44,6 +44,7 @@ import EnhancedContentRecommendations from '@/components/content/EnhancedContent
 import { beginContentService } from '@/lib/content-recommendation-service'
 import { getDemoReportsData, createDemoDataForTeacher } from '@/lib/demo-data'
 import { getTeacherDatabaseId, migrateTeacherToSupabase } from '@/lib/teacher-migration'
+import { seedRealDataForSuraj } from '@/lib/seed-real-data'
 
 // Wrapper component to handle async content loading
 function ContentRecommendationsWrapper({ learningProfile, studentName }: { 
@@ -460,12 +461,17 @@ function Day1KitContent() {
           console.log('  - At-risk students result:', testAtRisk.length, 'students')
         }
         
-        // If teacher exists but has no data, create some demo data
+        // If teacher exists but has no data, create appropriate data
         if (classroomsData.length === 0 && assignmentsData.length === 0) {
-          console.log('Teacher exists but has no data, creating demo data')
-          await createDemoDataForTeacher(teacherId)
+          if (teacher.email === 'suraj+1@speakaboos.com' || teacherId === 1001) {
+            console.log('Creating real student data for suraj+1@speakaboos.com')
+            await seedRealDataForSuraj()
+          } else {
+            console.log('Teacher exists but has no data, creating demo data')
+            await createDemoDataForTeacher(teacherId)
+          }
           
-          // Refetch data after creating demo data
+          // Refetch data after creating data
           const [newClassroomsData, newAssignmentsData] = await Promise.all([
             getTeacherClassrooms(teacherId),
             getTeacherAssignments(teacherId)
@@ -474,7 +480,7 @@ function Day1KitContent() {
           classroomsData = newClassroomsData || []
           assignmentsData = newAssignmentsData || []
           
-          console.log('After creating demo data - Classrooms:', classroomsData.length, 'Assignments:', assignmentsData.length)
+          console.log('After creating data - Classrooms:', classroomsData.length, 'Assignments:', assignmentsData.length)
         }
         
       } catch (dbError) {

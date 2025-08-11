@@ -68,6 +68,7 @@ if (!REGISTERED_USERS.has('suraj@speakaboos.com')) {
 if (!REGISTERED_USERS.has('suraj+1@speakaboos.com')) {
   REGISTERED_USERS.set('suraj+1@speakaboos.com', {
     id: 'teacher_suraj_plus_001',
+    numericId: 1001, // Add the numeric ID for database queries
     email: 'suraj+1@speakaboos.com',
     name: 'Suraj Kumar',
     userType: 'teacher' as const,
@@ -92,6 +93,7 @@ if (!REGISTERED_USERS.has('suraj+1@speakaboos.com')) {
 if (!REGISTERED_USERS.has('suraj+2@speakaboos.com')) {
   REGISTERED_USERS.set('suraj+2@speakaboos.com', {
     id: 'teacher_suraj_plus_002',
+    numericId: 1002, // Add the numeric ID for database queries
     email: 'suraj+2@speakaboos.com',
     name: 'Suraj Kumar',
     userType: 'teacher' as const,

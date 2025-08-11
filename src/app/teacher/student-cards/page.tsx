@@ -29,6 +29,7 @@ import AuthRequired from '@/components/teacher/AuthRequired'
 import StudentCard from '@/components/teacher/StudentCard'
 import { generateStudentCardData } from '@/lib/student-card-data'
 import { getDemoReportsData } from '@/lib/demo-data'
+import { seedRealDataForSuraj } from '@/lib/seed-real-data'
 import { INTEREST_OPTIONS, ENGAGEMENT_OPTIONS, MODALITY_OPTIONS, SOCIAL_OPTIONS } from '@/lib/questions'
 
 // Helper function to extract motivators, interests, and school experience from raw responses
@@ -139,10 +140,25 @@ function StudentCardsContent() {
       
       let finalAssignments = assignmentsData || []
       
-      // If no live data available, fall back to demo data
+      // If no live data available, create real data for suraj+1 or fall back to demo data
       if (finalAssignments.length === 0) {
-        const demoData = getDemoReportsData(teacher.id)
-        finalAssignments = demoData.assignments as any
+        if (teacher.email === 'suraj+1@speakaboos.com' || teacher.id === 1001) {
+          console.log('Creating real student data for suraj+1@speakaboos.com in student cards')
+          try {
+            await seedRealDataForSuraj()
+            // Refetch data after seeding
+            const newAssignmentsData = await getTeacherAssignments(teacher.id)
+            finalAssignments = newAssignmentsData || []
+            console.log('Refetched assignments after seeding:', finalAssignments.length)
+          } catch (error) {
+            console.error('Failed to seed real data, falling back to demo:', error)
+            const demoData = getDemoReportsData(teacher.id)
+            finalAssignments = demoData.assignments as any
+          }
+        } else {
+          const demoData = getDemoReportsData(teacher.id)
+          finalAssignments = demoData.assignments as any
+        }
       }
       
       // Convert assignments to student card format
