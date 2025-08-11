@@ -66,17 +66,24 @@ export default function TeacherLoginPage() {
       
       // Add a small delay to ensure cookie is set and show success message
       setTimeout(() => {
-        router.push('/teacher/dashboard')
+        console.log('Attempting redirect to dashboard...')
+        try {
+          router.push('/teacher/dashboard')
+        } catch (error) {
+          console.error('Router push error:', error)
+          // Fallback to window.location if router fails
+          window.location.href = '/teacher/dashboard'
+        }
       }, 1000)
 
     } catch (err: any) {
       console.error('Teacher login error:', err)
       setError('Something went wrong. Please try again.')
     } finally {
-      // Only set loading to false if login failed or there was an error
-      if (!success) {
+      // Always set loading to false after a delay to prevent UI issues
+      setTimeout(() => {
         setLoading(false)
-      }
+      }, success ? 1500 : 0)
     }
   }
 
