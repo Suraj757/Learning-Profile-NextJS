@@ -35,7 +35,7 @@ function ClassroomAnalyticsContent() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/teacher/register')
+      router.push('/teacher/login')
       return
     }
     

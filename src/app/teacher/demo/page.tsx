@@ -21,8 +21,8 @@ export default function TeacherDemoPage() {
       
     } catch (error) {
       console.error('Demo launch failed:', error)
-      // Fallback to registration
-      router.push('/teacher/register?demo=true')
+      // Fallback to login page
+      router.push('/teacher/login?demo=true')
     } finally {
       setLoading(false)
     }

@@ -18,7 +18,7 @@ export default function AuthRequired({ children, fallback }: AuthRequiredProps) 
     if (!loading && !isAuthenticated) {
       // Give a short delay to avoid jarring redirect
       const timer = setTimeout(() => {
-        router.push('/teacher/register')
+        router.push('/teacher/login')
       }, 100)
       return () => clearTimeout(timer)
     }
@@ -115,7 +115,7 @@ export default function AuthRequired({ children, fallback }: AuthRequiredProps) 
               
               <div className="text-center">
                 <Link
-                  href="/teacher/register"
+                  href="/teacher/login"
                   className="btn-begin-secondary px-6 py-2"
                 >
                   Go to Teacher Login

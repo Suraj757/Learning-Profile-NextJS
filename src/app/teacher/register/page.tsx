@@ -316,6 +316,7 @@ export default function TeacherRegisterPage() {
                 className="w-full px-4 py-3 border border-begin-gray rounded-card focus:ring-2 focus:ring-begin-teal focus:border-transparent text-body"
                 placeholder="Enter your school email address"
                 required
+                autoComplete="username"
               />
             </div>
 

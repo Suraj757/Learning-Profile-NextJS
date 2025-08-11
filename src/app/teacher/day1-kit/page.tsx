@@ -346,11 +346,13 @@ function Day1KitContent() {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.push('/teacher/register')
+      console.log('Day1Kit: Not authenticated, redirecting to login')
+      router.push('/teacher/login')
       return
     }
 
     if (teacher) {
+      console.log('Day1Kit: Teacher authenticated, loading data for:', teacher.name)
       loadDay1KitData()
     }
   }, [teacher, authLoading, isAuthenticated, router])
