@@ -392,6 +392,7 @@ export default function TeacherRegisterPage() {
                     placeholder="Create a strong password"
                     required
                     minLength={8}
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
@@ -419,6 +420,7 @@ export default function TeacherRegisterPage() {
                     className="w-full px-4 py-3 pr-12 border border-begin-gray rounded-card focus:ring-2 focus:ring-begin-teal focus:border-transparent text-body"
                     placeholder="Confirm your password"
                     required
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"

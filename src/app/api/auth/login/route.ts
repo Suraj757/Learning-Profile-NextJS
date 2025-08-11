@@ -99,7 +99,12 @@ export async function POST(request: NextRequest) {
 
     // Extract numeric ID for the teacher
     let numericId = Date.now() // fallback
-    if (user.id.includes('teacher_suraj_plus_001')) {
+    
+    // First check if user has a stored numericId (from registration)
+    if (user.numericId) {
+      numericId = user.numericId
+      console.log('Using stored numericId from registration:', numericId)
+    } else if (user.id.includes('teacher_suraj_plus_001')) {
       numericId = 1001 // Specific ID for test account 1
     } else if (user.id.includes('teacher_suraj_plus_002')) {
       numericId = 1002 // Specific ID for test account 2
