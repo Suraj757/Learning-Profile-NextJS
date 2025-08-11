@@ -32,10 +32,26 @@ export function useTeacherAuth() {
             console.log('Found secure teacher session:', sessionData.teacherData)
             setTeacher(sessionData.teacherData)
           } else {
-            // Create teacher object from session data
-            const numericId = sessionData.userId.includes('teacher_') 
-              ? parseInt(sessionData.userId.split('_')[1]) || Date.now()
-              : parseInt(sessionData.userId) || Date.now()
+            // Create teacher object from session data with proper ID extraction
+            let numericId: number = Date.now() // fallback
+            
+            if (sessionData.userId.includes('teacher_suraj_plus_001')) {
+              numericId = 1001
+            } else if (sessionData.userId.includes('teacher_suraj_plus_002')) {
+              numericId = 1002
+            } else if (sessionData.userId.includes('teacher_suraj_001')) {
+              numericId = 1000
+            } else if (sessionData.userId.includes('teacher_')) {
+              // Try to extract from user ID
+              const idParts = sessionData.userId.split('_')
+              if (idParts.length > 1 && idParts[1] !== 'suraj') {
+                const extracted = parseInt(idParts[1])
+                if (!isNaN(extracted)) numericId = extracted
+              }
+            } else {
+              const directParse = parseInt(sessionData.userId)
+              if (!isNaN(directParse)) numericId = directParse
+            }
               
             const teacherFromSession: Teacher = {
               id: numericId,
