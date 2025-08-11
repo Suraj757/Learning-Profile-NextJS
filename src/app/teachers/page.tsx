@@ -20,8 +20,14 @@ export default function TeachersLandingPage() {
                 Get Started Free
               </Link>
               <Link 
-                href="/"
+                href="/teacher/login"
                 className="text-begin-teal hover:text-begin-teal-hover font-semibold text-body transition-colors"
+              >
+                Teacher Sign In
+              </Link>
+              <Link 
+                href="/"
+                className="text-begin-blue hover:text-begin-blue/80 font-medium text-body transition-colors"
               >
                 For Parents
               </Link>
