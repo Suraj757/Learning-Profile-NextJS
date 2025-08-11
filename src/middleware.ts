@@ -22,6 +22,9 @@ const PUBLIC_ROUTES = [
   '/demo',
   '/teachers',
   '/teacher/register',
+  '/teacher/login',
+  '/teacher/forgot-password',
+  '/teacher/reset-password',
   '/teacher/help',
   '/auth/',
 ]
@@ -109,8 +112,8 @@ export async function middleware(request: NextRequest) {
     await logAccess(request, authenticated)
     
     if (!authenticated) {
-      // Redirect to login page with return URL
-      const loginUrl = new URL('/auth/login', request.url)
+      // Redirect to proper teacher login page with return URL
+      const loginUrl = new URL('/teacher/login', request.url)
       loginUrl.searchParams.set('returnTo', pathname)
       
       return NextResponse.redirect(loginUrl)
