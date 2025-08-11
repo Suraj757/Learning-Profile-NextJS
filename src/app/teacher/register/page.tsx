@@ -470,9 +470,16 @@ export default function TeacherRegisterPage() {
           </form>
 
           <div className="text-center mt-8 pt-6 border-t border-begin-gray">
-            <p className="text-sm text-begin-blue/70">
-              Already have an account? Just enter your email above to sign in.
+            <p className="text-sm text-begin-blue/70 mb-4">
+              Already have a teacher account?
             </p>
+            <Link 
+              href="/teacher/login"
+              className="btn-begin-secondary inline-flex items-center gap-2"
+            >
+              Sign In to Dashboard
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </div>

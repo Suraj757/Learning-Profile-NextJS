@@ -21,10 +21,10 @@ export default function HomePage() {
                 For Teachers
               </Link>
               <Link 
-                href="/teacher/register"
+                href="/teacher/login"
                 className="text-begin-teal hover:text-begin-teal-hover font-semibold text-body transition-colors"
               >
-                Teacher Dashboard
+                Teacher Sign In
               </Link>
             </div>
           </div>
@@ -273,10 +273,10 @@ export default function HomePage() {
                   <ArrowRight className="h-5 w-5" />
                 </Link>
                 <Link 
-                  href="/teacher/register"
+                  href="/teacher/login"
                   className="btn-begin-secondary"
                 >
-                  Teacher Dashboard
+                  Teacher Sign In
                 </Link>
               </div>
             </div>
