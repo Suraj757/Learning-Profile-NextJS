@@ -46,8 +46,8 @@ function TeacherDashboardContent() {
     console.log('Dashboard auth check:', { authLoading, isAuthenticated, teacher: !!teacher })
     
     if (!authLoading && !isAuthenticated) {
-      console.log('Redirecting to teacher register - not authenticated')
-      router.push('/teacher/register')
+      console.log('Redirecting to teacher login - not authenticated')
+      router.push('/teacher/login')
       return
     }
 

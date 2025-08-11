@@ -97,6 +97,33 @@ export async function POST(request: NextRequest) {
       .setExpirationTime('24h')
       .sign(JWT_SECRET)
 
+    // Extract numeric ID for the teacher
+    let numericId = Date.now() // fallback
+    if (user.id.includes('teacher_suraj_plus_001')) {
+      numericId = 1001 // Specific ID for test account
+    } else if (user.id.includes('teacher_suraj_001')) {
+      numericId = 1000 // Specific ID for main account
+    } else if (user.id.includes('teacher_')) {
+      // Try to extract from user ID
+      const idParts = user.id.split('_')
+      if (idParts.length > 1 && idParts[1] !== 'suraj') {
+        const extracted = parseInt(idParts[1])
+        if (!isNaN(extracted)) numericId = extracted
+      }
+    }
+
+    // Create teacher data for session
+    const teacherData = {
+      id: numericId,
+      email: user.email,
+      name: user.name || user.email.split('@')[0],
+      school: user.school || '',
+      grade_level: user.grade_level || '',
+      ambassador_status: false,
+      created_at: new Date().toISOString(),
+      isOfflineDemo: user.email.includes('demo')
+    }
+
     // Create session data
     const sessionData = {
       userId: user.id,
@@ -105,7 +132,8 @@ export async function POST(request: NextRequest) {
       name: user.name,
       authenticatedAt: new Date().toISOString(),
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
-      permissions: user.permissions
+      permissions: user.permissions,
+      teacherData: teacherData  // Include complete teacher data
     }
 
     // Get IP address for audit logging
