@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
       grade_level: user.grade_level || '',
       ambassador_status: false,
       created_at: new Date().toISOString(),
-      isOfflineDemo: user.email.includes('demo')
+      isOfflineDemo: user.email.includes('demo') && !user.email.includes('speakaboos.com')
     }
 
     // Create session data
