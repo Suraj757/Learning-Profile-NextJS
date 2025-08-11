@@ -35,6 +35,15 @@ export default function TeacherLoginPage() {
         }),
       })
 
+      console.log('Login API response status:', response.status, response.statusText)
+      
+      if (!response.ok) {
+        const errorResult = await response.json().catch(() => ({ error: `HTTP ${response.status} - ${response.statusText}` }))
+        console.log('Login API error response:', errorResult)
+        setError(errorResult.error || `Server error: ${response.status}`)
+        return
+      }
+      
       const result = await response.json()
       
       console.log('Login API response:', result)

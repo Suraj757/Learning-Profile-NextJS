@@ -64,7 +64,7 @@ if (!REGISTERED_USERS.has('suraj@speakaboos.com')) {
   })
 }
 
-// Add the specific teacher account with + symbol for testing
+// Add the specific teacher accounts with + symbol for testing
 if (!REGISTERED_USERS.has('suraj+1@speakaboos.com')) {
   REGISTERED_USERS.set('suraj+1@speakaboos.com', {
     id: 'teacher_suraj_plus_001',
@@ -84,6 +84,31 @@ if (!REGISTERED_USERS.has('suraj+1@speakaboos.com')) {
       canExportStudentData: true,
       canInviteParents: true,
       classroomIds: ['classroom_speakaboos_test_001'],
+      schoolId: 'speakaboos'
+    }
+  })
+}
+
+// Add second test account
+if (!REGISTERED_USERS.has('suraj+2@speakaboos.com')) {
+  REGISTERED_USERS.set('suraj+2@speakaboos.com', {
+    id: 'teacher_suraj_plus_002',
+    email: 'suraj+2@speakaboos.com',
+    name: 'Suraj Kumar (Test Account 2)',
+    userType: 'teacher' as const,
+    // For testing purposes, using bcrypt hash of "test123"
+    passwordHash: '$2b$12$/2zv2.b3AFtH/6DIF.Sdg.GtvHh5tlQ7J2o6P3h19U1vp.s.pUXwy',
+    isActive: true,
+    isVerified: true,
+    school: 'Speakaboos Elementary',
+    grade_level: '3rd Grade',
+    permissions: {
+      canViewStudentProfiles: true,
+      canCreateAssessments: true,
+      canViewClassroomAnalytics: true,
+      canExportStudentData: true,
+      canInviteParents: true,
+      classroomIds: ['classroom_speakaboos_test_002'],
       schoolId: 'speakaboos'
     }
   })

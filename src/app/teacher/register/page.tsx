@@ -114,7 +114,7 @@ export default function TeacherRegisterPage() {
 
       // Redirect to login after 3 seconds
       setTimeout(() => {
-        router.push('/auth/login?message=registration_success')
+        router.push('/teacher/login?message=registration_success')
       }, 3000)
 
     } catch (err: any) {

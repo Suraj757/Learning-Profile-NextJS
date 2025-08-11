@@ -100,7 +100,9 @@ export async function POST(request: NextRequest) {
     // Extract numeric ID for the teacher
     let numericId = Date.now() // fallback
     if (user.id.includes('teacher_suraj_plus_001')) {
-      numericId = 1001 // Specific ID for test account
+      numericId = 1001 // Specific ID for test account 1
+    } else if (user.id.includes('teacher_suraj_plus_002')) {
+      numericId = 1002 // Specific ID for test account 2
     } else if (user.id.includes('teacher_suraj_001')) {
       numericId = 1000 // Specific ID for main account
     } else if (user.id.includes('teacher_')) {
