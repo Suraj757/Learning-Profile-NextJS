@@ -45,6 +45,8 @@ import { beginContentService } from '@/lib/content-recommendation-service'
 import { getDemoReportsData, createDemoDataForTeacher } from '@/lib/demo-data'
 import { getTeacherDatabaseId, migrateTeacherToSupabase } from '@/lib/teacher-migration'
 import { seedRealDataForSuraj } from '@/lib/seed-real-data'
+import DemoDataIndicator, { DemoDataBanner, DemoDataWrapper } from '@/components/ui/DemoDataIndicator'
+import { analyzeDataSource, getDataSourceDescription, type ClassroomDataSource } from '@/lib/demo-data-detection'
 
 // Wrapper component to handle async content loading
 function ContentRecommendationsWrapper({ learningProfile, studentName }: { 
@@ -343,6 +345,7 @@ function Day1KitContent() {
   const [day1Data, setDay1Data] = useState<any>(null)
   const [classrooms, setClassrooms] = useState<Classroom[]>([])
   const [assignments, setAssignments] = useState<ProfileAssignment[]>([])
+  const [dataSource, setDataSource] = useState<ClassroomDataSource | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -511,6 +514,10 @@ function Day1KitContent() {
       setClassrooms(classroomsData)
       setAssignments(assignmentsData)
       
+      // Analyze data source for demo indicators
+      const sourceAnalysis = analyzeDataSource(classroomsData, assignmentsData, teacher.email)
+      setDataSource(sourceAnalysis)
+      
       // Generate Day 1 Kit data from actual classroom data
       const primaryClassroom = classroomsData[0] || { name: 'Your Classroom', grade_level: '3rd Grade' }
       const completedAssignments = assignmentsData.filter(a => a.status === 'completed')
@@ -541,6 +548,10 @@ function Day1KitContent() {
       const demoData = getDemoReportsData(teacher.id)
       setClassrooms(demoData.classrooms as any)
       setAssignments(demoData.assignments as any)
+      
+      // Analyze demo data source
+      const demoSourceAnalysis = analyzeDataSource(demoData.classrooms as any, demoData.assignments as any, teacher.email)
+      setDataSource(demoSourceAnalysis)
       
       // Generate demo Day 1 data
       const mockDay1Data = {
@@ -760,6 +771,15 @@ function Day1KitContent() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Demo Data Banner */}
+        {dataSource && dataSource.type !== 'real' && (
+          <DemoDataBanner
+            message={getDataSourceDescription(dataSource).description}
+            actionText={getDataSourceDescription(dataSource).actionText}
+            onAction={() => router.push('/teacher/send-assessment')}
+          />
+        )}
+
         {/* Tab Navigation */}
         <div className="mb-8 print:hidden">
           <div className="border-b border-begin-gray">
@@ -1048,6 +1068,9 @@ function Day1KitContent() {
                           <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">
                             Needs Attention
                           </span>
+                          {dataSource && dataSource.type !== 'real' && (
+                            <DemoDataIndicator message="Demo" size="sm" type="subtle" />
+                          )}
                         </div>
                         <div className="grid md:grid-cols-2 gap-4">
                           <div>

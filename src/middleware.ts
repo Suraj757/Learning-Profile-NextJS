@@ -5,6 +5,7 @@ import { jwtVerify } from 'jose'
 const PROTECTED_ROUTES = [
   '/results/',
   '/teacher/dashboard',
+  '/teacher/day1-kit',
   '/teacher/student-cards',
   '/teacher/classroom',
   '/teacher/assignments',

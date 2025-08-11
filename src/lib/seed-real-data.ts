@@ -24,7 +24,7 @@ export async function seedRealDataForSuraj() {
 
     console.log('Creating real data for suraj+1@speakaboos.com (teacher', teacherId + ')')
 
-    // Create real classroom
+    // Create or get existing classroom (createClassroom now handles conflicts)
     const classroom = await createClassroom(teacherId, {
       name: "Suraj's 3rd Grade",
       grade_level: '3rd Grade',

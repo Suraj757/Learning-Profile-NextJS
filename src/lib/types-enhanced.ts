@@ -1,7 +1,156 @@
 /**
- * Enhanced Data Structures for Day 1 Success Kit
- * Comprehensive types for classroom analytics, risk assessment, and optimization
+ * Enhanced Data Structures for Student-Centric Learning Profile Platform
+ * Combines Day 1 Success Kit analytics with scalable multi-tenant architecture
+ * Based on ARCHITECTURE.md and enhanced-student-centric-schema.sql
  */
+
+// =============================================================================
+// CORE STUDENT-CENTRIC TYPES (NEW ARCHITECTURE)
+// =============================================================================
+
+export interface School {
+  id: string
+  name: string
+  districtId?: string
+  schoolCode?: string
+  address?: Record<string, any>
+  principalEmail?: string
+  ferpaOfficerEmail?: string
+  privacySettings: {
+    allowTeacherDataExport: boolean
+    requireAssessmentApproval: boolean
+    dataRetentionYears: number
+    allowCrossYearAccess: boolean
+  }
+  subscriptionTier: 'free' | 'school' | 'district' | 'enterprise'
+  createdAt: string
+  updatedAt: string
+}
+
+// Student is the central, permanent entity
+export interface Student {
+  id: string
+  studentNumber?: string // School-assigned ID
+  firstName: string
+  lastName: string
+  dateOfBirth?: string
+  gradeLevel?: string
+  schoolId?: string
+  
+  // Privacy & compliance
+  ferpaDirectoryOptOut: boolean
+  dataRetentionPreference: 'minimum' | 'standard' | 'extended'
+  
+  // Computed fields
+  fullName?: string
+  age?: number
+  currentClassroom?: Classroom
+  currentTeachers?: Teacher[]
+  
+  // Metadata
+  createdAt: string
+  updatedAt: string
+}
+
+// Enhanced teacher with school affiliation
+export interface Teacher {
+  id: string
+  legacyId?: number // For migration
+  email: string
+  firstName: string
+  lastName: string
+  schoolId?: string
+  employeeId?: string
+  
+  // Teaching details
+  gradeLevels: string[]
+  subjectAreas: string[]
+  role: 'teacher' | 'specialist' | 'admin' | 'principal'
+  certificationStatus: 'pending' | 'verified' | 'expired' | 'revoked'
+  hireDate?: string
+  
+  // Status
+  isActive: boolean
+  verificationStatus: 'pending' | 'verified' | 'rejected'
+  
+  // Permissions
+  permissions: {
+    viewStudentProfiles: boolean
+    createAssessments: boolean
+    exportData: boolean
+    manageClassroom: boolean
+    viewHistoricalData: boolean
+  }
+  
+  // Computed fields
+  fullName?: string
+  
+  // Metadata
+  createdAt: string
+  updatedAt: string
+  lastLoginAt?: string
+}
+
+// The key to access control - relationships, not ownership
+export interface TeacherStudentRelationship {
+  id: string
+  teacherId: string
+  studentId: string
+  classroomId?: string
+  
+  // Relationship details
+  relationshipType: 'primary_teacher' | 'specialist' | 'support' | 'substitute'
+  schoolYear: string
+  startDate: string
+  endDate?: string // NULL = active
+  
+  // FERPA compliance
+  educationalPurpose: string
+  permissions: {
+    viewProfile: boolean
+    viewAssessments: boolean
+    createAssessments: boolean
+    shareWithParents: boolean
+    exportData: boolean
+  }
+  
+  // Computed fields
+  isActive?: boolean
+  
+  // Audit
+  createdAt: string
+  createdBy?: string
+}
+
+// Enhanced classroom with school context
+export interface Classroom {
+  id: string
+  legacyId?: number // For migration
+  schoolId: string
+  primaryTeacherId?: string
+  
+  // Details
+  name: string
+  gradeLevel?: string
+  subjectArea?: string
+  schoolYear: string
+  roomNumber?: string
+  maxEnrollment: number
+  
+  // Status
+  isActive: boolean
+  
+  // Computed fields
+  currentEnrollment?: number
+  
+  // Metadata
+  createdAt: string
+  updatedAt: string
+}
+
+// =============================================================================
+// LEGACY COMPATIBILITY TYPES (EXISTING SYSTEM)
+// =============================================================================
 
 // Base learning styles
 export type LearningStyle = 'creative' | 'analytical' | 'collaborative' | 'confident'

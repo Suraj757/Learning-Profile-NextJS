@@ -288,6 +288,21 @@ export async function createClassroom(teacherId: number, data: {
     throw new Error('Supabase not configured')
   }
   
+  // First try to find existing classroom
+  const { data: existingClassroom, error: findError } = await supabase
+    .from('classrooms')
+    .select('*')
+    .eq('teacher_id', teacherId)
+    .eq('name', data.name)
+    .eq('school_year', data.school_year)
+    .single()
+  
+  if (existingClassroom) {
+    console.log('✅ Using existing classroom:', existingClassroom.id, existingClassroom.name)
+    return existingClassroom
+  }
+  
+  // If not found, create new one
   const { data: classroom, error } = await supabase
     .from('classrooms')
     .insert([{
@@ -299,7 +314,29 @@ export async function createClassroom(teacherId: number, data: {
     .select()
     .single()
   
-  if (error) throw error
+  if (error) {
+    // Handle race condition - another process might have created it
+    if (error.code === '23505' || error.message?.includes('duplicate')) {
+      console.log('🔄 Classroom created by another process, fetching...')
+      const { data: raceClassroom, error: raceError } = await supabase
+        .from('classrooms')
+        .select('*')
+        .eq('teacher_id', teacherId)
+        .eq('name', data.name)
+        .eq('school_year', data.school_year)
+        .single()
+      
+      if (raceClassroom) {
+        return raceClassroom
+      }
+      if (raceError) {
+        console.error('Failed to fetch classroom after race condition:', raceError)
+      }
+    }
+    throw error
+  }
+  
+  console.log('✅ Created new classroom:', classroom.id, classroom.name)
   return classroom
 }
 
