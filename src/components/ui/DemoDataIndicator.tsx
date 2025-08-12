@@ -47,13 +47,21 @@ function DemoDataIndicator({
     subtle: 'bg-gray-100 text-gray-600 border border-gray-200'
   }
   
-  const icons = {
-    warning: AlertTriangle,
-    info: Info,
-    subtle: Eye
+  // Explicitly preserve imports for production builds
+  const getIcon = (iconType: string) => {
+    switch (iconType) {
+      case 'warning':
+        return AlertTriangle
+      case 'info':
+        return Info
+      case 'subtle':
+        return Eye
+      default:
+        return Info
+    }
   }
   
-  const Icon = icons[type]
+  const Icon = getIcon(type)
   
   return (
     <span className={`${baseClasses} ${sizeClasses[size]} ${typeClasses[type]} ${className}`}>
