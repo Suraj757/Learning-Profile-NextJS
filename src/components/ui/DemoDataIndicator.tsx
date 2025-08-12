@@ -1,3 +1,6 @@
+'use client'
+
+import React from 'react'
 import { AlertTriangle, Info, Eye } from 'lucide-react'
 import { useTeacherAuth } from '@/lib/auth/hooks'
 
