@@ -7,7 +7,7 @@ interface PerformanceMonitorProps {
   showDebugInfo?: boolean
 }
 
-export default function PerformanceMonitor({ enabled = false, showDebugInfo = false }: PerformanceMonitorProps) {
+function PerformanceMonitor({ enabled = false, showDebugInfo = false }: PerformanceMonitorProps) {
   const [vitals, setVitals] = useState<WebVitals[]>([])
   const [memoryUsage, setMemoryUsage] = useState<ReturnType<typeof monitorMemoryUsage> | null>(null)
 
@@ -131,7 +131,38 @@ export function usePerformanceVitals() {
         return [...prev, vital]
       })
     })
-  }, [])
 
-  return vitals
+    // Monitor memory usage periodically
+    const interval = setInterval(() => {
+      const usage = monitorMemoryUsage()
+      setMemoryUsage(usage)
+    }, 5000)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [enabled])
+
+  // Don't render anything in production unless debug is enabled
+  if (!enabled || (!showDebugInfo && process.env.NODE_ENV === 'production')) {
+    return null
+  }
+
+  return (
+    <div className="fixed bottom-4 right-4 bg-black/80 text-white p-2 rounded text-xs font-mono z-50">
+      <div>Performance Metrics:</div>
+      {vitals.map(vital => (
+        <div key={vital.name}>
+          {vital.name}: {vital.value.toFixed(2)}ms
+        </div>
+      ))}
+      {memoryUsage && (
+        <div>Memory: {(memoryUsage.used / 1024 / 1024).toFixed(1)}MB</div>
+      )}
+    </div>
+  )
 }
+
+// Export both named and default
+export { PerformanceMonitor }
+export default PerformanceMonitor

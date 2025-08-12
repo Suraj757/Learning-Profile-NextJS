@@ -208,7 +208,7 @@ export async function POST(request: NextRequest) {
       authenticatedAt: new Date().toISOString(),
       expiresAt: new Date(Date.now() + sessionMaxAge * 1000).toISOString(),
       rememberMe: rememberMe || false,
-      isEduDomain: emailValidation.isEduDomain
+      isEduDomain: emailValidation.isEduDomain,
       permissions: user.permissions,
       teacherData: teacherData  // Include complete teacher data
     }

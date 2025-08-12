@@ -1,16 +1,84 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateEducationalEmail, generatePassphraseSuggestion } from '@/lib/auth/password-validation'
-import { userExists } from '@/lib/auth/user-storage'
 
-// Educational domain patterns for enhanced detection
-const EDUCATIONAL_DOMAINS = {
-  '.edu': { type: 'university', confidence: 'high', features: ['full_access', 'ferpa_compliant'] },
-  '.k12.': { type: 'k12_school', confidence: 'high', features: ['full_access', 'ferpa_compliant'] },
-  '.school.': { type: 'school_district', confidence: 'high', features: ['full_access', 'ferpa_compliant'] },
-  'schools.': { type: 'school_system', confidence: 'medium', features: ['full_access'] },
-  '.sch.': { type: 'school', confidence: 'medium', features: ['full_access'] },
-  'isd.': { type: 'independent_school_district', confidence: 'medium', features: ['full_access'] },
-  'usd.': { type: 'unified_school_district', confidence: 'medium', features: ['full_access'] },
-  'college.': { type: 'college', confidence: 'high', features: ['full_access', 'ferpa_compliant'] },
-  'university.': { type: 'university', confidence: 'high', features: ['full_access', 'ferpa_compliant'] }
-}\n\n// Common educational email providers that might not have .edu\nconst EDUCATIONAL_PROVIDERS = {\n  'schoology.com': { type: 'education_platform', confidence: 'high' },\n  'clever.com': { type: 'education_platform', confidence: 'high' },\n  'edmodo.com': { type: 'education_platform', confidence: 'high' },\n  'classlink.com': { type: 'education_platform', confidence: 'high' },\n  'powerschool.com': { type: 'education_platform', confidence: 'high' }\n}\n\nexport async function POST(request: NextRequest) {\n  try {\n    const { email, context } = await request.json()\n    \n    if (!email) {\n      return NextResponse.json({\n        success: false,\n        error: 'Email address is required'\n      }, { status: 400 })\n    }\n    \n    // Basic email validation\n    const emailValidation = validateEducationalEmail(email.toLowerCase())\n    \n    if (!emailValidation.isValid) {\n      return NextResponse.json({\n        success: false,\n        valid: false,\n        error: 'Please enter a valid email address',\n        suggestions: ['Check for typos', 'Include @ symbol and domain']\n      }, { status: 400 })\n    }\n    \n    // Check if email already exists\n    const exists = userExists(email)\n    \n    // Enhanced domain analysis\n    const domainAnalysis = analyzeDomain(email)\n    \n    // Generate contextual recommendations\n    const recommendations = generateRecommendations(email, domainAnalysis, context)\n    \n    // Determine authentication flow\n    const authFlow = determineAuthFlow(email, domainAnalysis, exists)\n    \n    return NextResponse.json({\n      success: true,\n      valid: true,\n      email: email.toLowerCase(),\n      exists,\n      domain: {\n        name: email.split('@')[1],\n        type: domainAnalysis.type,\n        confidence: domainAnalysis.confidence,\n        isEducational: domainAnalysis.isEducational,\n        features: domainAnalysis.features,\n        ferpaCompliant: domainAnalysis.ferpaCompliant\n      },\n      recommendations,\n      authFlow,\n      context: {\n        passphraseSuggestion: generatePassphraseSuggestion(),\n        relaxedRequirements: domainAnalysis.isEducational,\n        fullAccess: domainAnalysis.features.includes('full_access'),\n        timestamp: new Date().toISOString()\n      }\n    })\n    \n  } catch (error) {\n    console.error('Email validation error:', error)\n    return NextResponse.json({\n      success: false,\n      error: 'Unable to validate email at this time',\n      suggestions: ['Try again in a moment', 'Check your internet connection']\n    }, { status: 500 })\n  }\n}\n\nexport async function GET(request: NextRequest) {\n  // GET endpoint for checking email without validation\n  try {\n    const url = new URL(request.url)\n    const email = url.searchParams.get('email')\n    \n    if (!email) {\n      return NextResponse.json({\n        success: false,\n        error: 'Email parameter is required'\n      }, { status: 400 })\n    }\n    \n    const exists = userExists(email)\n    const domainAnalysis = analyzeDomain(email)\n    \n    return NextResponse.json({\n      success: true,\n      email: email.toLowerCase(),\n      exists,\n      isEducational: domainAnalysis.isEducational,\n      domainType: domainAnalysis.type,\n      confidence: domainAnalysis.confidence\n    })\n    \n  } catch (error) {\n    console.error('Email check error:', error)\n    return NextResponse.json({\n      success: false,\n      error: 'Unable to check email'\n    }, { status: 500 })\n  }\n}\n\n// Enhanced domain analysis\nfunction analyzeDomain(email: string) {\n  const domain = email.split('@')[1]?.toLowerCase()\n  const analysis = {\n    type: 'unknown' as string,\n    confidence: 'low' as 'low' | 'medium' | 'high',\n    isEducational: false,\n    features: [] as string[],\n    ferpaCompliant: false\n  }\n  \n  if (!domain) return analysis\n  \n  // Check direct educational domains\n  for (const [pattern, info] of Object.entries(EDUCATIONAL_DOMAINS)) {\n    if (domain.includes(pattern)) {\n      analysis.type = info.type\n      analysis.confidence = info.confidence as 'low' | 'medium' | 'high'\n      analysis.isEducational = true\n      analysis.features = info.features\n      analysis.ferpaCompliant = info.features.includes('ferpa_compliant')\n      break\n    }\n  }\n  \n  // Check educational platforms\n  if (!analysis.isEducational) {\n    for (const [provider, info] of Object.entries(EDUCATIONAL_PROVIDERS)) {\n      if (domain.includes(provider)) {\n        analysis.type = info.type\n        analysis.confidence = info.confidence as 'low' | 'medium' | 'high'\n        analysis.isEducational = true\n        analysis.features = ['limited_access']\n        break\n      }\n    }\n  }\n  \n  // Additional heuristics for educational detection\n  if (!analysis.isEducational) {\n    const educationalKeywords = [\n      'school', 'district', 'academy', 'college', 'university',\n      'learning', 'education', 'student', 'teacher', 'faculty'\n    ]\n    \n    if (educationalKeywords.some(keyword => domain.includes(keyword))) {\n      analysis.type = 'educational_organization'\n      analysis.confidence = 'medium'\n      analysis.isEducational = true\n      analysis.features = ['full_access']\n    }\n  }\n  \n  return analysis\n}\n\n// Generate contextual recommendations\nfunction generateRecommendations(email: string, domainAnalysis: any, context?: string) {\n  const recommendations = []\n  \n  if (domainAnalysis.isEducational) {\n    recommendations.push({\n      type: 'success',\n      message: 'Great! This looks like an educational email address.',\n      details: 'You\\'ll have access to all educational features and simplified password requirements.'\n    })\n    \n    if (domainAnalysis.ferpaCompliant) {\n      recommendations.push({\n        type: 'info',\n        message: 'FERPA Compliant Institution',\n        details: 'This institution follows FERPA guidelines, ensuring proper student data protection.'\n      })\n    }\n  } else {\n    recommendations.push({\n      type: 'info',\n      message: 'Personal email detected',\n      details: 'You can still use the platform, though some educational features may be limited.'\n    })\n    \n    recommendations.push({\n      type: 'suggestion',\n      message: 'Consider using your school email',\n      details: 'If you have a school or institutional email, using it will unlock additional features.'\n    })\n  }\n  \n  // Context-specific recommendations\n  if (context === 'registration') {\n    if (domainAnalysis.isEducational) {\n      recommendations.push({\n        type: 'tip',\n        message: 'Password tip for educators',\n        details: 'You can use simple passphrases like \"coffee morning sunshine\" - easier to remember!'\n      })\n    }\n  }\n  \n  return recommendations\n}\n\n// Determine optimal authentication flow\nfunction determineAuthFlow(email: string, domainAnalysis: any, exists: boolean) {\n  const flow = {\n    recommended: 'standard' as 'standard' | 'educational' | 'enterprise',\n    features: [] as string[],\n    passwordPolicy: 'standard' as 'standard' | 'relaxed' | 'strict',\n    verificationRequired: true,\n    streamlined: false\n  }\n  \n  if (domainAnalysis.isEducational) {\n    flow.recommended = 'educational'\n    flow.features.push('educational_dashboard', 'ferpa_compliant_data')\n    flow.passwordPolicy = 'relaxed'\n    flow.streamlined = true\n    \n    if (domainAnalysis.confidence === 'high') {\n      flow.features.push('fast_verification', 'bulk_import')\n    }\n  }\n  \n  if (exists) {\n    flow.recommended = 'login_redirect'\n    flow.features = ['existing_account']\n  }\n  \n  return flow\n}
+// Simple email validation for the test system
+export async function POST(request: NextRequest) {
+  try {
+    const { email } = await request.json()
+    
+    if (!email) {
+      return NextResponse.json({
+        success: false,
+        error: 'Email address is required'
+      }, { status: 400 })
+    }
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const isValid = emailRegex.test(email)
+    
+    if (!isValid) {
+      return NextResponse.json({
+        success: false,
+        valid: false,
+        error: 'Please enter a valid email address'
+      }, { status: 400 })
+    }
+    
+    // Check if it's an educational email
+    const domain = email.split('@')[1]?.toLowerCase()
+    const isEducational = domain?.includes('.edu') || 
+                         domain?.includes('school') || 
+                         domain?.includes('district')
+    
+    return NextResponse.json({
+      success: true,
+      valid: true,
+      email: email.toLowerCase(),
+      domain: {
+        name: domain,
+        isEducational,
+        type: isEducational ? 'educational' : 'personal'
+      }
+    })
+    
+  } catch (error) {
+    console.error('Email validation error:', error)
+    return NextResponse.json({
+      success: false,
+      error: 'Unable to validate email at this time'
+    }, { status: 500 })
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const url = new URL(request.url)
+    const email = url.searchParams.get('email')
+    
+    if (!email) {
+      return NextResponse.json({
+        success: false,
+        error: 'Email parameter is required'
+      }, { status: 400 })
+    }
+    
+    const domain = email.split('@')[1]?.toLowerCase()
+    const isEducational = domain?.includes('.edu') || 
+                         domain?.includes('school') || 
+                         domain?.includes('district')
+    
+    return NextResponse.json({
+      success: true,
+      email: email.toLowerCase(),
+      isEducational,
+      domainType: isEducational ? 'educational' : 'personal'
+    })
+    
+  } catch (error) {
+    console.error('Email check error:', error)
+    return NextResponse.json({
+      success: false,
+      error: 'Unable to check email'
+    }, { status: 500 })
+  }
+}

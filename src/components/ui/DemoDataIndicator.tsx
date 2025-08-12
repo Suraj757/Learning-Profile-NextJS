@@ -163,5 +163,6 @@ export function DemoDataWrapper({
   )
 }
 
-// Export default
+// Export both named and default
+export { DemoDataIndicator }
 export default DemoDataIndicator
