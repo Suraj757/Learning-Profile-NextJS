@@ -785,10 +785,10 @@ function Day1KitContent() {
           <div className="border-b border-begin-gray">
             <nav className="-mb-px flex space-x-8">
               {[
-                { id: 'overview', label: 'Classroom Overview', icon: PieChart },
-                { id: 'alerts', label: 'Early Alerts', icon: AlertTriangle },
-                { id: 'seating', label: 'Seating Chart', icon: Layout },
-                { id: 'emails', label: 'Parent Emails', icon: MessageSquare }
+                { id: 'overview', label: 'Classroom Overview', getIcon: () => PieChart },
+                { id: 'alerts', label: 'Early Alerts', getIcon: () => AlertTriangle },
+                { id: 'seating', label: 'Seating Chart', getIcon: () => Layout },
+                { id: 'emails', label: 'Parent Emails', getIcon: () => MessageSquare }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -799,7 +799,7 @@ function Day1KitContent() {
                       : 'border-transparent text-begin-blue/70 hover:text-begin-blue hover:border-begin-gray'
                   }`}
                 >
-                  <tab.icon className="h-4 w-4" />
+                  {React.createElement(tab.getIcon(), { className: "h-4 w-4" })}
                   {tab.label}
                 </button>
               ))}

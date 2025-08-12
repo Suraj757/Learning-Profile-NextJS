@@ -122,26 +122,40 @@ function analyzeAtRiskStudents(assignments: any[]): AtRiskStudent[] {
   })
 }
 
+// Helper function to get risk level icon (prevents tree-shaking issues)
+const getRiskIcon = (level: string) => {
+  switch (level) {
+    case 'high':
+      return AlertTriangle
+    case 'medium':
+      return Clock
+    case 'low':
+      return Eye
+    default:
+      return AlertTriangle
+  }
+}
+
 const riskLevelConfig = {
   high: {
     color: 'text-red-700',
     bgColor: 'bg-red-50',
     borderColor: 'border-red-200',
-    icon: AlertTriangle,
+    getIcon: () => getRiskIcon('high'),
     label: 'High Risk'
   },
   medium: {
     color: 'text-orange-700',
     bgColor: 'bg-orange-50',
     borderColor: 'border-orange-200',
-    icon: Clock,
+    getIcon: () => getRiskIcon('medium'),
     label: 'Moderate Risk'
   },
   low: {
     color: 'text-yellow-700',
     bgColor: 'bg-yellow-50',
     borderColor: 'border-yellow-200',
-    icon: Eye,
+    getIcon: () => getRiskIcon('low'),
     label: 'Watch List'
   }
 }
@@ -390,7 +404,7 @@ export default function AtRiskAlertsPage() {
         <div className="space-y-4">
           {filteredStudents.map((student) => {
             const config = riskLevelConfig[student.riskLevel as keyof typeof riskLevelConfig]
-            const IconComponent = config.icon
+            const IconComponent = config.getIcon()
             
             return (
               <div
