@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Simple email validation for the test system
+// Simple email validation for the test system  
 export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json()
