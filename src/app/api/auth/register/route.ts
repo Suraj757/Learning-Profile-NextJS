@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import { SignJWT } from 'jose'
 import { userExists, createUser } from '@/lib/auth/user-storage'
 import { createTeacher as createSupabaseTeacher } from '@/lib/supabase'
+import { validatePassword, validateEducationalEmail, generatePassphraseSuggestion } from '@/lib/auth/password-validation'
 
 // Teacher registration interface
 interface TeacherRegistration {
@@ -14,46 +15,78 @@ interface TeacherRegistration {
   gradeLevel: string
 }
 
-// Validation helper
-function validateRegistration(data: TeacherRegistration): { isValid: boolean; errors: string[] } {
+// Enhanced validation with educational UX focus
+function validateRegistration(data: TeacherRegistration): { 
+  isValid: boolean; 
+  errors: string[]; 
+  suggestions: string[];
+  warnings: string[];
+  context: any;
+} {
   const errors: string[] = []
-
-  // Email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!data.email || !emailRegex.test(data.email)) {
-    errors.push('Valid email address is required')
-  }
-
-  // Password validation
-  if (!data.password || data.password.length < 8) {
-    errors.push('Password must be at least 8 characters long')
-  }
-
-  if (data.password !== data.confirmPassword) {
-    errors.push('Passwords do not match')
-  }
-
-  // Password strength validation
-  const hasUpperCase = /[A-Z]/.test(data.password)
-  const hasLowerCase = /[a-z]/.test(data.password)
-  const hasNumber = /\d/.test(data.password)
+  const suggestions: string[] = []
+  const warnings: string[] = []
   
-  if (!hasUpperCase || !hasLowerCase || !hasNumber) {
-    errors.push('Password must contain uppercase, lowercase, and number')
+  // Enhanced email validation with educational context
+  const emailValidation = validateEducationalEmail(data.email)
+  if (!emailValidation.isValid) {
+    errors.push('Please enter a valid email address')
+  }
+  
+  // Add educational domain feedback
+  if (emailValidation.warnings.length > 0) {
+    warnings.push(...emailValidation.warnings)
+  }
+  
+  if (emailValidation.suggestions.length > 0) {
+    suggestions.push(...emailValidation.suggestions)
   }
 
-  // Required fields
+  // Password confirmation check
+  if (data.password !== data.confirmPassword) {
+    errors.push('Passwords do not match - please retype your password carefully')
+  }
+
+  // Enhanced password validation
+  if (data.password) {
+    const passwordValidation = validatePassword(data.password, data.email)
+    if (!passwordValidation.isValid) {
+      errors.push(...passwordValidation.errors)
+    }
+    
+    if (passwordValidation.suggestions.length > 0) {
+      suggestions.push(...passwordValidation.suggestions)
+    }
+    
+    // Strength-based suggestions
+    if (passwordValidation.strength === 'weak' && emailValidation.isEduDomain) {
+      suggestions.push('As an educator, consider using a phrase like "coffee morning sunshine" - easier to remember!')
+    }
+  }
+
+  // Required fields with helpful messaging
   if (!data.name?.trim()) {
-    errors.push('Full name is required')
+    errors.push('Please enter your full name as you\'d like it to appear to students and parents')
   }
 
   if (!data.school?.trim()) {
-    errors.push('School name is required')
+    errors.push('School name is required to help us provide relevant educational features')
+  }
+
+  // Validate school name format
+  if (data.school?.trim() && data.school.trim().length < 3) {
+    errors.push('Please enter the complete name of your school or educational institution')
   }
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
+    suggestions,
+    warnings,
+    context: {
+      isEduDomain: emailValidation.isEduDomain,
+      passphraseSuggestion: generatePassphraseSuggestion()
+    }
   }
 }
 
@@ -140,24 +173,38 @@ export async function POST(request: NextRequest) {
   try {
     const data: TeacherRegistration = await request.json()
 
-    // Validate input data
+    // Enhanced validation with UX feedback
     const validation = validateRegistration(data)
     if (!validation.isValid) {
       return NextResponse.json(
         { 
           success: false,
-          errors: validation.errors 
+          errors: validation.errors,
+          suggestions: validation.suggestions,
+          warnings: validation.warnings,
+          context: validation.context,
+          field: validation.errors[0]?.includes('email') ? 'email' :
+                 validation.errors[0]?.includes('name') ? 'name' :
+                 validation.errors[0]?.includes('school') ? 'school' :
+                 validation.errors[0]?.includes('match') ? 'confirmPassword' : 'password'
         },
         { status: 400 }
       )
     }
 
-    // Check if email already exists
+    // Enhanced email existence check
     if (userExists(data.email)) {
       return NextResponse.json(
         { 
           success: false,
-          errors: ['An account with this email already exists'] 
+          error: 'An account with this email address already exists. Would you like to sign in instead?',
+          field: 'email',
+          action: 'redirect_to_login',
+          suggestions: [
+            'Try signing in with your existing password',
+            'Use the "Forgot Password" link if you need to reset your password',
+            'Contact support if you\'re having trouble accessing your account'
+          ]
         },
         { status: 409 }
       )
@@ -189,24 +236,50 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Registration successful! Please check your email to verify your account.',
+      message: validation.context.isEduDomain 
+        ? 'Welcome to the educational platform! Registration successful. Please check your email to verify your account and unlock all teacher features.'
+        : 'Registration successful! Please check your email to verify your account.',
       user: {
         id: newTeacher.id,
         email: newTeacher.email,
         name: newTeacher.name,
         school: newTeacher.school,
-        isVerified: false
+        gradeLevel: newTeacher.gradeLevel,
+        isVerified: false,
+        isEduDomain: validation.context.isEduDomain
+      },
+      nextSteps: [
+        'Check your email for a verification link',
+        'Click the verification link to activate your account',
+        validation.context.isEduDomain 
+          ? 'Once verified, you\'ll have access to all educational features'
+          : 'Once verified, you can start using the platform'
+      ],
+      context: {
+        isEduDomain: validation.context.isEduDomain,
+        hasFullAccess: false,
+        requiresVerification: true
       }
     })
 
   } catch (error) {
     console.error('Registration error:', error)
-    return NextResponse.json(
-      { 
-        success: false,
-        errors: ['Internal server error during registration'] 
-      },
-      { status: 500 }
-    )
+    
+    const errorResponse = {
+      success: false,
+      error: 'We\'re experiencing technical difficulties with account creation. Please try again in a moment.',
+      field: 'system',
+      suggestions: [
+        'Try again in a few minutes',
+        'Check your internet connection',
+        'Contact support if this issue continues'
+      ]
+    }
+    
+    if (process.env.NODE_ENV === 'development') {
+      errorResponse.error = `Registration error: ${error.message}`
+    }
+    
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }

@@ -18,7 +18,9 @@ import {
   Send,
   CreditCard
 } from 'lucide-react'
-import { useTeacherAuth } from '@/lib/teacher-auth'
+import { useTeacherAuth } from '@/lib/auth/hooks'
+import AuthenticatedHeader from '@/components/auth/AuthenticatedHeader'
+import { DemoDataBanner } from '@/components/ui/DemoDataIndicator'
 import { getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
 import type { Classroom, ProfileAssignment } from '@/lib/supabase'
 import DelightfulLoading from '@/components/loading/DelightfulLoading'
@@ -27,7 +29,8 @@ import { getOnboardingStatus, OnboardingStatus } from '@/lib/teacher-onboarding'
 import { getTeacherDatabaseId, migrateTeacherToSupabase } from '@/lib/teacher-migration'
 
 function TeacherDashboardContent() {
-  const { teacher, loading: authLoading, isAuthenticated } = useTeacherAuth()
+  const { teacher, loading: authLoading } = useTeacherAuth()
+  const isAuthenticated = !!teacher
   const [classrooms, setClassrooms] = useState<Classroom[]>([])
   const [assignments, setAssignments] = useState<ProfileAssignment[]>([])
   const [loading, setLoading] = useState(true)
@@ -225,34 +228,13 @@ function TeacherDashboardContent() {
 
   return (
     <div className="min-h-screen bg-begin-cream">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-begin-gray">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <BookOpen className="h-8 w-8 text-begin-teal" />
-              <div>
-                <span className="text-2xl font-bold text-begin-blue">Teacher Dashboard</span>
-                <p className="text-sm text-begin-blue/70">Welcome back, {teacher?.name}</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link 
-                href="/teacher/settings"
-                className="p-2 text-begin-blue/70 hover:text-begin-teal transition-colors"
-              >
-                <Settings className="h-6 w-6" />
-              </Link>
-              <Link 
-                href="/"
-                className="text-begin-teal hover:text-begin-teal-hover font-semibold transition-colors"
-              >
-                Home
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Enhanced Header with Auth Components */}
+      <AuthenticatedHeader 
+        title="Teacher Dashboard" 
+        subtitle={`Welcome back, ${teacher?.name || teacher?.email?.split('@')[0] || 'Teacher'}`}
+        showAuthState={true}
+        showNotifications={true}
+      />
 
       {/* Welcome Message */}
       {showWelcome && (
@@ -340,6 +322,13 @@ function TeacherDashboardContent() {
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Demo Data Indicator */}
+        <DemoDataBanner 
+          message="You are viewing demo data to explore the platform. Create real assessments to see actual student insights."
+          actionText="Create First Classroom"
+          onAction={() => router.push('/teacher/classroom/create')}
+        />
+        
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="card-begin bg-gradient-to-br from-begin-blue to-begin-blue/80 text-white">

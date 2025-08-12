@@ -1,5 +1,6 @@
-// Secure Authentication Hooks - Educational Platform
-// Replaces vulnerable localStorage-based authentication
+// Enhanced Authentication Hooks - Educational Platform
+// Supports both secure enterprise auth and simplified UX flows
+// Based on UX research findings for better teacher experience
 
 'use client'
 import { useState, useEffect, useCallback, useContext, createContext } from 'react'
@@ -544,6 +545,359 @@ export function AuthGuard({
   }
 
   return <>{children}</>
+}
+
+// Simplified authentication hooks for better UX (alongside existing secure hooks)
+
+export interface SimpleUser {
+  id: string
+  email: string
+  name: string
+  userType: 'teacher' | 'parent' | 'admin'
+  school?: string
+  gradeLevel?: string
+  isVerified: boolean
+  isEduDomain?: boolean
+}
+
+export interface SimpleSessionData {
+  userId: string
+  email: string
+  userType: string
+  authenticatedAt: string
+  expiresAt: string
+  rememberMe?: boolean
+  isEduDomain?: boolean
+}
+
+export interface SimpleAuthState {
+  user: SimpleUser | null
+  loading: boolean
+  isAuthenticated: boolean
+  sessionData: SimpleSessionData | null
+  context: {
+    isOfflineDemo: boolean
+    hasRealData: boolean
+    isEduDomain: boolean
+    dataSource: 'offline_demo' | 'demo_data' | 'real_data' | 'unknown'
+  } | null
+}
+
+export interface SimpleAuthActions {
+  login: (email: string, password: string, userType: string, rememberMe?: boolean) => Promise<{ success: boolean; error?: string; data?: any }>
+  logout: () => Promise<void>
+  refreshSession: () => Promise<boolean>
+  checkSession: () => Promise<void>
+}
+
+// Simplified authentication hook for better UX (based on research findings)
+export function useSimpleAuth(): SimpleAuthState & SimpleAuthActions {
+  const [authState, setAuthState] = useState<SimpleAuthState>({
+    user: null,
+    loading: true,
+    isAuthenticated: false,
+    sessionData: null,
+    context: null
+  })
+  
+  // Check session status
+  const checkSession = useCallback(async () => {
+    try {
+      const response = await fetch('/api/auth/session', {
+        method: 'GET',
+        credentials: 'include'
+      })
+      
+      const data = await response.json()
+      
+      if (data.authenticated && data.user) {
+        setAuthState({
+          user: data.user,
+          loading: false,
+          isAuthenticated: true,
+          sessionData: data.session,
+          context: data.dataState
+        })
+      } else {
+        setAuthState({
+          user: null,
+          loading: false,
+          isAuthenticated: false,
+          sessionData: null,
+          context: null
+        })
+      }
+    } catch (error) {
+      console.error('Session check failed:', error)
+      setAuthState(prev => ({ ...prev, loading: false }))
+    }
+  }, [])
+
+  // Simplified login with enhanced error handling
+  const login = useCallback(async (
+    email: string, 
+    password: string, 
+    userType: string, 
+    rememberMe: boolean = false
+  ) => {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password, userType, rememberMe })
+      })
+      
+      const data = await response.json()
+      
+      if (data.success && data.user) {
+        setAuthState({
+          user: data.user,
+          loading: false,
+          isAuthenticated: true,
+          sessionData: data.sessionData,
+          context: data.context
+        })
+        
+        return { success: true, data }
+      } else {
+        return { 
+          success: false, 
+          error: data.error || 'Login failed',
+          field: data.field,
+          suggestions: data.suggestions
+        }
+      }
+    } catch (error) {
+      console.error('Login error:', error)
+      return { 
+        success: false, 
+        error: 'Network error - please check your connection and try again' 
+      }
+    }
+  }, [])
+
+  // Enhanced logout with cleanup
+  const logout = useCallback(async () => {
+    try {
+      setAuthState(prev => ({ ...prev, loading: true }))
+      
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      })
+      
+      setAuthState({
+        user: null,
+        loading: false,
+        isAuthenticated: false,
+        sessionData: null,
+        context: null
+      })
+      
+      // Clear any client-side storage
+      localStorage.removeItem('teacher_session')
+      localStorage.removeItem('teacher_session_bridge')
+      
+      // Redirect to login
+      window.location.href = '/auth/login'
+      
+    } catch (error) {
+      console.error('Logout error:', error)
+      setAuthState({
+        user: null,
+        loading: false,
+        isAuthenticated: false,
+        sessionData: null,
+        context: null
+      })
+      window.location.href = '/auth/login'
+    }
+  }, [])
+
+  // Session refresh functionality
+  const refreshSession = useCallback(async (): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ action: 'refresh' })
+      })
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        await checkSession() // Refresh the current session data
+        return true
+      }
+      
+      return false
+    } catch (error) {
+      console.error('Session refresh failed:', error)
+      return false
+    }
+  }, [checkSession])
+
+  // Initialize session check on mount
+  useEffect(() => {
+    checkSession()
+  }, [checkSession])
+
+  // Set up periodic session validation (every 5 minutes)
+  useEffect(() => {
+    if (authState.isAuthenticated) {
+      const interval = setInterval(() => {
+        checkSession()
+      }, 5 * 60 * 1000) // 5 minutes
+      
+      return () => clearInterval(interval)
+    }
+  }, [authState.isAuthenticated, checkSession])
+
+  return {
+    ...authState,
+    login,
+    logout,
+    refreshSession,
+    checkSession
+  }
+}
+
+// Hook for password validation with real-time feedback
+export function usePasswordValidation(email?: string) {
+  const [validation, setValidation] = useState<{
+    isValid: boolean
+    errors: string[]
+    suggestions: string[]
+    strength: 'weak' | 'fair' | 'good' | 'strong'
+  } | null>(null)
+  
+  const validatePassword = useCallback(async (password: string) => {
+    if (!password) {
+      setValidation(null)
+      return
+    }
+    
+    try {
+      // Use the validation library directly for real-time feedback
+      const { validatePassword: validate } = await import('./password-validation')
+      const result = validate(password, email)
+      setValidation(result)
+    } catch (error) {
+      console.error('Password validation error:', error)
+    }
+  }, [email])
+  
+  return {
+    validation,
+    validatePassword
+  }
+}
+
+// Hook for email validation with educational context
+export function useEmailValidation() {
+  const [emailData, setEmailData] = useState<{
+    valid: boolean
+    exists: boolean
+    isEducational: boolean
+    recommendations: any[]
+    authFlow: any
+  } | null>(null)
+  
+  const [loading, setLoading] = useState(false)
+  
+  const validateEmail = useCallback(async (email: string, context?: string) => {
+    if (!email) {
+      setEmailData(null)
+      return
+    }
+    
+    setLoading(true)
+    
+    try {
+      const response = await fetch('/api/auth/validate-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, context })
+      })
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        setEmailData({
+          valid: data.valid,
+          exists: data.exists,
+          isEducational: data.domain.isEducational,
+          recommendations: data.recommendations,
+          authFlow: data.authFlow
+        })
+      } else {
+        setEmailData(null)
+      }
+    } catch (error) {
+      console.error('Email validation error:', error)
+      setEmailData(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+  
+  return {
+    emailData,
+    loading,
+    validateEmail
+  }
+}
+
+// Hook for session warnings and management
+export function useSessionWarnings() {
+  const [warnings, setWarnings] = useState<{
+    expiringSoon: boolean
+    hoursRemaining: number
+  } | null>(null)
+  
+  const auth = useSimpleAuth()
+  
+  useEffect(() => {
+    if (auth.sessionData?.expiresAt) {
+      const checkExpiration = () => {
+        const now = new Date()
+        const expiresAt = new Date(auth.sessionData!.expiresAt)
+        const hoursRemaining = Math.floor((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60))
+        
+        if (hoursRemaining <= 2 && hoursRemaining > 0) {
+          setWarnings({
+            expiringSoon: true,
+            hoursRemaining
+          })
+        } else {
+          setWarnings(null)
+        }
+      }
+      
+      // Check immediately
+      checkExpiration()
+      
+      // Check every 30 minutes
+      const interval = setInterval(checkExpiration, 30 * 60 * 1000)
+      
+      return () => clearInterval(interval)
+    }
+  }, [auth.sessionData])
+  
+  const extendSession = useCallback(async () => {
+    const success = await auth.refreshSession()
+    if (success) {
+      setWarnings(null)
+    }
+    return success
+  }, [auth.refreshSession])
+  
+  return {
+    warnings,
+    extendSession
+  }
 }
 
 export default useSecureAuth

@@ -1,4 +1,5 @@
 import { AlertTriangle, Info, Eye } from 'lucide-react'
+import { useTeacherAuth } from '@/lib/auth/hooks'
 
 interface DemoDataIndicatorProps {
   type?: 'warning' | 'info' | 'subtle'
@@ -15,6 +16,20 @@ function DemoDataIndicator({
   showIcon = true,
   className = '' 
 }: DemoDataIndicatorProps) {
+  const { teacher } = useTeacherAuth()
+  
+  // Auto-detect demo state if using default message
+  const isDemoAccount = teacher?.email?.includes('demo') || 
+                       teacher?.email?.includes('temp') ||
+                       teacher?.name?.toLowerCase().includes('demo') ||
+                       teacher?.isOfflineDemo ||
+                       teacher?.isOfflineAccount
+  
+  // Don't show indicator if not demo account (unless message is custom)
+  if (message === 'Demo Data' && !isDemoAccount) {
+    return null
+  }
+  
   const baseClasses = 'inline-flex items-center gap-2 rounded-full font-medium'
   
   const sizeClasses = {
@@ -59,6 +74,19 @@ export function DemoDataBanner({
   actionText = 'Send Assessments',
   onAction 
 }: DemoDataBannerProps) {
+  const { teacher } = useTeacherAuth()
+  
+  // Auto-detect demo state
+  const isDemoAccount = teacher?.email?.includes('demo') || 
+                       teacher?.email?.includes('temp') ||
+                       teacher?.name?.toLowerCase().includes('demo') ||
+                       teacher?.isOfflineDemo ||
+                       teacher?.isOfflineAccount
+  
+  // Don't show banner if not demo account
+  if (!isDemoAccount) {
+    return null
+  }
   return (
     <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 mb-6">
       <div className="flex items-start gap-3">
@@ -105,7 +133,17 @@ export function DemoDataWrapper({
   demoMessage = 'Demo Data',
   className = '' 
 }: DemoDataWrapperProps) {
-  if (!isDemo) return <>{children}</>
+  const { teacher } = useTeacherAuth()
+  
+  // Auto-detect demo state if not explicitly provided
+  const isDemoAccount = isDemo || 
+                       teacher?.email?.includes('demo') || 
+                       teacher?.email?.includes('temp') ||
+                       teacher?.name?.toLowerCase().includes('demo') ||
+                       teacher?.isOfflineDemo ||
+                       teacher?.isOfflineAccount
+  
+  if (!isDemoAccount) return <>{children}</>
   
   return (
     <div className={`relative ${className}`}>

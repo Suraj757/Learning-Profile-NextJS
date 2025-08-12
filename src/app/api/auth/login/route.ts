@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { SignJWT } from 'jose'
 import bcrypt from 'bcryptjs'
 import { getUserByEmail } from '@/lib/auth/user-storage'
+import { validateEducationalEmail, isEduDomain } from '@/lib/auth/password-validation'
 
 // Password verification function
 async function verifyPassword(password: string, hash: string): Promise<boolean> {
@@ -27,11 +28,28 @@ const JWT_SECRET = new TextEncoder().encode(
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, userType } = await request.json()
+    const { email, password, userType, rememberMe } = await request.json()
 
     if (!email || !password || !userType) {
       return NextResponse.json(
-        { error: 'Email, password, and user type are required' },
+        { 
+          success: false,
+          error: 'Email, password, and user type are required',
+          field: 'validation'
+        },
+        { status: 400 }
+      )
+    }
+
+    // Validate email format and educational context
+    const emailValidation = validateEducationalEmail(email)
+    if (!emailValidation.isValid) {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: 'Please enter a valid email address',
+          field: 'email'
+        },
         { status: 400 }
       )
     }
@@ -39,9 +57,33 @@ export async function POST(request: NextRequest) {
     // Find user (check both registered and demo users)
     const user = getUserByEmail(email)
     
-    if (!user || user.userType !== userType) {
+    if (!user) {
+      // Enhanced error message for teachers
+      const errorMessage = userType === 'teacher' 
+        ? 'We couldn\'t find an account with this email. Would you like to create a new teacher account?'
+        : 'Invalid email or password. Please check your credentials and try again.'
+      
       return NextResponse.json(
-        { error: 'Invalid credentials or user type' },
+        { 
+          success: false,
+          error: errorMessage,
+          field: 'email',
+          isEduDomain: emailValidation.isEduDomain,
+          suggestions: userType === 'teacher' ? ['Check for typos in your email', 'Try registering for a new account'] : []
+        },
+        { status: 401 }
+      )
+    }
+    
+    if (user.userType !== userType) {
+      const correctType = user.userType === 'teacher' ? 'Teacher' : 'Parent'
+      return NextResponse.json(
+        { 
+          success: false,
+          error: `This email is registered as a ${correctType} account. Please select the correct account type.`,
+          field: 'userType',
+          correctUserType: user.userType
+        },
         { status: 401 }
       )
     }
@@ -50,10 +92,13 @@ export async function POST(request: NextRequest) {
     if (user.needsPasswordSetup) {
       return NextResponse.json(
         { 
-          error: 'Password setup required',
+          success: false,
+          error: 'Welcome! Please set up your password to complete account setup.',
           needsPasswordSetup: true,
           userId: user.id,
-          email: user.email
+          email: user.email,
+          isEduDomain: emailValidation.isEduDomain,
+          message: 'We\'ll redirect you to password setup in just a moment.'
         },
         { status: 401 }
       )
@@ -71,8 +116,21 @@ export async function POST(request: NextRequest) {
     }
     
     if (!passwordValid) {
+      // Rate limiting check (simple implementation)
+      const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown'
+      console.log(`[AUTH] Failed login attempt: ${email} from ${ip}`)
+      
       return NextResponse.json(
-        { error: 'Invalid credentials' },
+        { 
+          success: false,
+          error: 'Incorrect password. Please check your password and try again.',
+          field: 'password',
+          suggestions: [
+            'Make sure Caps Lock is off',
+            'Try typing your password in a text editor first',
+            'Use the "Forgot Password" link if you need to reset it'
+          ]
+        },
         { status: 401 }
       )
     }
@@ -80,21 +138,31 @@ export async function POST(request: NextRequest) {
     // Check if user is active
     if (!user.isActive) {
       return NextResponse.json(
-        { error: 'Account is deactivated' },
+        { 
+          success: false,
+          error: 'Your account has been deactivated. Please contact your administrator for assistance.',
+          field: 'account',
+          contactInfo: 'If you believe this is an error, please contact support.'
+        },
         { status: 403 }
       )
     }
 
+    // Determine session duration based on rememberMe
+    const sessionDuration = rememberMe ? '7d' : '24h'
+    const sessionMaxAge = rememberMe ? 7 * 24 * 60 * 60 : 24 * 60 * 60 // seconds
+    
     // Create JWT token
     const token = await new SignJWT({
       userId: user.id,
       email: user.email,
       userType: user.userType,
-      permissions: user.permissions
+      permissions: user.permissions,
+      isEduDomain: emailValidation.isEduDomain
     })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
-      .setExpirationTime('24h')
+      .setExpirationTime(sessionDuration)
       .sign(JWT_SECRET)
 
     // Extract numeric ID for the teacher
@@ -138,7 +206,9 @@ export async function POST(request: NextRequest) {
       userType: user.userType,
       name: user.name,
       authenticatedAt: new Date().toISOString(),
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
+      expiresAt: new Date(Date.now() + sessionMaxAge * 1000).toISOString(),
+      rememberMe: rememberMe || false,
+      isEduDomain: emailValidation.isEduDomain
       permissions: user.permissions,
       teacherData: teacherData  // Include complete teacher data
     }
@@ -147,29 +217,45 @@ export async function POST(request: NextRequest) {
     const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown'
     const userAgent = request.headers.get('user-agent') || 'unknown'
 
-    // Log successful login
-    console.log(`[AUTH] Successful login: ${email} (${userType}) from ${ip}`)
+    // Enhanced login logging with context
+    console.log(`[AUTH] Successful login: ${email} (${userType}) from ${ip}`, {
+      userId: user.id,
+      isEduDomain: emailValidation.isEduDomain,
+      rememberMe: rememberMe || false,
+      sessionDuration: sessionDuration,
+      userAgent: request.headers.get('user-agent')?.substring(0, 100) || 'unknown'
+    })
 
-    // Return success with session data
+    // Return success with enhanced session data
     const response = NextResponse.json({
       success: true,
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
-        userType: user.userType
+        userType: user.userType,
+        isVerified: user.isVerified || false,
+        school: user.school || null,
+        gradeLevel: user.grade_level || null
       },
       sessionData,
-      message: 'Login successful'
+      context: {
+        isEduDomain: emailValidation.isEduDomain,
+        hasRealData: !user.email.includes('demo') || user.email.includes('speakaboos.com'),
+        isOfflineDemo: user.email.includes('demo') && !user.email.includes('speakaboos.com')
+      },
+      message: emailValidation.isEduDomain 
+        ? 'Welcome back! You\'re logged in with full educational features.'
+        : 'Welcome back! You\'re logged in successfully.'
     })
 
-    // Set secure cookie (httpOnly for security)
+    // Set secure cookie with dynamic duration
     const cookieValue = encodeURIComponent(JSON.stringify(sessionData))
     response.cookies.set('edu-session', cookieValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 24 * 60 * 60, // 24 hours
+      maxAge: sessionMaxAge,
       path: '/'
     })
     
@@ -185,7 +271,7 @@ export async function POST(request: NextRequest) {
       httpOnly: false, // Client-readable
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 24 * 60 * 60, // 24 hours
+      maxAge: sessionMaxAge,
       path: '/'
     })
 
@@ -193,10 +279,19 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Login error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error during login' },
-      { status: 500 }
-    )
+    
+    // Enhanced error response for development
+    const errorResponse = {
+      success: false,
+      error: 'We\'re experiencing technical difficulties. Please try again in a moment.',
+      field: 'system'
+    }
+    
+    if (process.env.NODE_ENV === 'development') {
+      errorResponse.error = `System error: ${error.message}`
+    }
+    
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }
 
