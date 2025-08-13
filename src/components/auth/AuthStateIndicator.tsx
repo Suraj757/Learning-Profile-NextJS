@@ -12,7 +12,7 @@ import {
   Settings,
   X
 } from 'lucide-react'
-import { useTeacherAuth } from '@/lib/auth/hooks'
+import { useTeacherAuth } from '@/lib/teacher-auth'
 
 interface AuthStateIndicatorProps {
   variant?: 'full' | 'compact' | 'minimal' | 'badge'

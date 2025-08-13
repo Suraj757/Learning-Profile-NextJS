@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { BookOpen, Bell, HelpCircle } from 'lucide-react'
-import { useTeacherAuth } from '@/lib/auth/hooks'
+import { useTeacherAuth } from '@/lib/teacher-auth'
 import LogoutButton from './LogoutButton'
 import AuthStateIndicator from './AuthStateIndicator'
 
