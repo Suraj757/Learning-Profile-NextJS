@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { BookOpen, ArrowLeft, Star, Quote, Users, Home, School, Lightbulb, Eye, Play, Sparkles, MessageSquare, Target, CheckCircle, Calendar, Award, TrendingUp, ExternalLink, AlertCircle } from 'lucide-react'
+import { BookOpen, ArrowLeft, Star, Quote, Users, Home, School, Lightbulb, Eye, Play, Sparkles, MessageSquare, Target, CheckCircle, Calendar, Award, TrendingUp, ExternalLink, AlertCircle, AlertTriangle } from 'lucide-react'
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts'
 import EnhancedContentRecommendations from '@/components/content/EnhancedContentRecommendations'
 import { beginContentService } from '@/lib/content-recommendation-service'
