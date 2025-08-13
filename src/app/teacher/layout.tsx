@@ -17,11 +17,12 @@ export default function TeacherLayout({
   children: React.ReactNode
 }) {
   return (
-    <PerformanceMonitor 
-      threshold={2000}
-      reportingEnabled={process.env.NODE_ENV === 'production'}
-    >
+    <>
       {children}
-    </PerformanceMonitor>
+      <PerformanceMonitor 
+        enabled={process.env.NODE_ENV === 'development'}
+        showDebugInfo={process.env.NODE_ENV === 'development'}
+      />
+    </>
   )
 }

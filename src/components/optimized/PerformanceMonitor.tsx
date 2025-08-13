@@ -5,9 +5,12 @@ import { observeWebVitals, type WebVitals, checkPerformanceBudget, monitorMemory
 interface PerformanceMonitorProps {
   enabled?: boolean
   showDebugInfo?: boolean
+  threshold?: number
+  reportingEnabled?: boolean
+  children?: React.ReactNode
 }
 
-function PerformanceMonitor({ enabled = false, showDebugInfo = false }: PerformanceMonitorProps) {
+function PerformanceMonitor({ enabled = false, showDebugInfo = false, children }: PerformanceMonitorProps) {
   const [vitals, setVitals] = useState<WebVitals[]>([])
   const [memoryUsage, setMemoryUsage] = useState<ReturnType<typeof monitorMemoryUsage> | null>(null)
 
@@ -69,57 +72,63 @@ function PerformanceMonitor({ enabled = false, showDebugInfo = false }: Performa
     }
   }
 
-  if (!enabled || !showDebugInfo) return null
+  if (!enabled || !showDebugInfo) {
+    return children ? <>{children}</> : null
+  }
 
   const budgetCheck = checkPerformanceBudget(vitals)
 
   return (
-    <div className="fixed bottom-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-sm z-50 text-xs">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-bold text-gray-800">Performance Monitor</h3>
-        <div className={`w-2 h-2 rounded-full ${budgetCheck.passed ? 'bg-green-500' : 'bg-red-500'}`} />
-      </div>
-      
-      <div className="space-y-1">
-        {vitals.map(vital => (
-          <div key={vital.name} className="flex justify-between items-center">
-            <span className="text-gray-600">{vital.name}:</span>
-            <span className={`font-mono ${
-              vital.rating === 'good' ? 'text-green-600' : 
-              vital.rating === 'needs-improvement' ? 'text-yellow-600' : 'text-red-600'
-            }`}>
-              {vital.name === 'CLS' ? vital.value.toFixed(3) : `${Math.round(vital.value)}${vital.name === 'FID' || vital.name === 'LCP' || vital.name === 'FCP' ? 'ms' : ''}`}
-            </span>
-          </div>
-        ))}
+    <>
+      {children}
+      <div className="fixed bottom-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-sm z-50 text-xs">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-bold text-gray-800">Performance Monitor</h3>
+          <div className={`w-2 h-2 rounded-full ${budgetCheck.passed ? 'bg-green-500' : 'bg-red-500'}`} />
+        </div>
         
-        {memoryUsage && (
-          <div className="border-t pt-2 mt-2">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Memory:</span>
-              <span className="font-mono text-gray-800">{memoryUsage.usedJSHeapSize}MB</span>
+        <div className="space-y-1">
+          {vitals.map(vital => (
+            <div key={vital.name} className="flex justify-between items-center">
+              <span className="text-gray-600">{vital.name}:</span>
+              <span className={`font-mono ${
+                vital.rating === 'good' ? 'text-green-600' : 
+                vital.rating === 'needs-improvement' ? 'text-yellow-600' : 'text-red-600'
+              }`}>
+                {vital.name === 'CLS' ? vital.value.toFixed(3) : `${Math.round(vital.value)}${vital.name === 'FID' || vital.name === 'LCP' || vital.name === 'FCP' ? 'ms' : ''}`}
+              </span>
             </div>
-          </div>
-        )}
-        
-        {!budgetCheck.passed && (
-          <div className="border-t pt-2 mt-2">
-            <div className="text-red-600 text-xs">
-              <div className="font-semibold">Budget Violations:</div>
-              {budgetCheck.violations.map((violation, i) => (
-                <div key={i} className="truncate">{violation}</div>
-              ))}
+          ))}
+          
+          {memoryUsage && (
+            <div className="border-t pt-2 mt-2">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Memory:</span>
+                <span className="font-mono text-gray-800">{memoryUsage.usedJSHeapSize}MB</span>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+          
+          {!budgetCheck.passed && (
+            <div className="border-t pt-2 mt-2">
+              <div className="text-red-600 text-xs">
+                <div className="font-semibold">Budget Violations:</div>
+                {budgetCheck.violations.map((violation, i) => (
+                  <div key={i} className="truncate">{violation}</div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
 // Hook for accessing performance data
 export function usePerformanceVitals() {
   const [vitals, setVitals] = useState<WebVitals[]>([])
+  const [memoryUsage, setMemoryUsage] = useState<ReturnType<typeof monitorMemoryUsage> | null>(null)
 
   useEffect(() => {
     observeWebVitals((vital) => {
@@ -135,32 +144,17 @@ export function usePerformanceVitals() {
     // Monitor memory usage periodically
     const interval = setInterval(() => {
       const usage = monitorMemoryUsage()
-      setMemoryUsage(usage)
+      if (usage) {
+        setMemoryUsage(usage)
+      }
     }, 5000)
 
     return () => {
       clearInterval(interval)
     }
-  }, [enabled])
+  }, [])
 
-  // Don't render anything in production unless debug is enabled
-  if (!enabled || (!showDebugInfo && process.env.NODE_ENV === 'production')) {
-    return null
-  }
-
-  return (
-    <div className="fixed bottom-4 right-4 bg-black/80 text-white p-2 rounded text-xs font-mono z-50">
-      <div>Performance Metrics:</div>
-      {vitals.map(vital => (
-        <div key={vital.name}>
-          {vital.name}: {vital.value.toFixed(2)}ms
-        </div>
-      ))}
-      {memoryUsage && (
-        <div>Memory: {(memoryUsage.used / 1024 / 1024).toFixed(1)}MB</div>
-      )}
-    </div>
-  )
+  return { vitals, memoryUsage }
 }
 
 // Export both named and default
