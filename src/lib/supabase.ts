@@ -230,20 +230,28 @@ export async function createTeacher(data: {
   name: string
   school?: string
   grade_level?: string
+  id?: number
 }) {
   if (!supabase) {
     throw new Error('Supabase not configured')
   }
   
+  const insertData: any = {
+    email: data.email,
+    name: data.name,
+    school: data.school,
+    grade_level: data.grade_level,
+    ambassador_status: false
+  }
+  
+  // Include specific ID if provided (for test accounts)
+  if (data.id) {
+    insertData.id = data.id
+  }
+  
   const { data: teacher, error } = await supabase
     .from('teachers')
-    .insert([{
-      email: data.email,
-      name: data.name,
-      school: data.school,
-      grade_level: data.grade_level,
-      ambassador_status: false
-    }])
+    .insert([insertData])
     .select()
     .single()
   
@@ -276,6 +284,62 @@ export async function getTeacherByEmail(email: string) {
     console.warn('Error in getTeacherByEmail:', error.message)
     return null
   }
+}
+
+// Sync teacher from authentication system to database
+export async function ensureTeacherExists(teacherId: number, email?: string) {
+  if (!supabase) {
+    throw new Error('Supabase not configured')
+  }
+  
+  // Check if teacher already exists
+  const { data: existingTeacher, error: checkError } = await supabase
+    .from('teachers')
+    .select('id')
+    .eq('id', teacherId)
+    .single()
+  
+  if (!checkError && existingTeacher) {
+    return existingTeacher // Teacher already exists
+  }
+  
+  if (checkError && checkError.code !== 'PGRST116') {
+    throw new Error(`Error checking teacher existence: ${checkError.message}`)
+  }
+  
+  // Teacher doesn't exist, create it
+  let teacherData = {
+    id: teacherId,
+    email: email || 'unknown@teacher.com',
+    name: 'Teacher',
+    school: null,
+    grade_level: null,
+    ambassador_status: false
+  }
+  
+  // Map known test accounts
+  const knownAccounts = {
+    1000: { email: 'suraj@speakaboos.com', name: 'Suraj Kumar', school: 'Speakaboos Elementary', grade_level: '3rd Grade' },
+    1001: { email: 'suraj+1@speakaboos.com', name: 'Suraj Kumar', school: 'Speakaboos Elementary', grade_level: '3rd Grade' },
+    1002: { email: 'suraj+2@speakaboos.com', name: 'Suraj Kumar', school: 'Speakaboos Elementary', grade_level: '3rd Grade' }
+  }
+  
+  if (knownAccounts[teacherId as keyof typeof knownAccounts]) {
+    teacherData = { ...teacherData, ...knownAccounts[teacherId as keyof typeof knownAccounts] }
+  }
+  
+  const { data: newTeacher, error: createError } = await supabase
+    .from('teachers')
+    .insert([teacherData])
+    .select()
+    .single()
+  
+  if (createError) {
+    throw new Error(`Failed to create teacher record: ${createError.message}`)
+  }
+  
+  console.log(`Created teacher record for ID ${teacherId}: ${teacherData.email}`)
+  return newTeacher
 }
 
 // Classroom Management Functions
@@ -417,6 +481,9 @@ export async function createProfileAssignment(data: {
     throw new Error('Supabase not configured')
   }
   
+  // Ensure the teacher exists in the database
+  await ensureTeacherExists(data.teacher_id)
+  
   const assignment_token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
   
   const { data: assignment, error } = await supabase
@@ -431,7 +498,11 @@ export async function createProfileAssignment(data: {
     .select()
     .single()
   
-  if (error) throw error
+  if (error) {
+    console.error('Profile assignment creation failed:', error)
+    throw new Error(`Failed to create assignment: ${error.message}`)
+  }
+  
   return assignment
 }
 
