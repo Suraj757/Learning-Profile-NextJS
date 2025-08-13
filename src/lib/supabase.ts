@@ -295,16 +295,17 @@ export async function ensureTeacherExists(teacherId: number, email?: string) {
   // Check if teacher already exists
   const { data: existingTeacher, error: checkError } = await supabase
     .from('teachers')
-    .select('id')
+    .select('id, email, name, school, grade_level, ambassador_status')
     .eq('id', teacherId)
-    .single()
+    .maybeSingle()
   
   if (!checkError && existingTeacher) {
     return existingTeacher // Teacher already exists
   }
   
-  if (checkError && checkError.code !== 'PGRST116') {
-    throw new Error(`Error checking teacher existence: ${checkError.message}`)
+  if (checkError) {
+    console.error('Error checking teacher existence:', checkError)
+    // Don't throw error, continue to create teacher
   }
   
   // Teacher doesn't exist, create it
@@ -330,11 +331,12 @@ export async function ensureTeacherExists(teacherId: number, email?: string) {
   
   const { data: newTeacher, error: createError } = await supabase
     .from('teachers')
-    .insert([teacherData])
-    .select()
+    .upsert(teacherData, { onConflict: 'id' })
+    .select('id, email, name, school, grade_level, ambassador_status')
     .single()
   
   if (createError) {
+    console.error('Error creating teacher:', createError)
     throw new Error(`Failed to create teacher record: ${createError.message}`)
   }
   
@@ -476,13 +478,14 @@ export async function createProfileAssignment(data: {
   parent_email: string
   child_name: string
   student_id?: number
+  teacher_email?: string
 }) {
   if (!supabase) {
     throw new Error('Supabase not configured')
   }
   
   // Ensure the teacher exists in the database
-  await ensureTeacherExists(data.teacher_id)
+  await ensureTeacherExists(data.teacher_id, data.teacher_email)
   
   const assignment_token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
   

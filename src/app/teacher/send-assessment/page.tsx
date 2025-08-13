@@ -66,7 +66,8 @@ export default function SendAssessmentPage() {
         const assignment = await createProfileAssignment({
           teacher_id: teacher.id,
           parent_email: studentInfo.parent_email.trim(),
-          child_name: studentInfo.child_name.trim()
+          child_name: studentInfo.child_name.trim(),
+          teacher_email: teacher.email
         })
 
         const link = generateAssessmentLink(assignment.assignment_token, typeof window !== 'undefined' ? window.location.origin : '')
