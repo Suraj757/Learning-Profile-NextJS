@@ -82,7 +82,7 @@ export function SecureAuthProvider({ children }: { children: React.ReactNode }) 
       setLoading(true)
       
       // Check for existing session
-      const response = await fetch('/api/auth/verify', {
+      const response = await fetch('/api/auth/session', {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -92,16 +92,21 @@ export function SecureAuthProvider({ children }: { children: React.ReactNode }) 
 
       if (response.ok) {
         const data = await response.json()
-        setUser(data.user)
-        setSession(data.session)
-        setPermissions(data.permissions || [])
-        setEducationalContext({
-          activeSchoolId: data.session?.active_school_id,
-          activeClassroomId: data.session?.active_classroom_id
-        })
-        
-        // Log successful session restoration
-        console.log('🔐 Session restored for user:', data.user.email)
+        if (data.authenticated) {
+          setUser(data.user)
+          setSession(data.session)
+          setPermissions(data.permissions || [])
+          setEducationalContext({
+            activeSchoolId: data.session?.active_school_id,
+            activeClassroomId: data.session?.active_classroom_id
+          })
+          
+          // Log successful session restoration
+          console.log('🔐 Session restored for user:', data.user.email)
+        } else {
+          console.log('🔑 No valid session found:', data.reason)
+          clearAuthState()
+        }
       } else if (response.status === 401) {
         // Session expired or invalid
         console.log('🔑 No valid session found')

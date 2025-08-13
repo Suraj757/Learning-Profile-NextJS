@@ -1,15 +1,15 @@
 'use client'
 import React from 'react'
-import { SecureAuthProvider } from '@/lib/auth/hooks'
 import { PerformanceMonitor } from '@/components/optimized/PerformanceMonitor'
 
 /**
  * Teacher Application Layout
  * 
  * This layout provides:
- * - Secure authentication context for all teacher pages
  * - Performance monitoring for teacher dashboard
  * - Educational compliance framework
+ * 
+ * Note: Authentication is handled individually by each page using useTeacherAuth
  */
 export default function TeacherLayout({
   children,
@@ -17,13 +17,11 @@ export default function TeacherLayout({
   children: React.ReactNode
 }) {
   return (
-    <SecureAuthProvider>
-      <PerformanceMonitor 
-        threshold={2000}
-        reportingEnabled={process.env.NODE_ENV === 'production'}
-      >
-        {children}
-      </PerformanceMonitor>
-    </SecureAuthProvider>
+    <PerformanceMonitor 
+      threshold={2000}
+      reportingEnabled={process.env.NODE_ENV === 'production'}
+    >
+      {children}
+    </PerformanceMonitor>
   )
 }

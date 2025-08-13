@@ -22,12 +22,12 @@ import {
   Target,
   Heart
 } from 'lucide-react'
-import { useTeacherAuth } from '@/lib/auth/hooks'
+import { useTeacherAuth } from '@/lib/teacher-auth'
 import AuthenticatedHeader from '@/components/auth/AuthenticatedHeader'
 import { DemoDataBanner, DemoDataWrapper } from '@/components/ui/DemoDataIndicator'
 import { getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
 import type { Classroom, ProfileAssignment } from '@/lib/supabase'
-import { AuthGuard } from '@/lib/auth/hooks'
+// import { AuthGuard } from '@/lib/auth/hooks'
 import StudentCard from '@/components/teacher/StudentCard'
 import { generateStudentCardData } from '@/lib/student-card-data'
 import { getDemoReportsData } from '@/lib/demo-data'

@@ -18,7 +18,7 @@ import {
   Send,
   CreditCard
 } from 'lucide-react'
-import { useTeacherAuth } from '@/lib/auth/hooks'
+import { useTeacherAuth } from '@/lib/teacher-auth'
 import AuthenticatedHeader from '@/components/auth/AuthenticatedHeader'
 import { DemoDataBanner } from '@/components/ui/DemoDataIndicator'
 import { getTeacherClassrooms, getTeacherAssignments } from '@/lib/supabase'
