@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { X, Clock, User, BookOpen, ArrowRight, Mail, Loader2, AlertCircle } from 'lucide-react'
 import { ProgressSession, recoverProgressByEmail } from '@/lib/progress-manager'
 
