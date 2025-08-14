@@ -312,21 +312,9 @@ export async function ensureTeacherExists(teacherId: number, email?: string) {
       .maybeSingle()
     
     if (!emailError && emailTeacher) {
-      // Teacher exists with different ID, update the ID
-      const { data: updatedTeacher, error: updateError } = await supabase
-        .from('teachers')
-        .update({ id: teacherId })
-        .eq('email', email)
-        .select('id, email, name, school, grade_level, ambassador_status')
-        .single()
-      
-      if (updateError) {
-        console.error('Error updating teacher ID:', updateError)
-        return emailTeacher // Return existing teacher even if update failed
-      }
-      
-      console.log(`Updated teacher ID from ${emailTeacher.id} to ${teacherId} for ${email}`)
-      return updatedTeacher
+      // Teacher exists with different ID, just use the existing teacher
+      console.log(`Found existing teacher with different ID. Requested: ${teacherId}, Found: ${emailTeacher.id} for ${email}`)
+      return emailTeacher // Return existing teacher with its current ID
     }
   }
   
@@ -543,15 +531,17 @@ export async function createProfileAssignment(data: {
     throw new Error('Supabase not configured')
   }
   
-  // Ensure the teacher exists in the database
-  await ensureTeacherExists(data.teacher_id, data.teacher_email)
+  // Ensure the teacher exists in the database and get the actual teacher record
+  const teacher = await ensureTeacherExists(data.teacher_id, data.teacher_email)
+  
+  console.log(`Creating assignment for teacher ID: ${teacher.id}, Email: ${teacher.email}`)
   
   const assignment_token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
   
   const { data: assignment, error } = await supabase
     .from('profile_assignments')
     .insert([{
-      teacher_id: data.teacher_id,
+      teacher_id: teacher.id, // Use the actual teacher ID from the database
       parent_email: data.parent_email,
       child_name: data.child_name,
       assignment_token,
