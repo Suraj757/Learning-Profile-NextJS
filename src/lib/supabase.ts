@@ -292,7 +292,7 @@ export async function ensureTeacherExists(teacherId: number, email?: string) {
     throw new Error('Supabase not configured')
   }
   
-  // Check if teacher already exists
+  // Check if teacher already exists by ID
   const { data: existingTeacher, error: checkError } = await supabase
     .from('teachers')
     .select('id, email, name, school, grade_level, ambassador_status')
@@ -301,6 +301,33 @@ export async function ensureTeacherExists(teacherId: number, email?: string) {
   
   if (!checkError && existingTeacher) {
     return existingTeacher // Teacher already exists
+  }
+  
+  // Check if teacher exists by email (in case of ID mismatch)
+  if (email) {
+    const { data: emailTeacher, error: emailError } = await supabase
+      .from('teachers')
+      .select('id, email, name, school, grade_level, ambassador_status')
+      .eq('email', email)
+      .maybeSingle()
+    
+    if (!emailError && emailTeacher) {
+      // Teacher exists with different ID, update the ID
+      const { data: updatedTeacher, error: updateError } = await supabase
+        .from('teachers')
+        .update({ id: teacherId })
+        .eq('email', email)
+        .select('id, email, name, school, grade_level, ambassador_status')
+        .single()
+      
+      if (updateError) {
+        console.error('Error updating teacher ID:', updateError)
+        return emailTeacher // Return existing teacher even if update failed
+      }
+      
+      console.log(`Updated teacher ID from ${emailTeacher.id} to ${teacherId} for ${email}`)
+      return updatedTeacher
+    }
   }
   
   if (checkError) {
@@ -331,12 +358,44 @@ export async function ensureTeacherExists(teacherId: number, email?: string) {
   
   const { data: newTeacher, error: createError } = await supabase
     .from('teachers')
-    .upsert(teacherData, { onConflict: 'id' })
+    .insert(teacherData)
     .select('id, email, name, school, grade_level, ambassador_status')
     .single()
   
   if (createError) {
     console.error('Error creating teacher:', createError)
+    
+    // If it's a duplicate key error, try to find and return the existing teacher
+    if (createError.code === '23505') { // PostgreSQL unique violation error code
+      console.log('Teacher record already exists, attempting to find existing record')
+      
+      // Try to find by email first
+      if (email) {
+        const { data: existingByEmail, error: emailSearchError } = await supabase
+          .from('teachers')
+          .select('id, email, name, school, grade_level, ambassador_status')
+          .eq('email', email)
+          .maybeSingle()
+        
+        if (!emailSearchError && existingByEmail) {
+          console.log(`Found existing teacher by email: ${email}`)
+          return existingByEmail
+        }
+      }
+      
+      // Try to find by ID
+      const { data: existingById, error: idSearchError } = await supabase
+        .from('teachers')
+        .select('id, email, name, school, grade_level, ambassador_status')
+        .eq('id', teacherId)
+        .maybeSingle()
+      
+      if (!idSearchError && existingById) {
+        console.log(`Found existing teacher by ID: ${teacherId}`)
+        return existingById
+      }
+    }
+    
     throw new Error(`Failed to create teacher record: ${createError.message}`)
   }
   
