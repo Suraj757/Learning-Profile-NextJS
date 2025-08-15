@@ -1,0 +1,251 @@
+'use client'
+import { useState, useEffect } from 'react'
+import { Calendar, Clock, Info, AlertCircle } from 'lucide-react'
+
+interface PreciseAgeData {
+  years: number
+  months: number
+  birthDate?: Date
+}
+
+interface PreciseAgeSelectorProps {
+  onAgeChange: (ageData: PreciseAgeData) => void
+  selectedAge?: PreciseAgeData
+  className?: string
+}
+
+export function PreciseAgeSelector({ onAgeChange, selectedAge, className = '' }: PreciseAgeSelectorProps) {
+  const [years, setYears] = useState(selectedAge?.years || 3)
+  const [months, setMonths] = useState(selectedAge?.months || 0)
+  const [inputMethod, setInputMethod] = useState<'age' | 'birthdate'>('age')
+  const [birthDate, setBirthDate] = useState<string>('')
+  const [showDevelopmentalInfo, setShowDevelopmentalInfo] = useState(false)
+
+  // Calculate age from birth date
+  const calculateAgeFromBirthDate = (birthDateStr: string) => {
+    const birth = new Date(birthDateStr)
+    const now = new Date()
+    const diffTime = Math.abs(now.getTime() - birth.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    const totalMonths = Math.floor(diffDays / 30.44) // Average days per month
+    const calcYears = Math.floor(totalMonths / 12)
+    const calcMonths = totalMonths % 12
+    
+    return { years: calcYears, months: calcMonths }
+  }
+
+  // Update age when birth date changes
+  useEffect(() => {
+    if (inputMethod === 'birthdate' && birthDate) {
+      const calculatedAge = calculateAgeFromBirthDate(birthDate)
+      setYears(calculatedAge.years)
+      setMonths(calculatedAge.months)
+    }
+  }, [birthDate, inputMethod])
+
+  // Notify parent component of age changes
+  useEffect(() => {
+    const ageData: PreciseAgeData = {
+      years,
+      months,
+      ...(inputMethod === 'birthdate' && birthDate ? { birthDate: new Date(birthDate) } : {})
+    }
+    onAgeChange(ageData)
+  }, [years, months, birthDate, inputMethod, onAgeChange])
+
+  // Get age group display
+  const getAgeGroupInfo = () => {
+    const totalMonths = years * 12 + months
+    
+    if (totalMonths < 42) { // < 3.5 years
+      return {
+        group: '3-4',
+        display: '3-4 years old',
+        description: 'Preschool age, exploring and learning through play',
+        questions: 26,
+        color: 'bg-pink-50 border-pink-200 text-pink-700'
+      }
+    } else if (totalMonths < 66) { // 3.5 - 5.5 years
+      return {
+        group: '4-5', 
+        display: '4-5 years old',
+        description: 'Pre-K to Kindergarten, developing school readiness',
+        questions: 26,
+        color: 'bg-purple-50 border-purple-200 text-purple-700'
+      }
+    } else {
+      return {
+        group: '5+',
+        display: '5+ years old', 
+        description: 'Elementary age, engaged in formal learning',
+        questions: 29,
+        color: 'bg-blue-50 border-blue-200 text-blue-700'
+      }
+    }
+  }
+
+  const ageGroupInfo = getAgeGroupInfo()
+  const maxDate = new Date()
+  maxDate.setFullYear(maxDate.getFullYear() - 3) // Minimum 3 years old
+  const minDate = new Date()
+  minDate.setFullYear(minDate.getFullYear() - 10) // Maximum 10 years old
+
+  return (
+    <div className={`space-y-6 ${className}`}>
+      {/* Input Method Selection */}
+      <div className="flex bg-gray-100 rounded-xl p-1">
+        <button
+          onClick={() => setInputMethod('age')}
+          className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            inputMethod === 'age'
+              ? 'bg-white text-begin-blue shadow-sm'
+              : 'text-gray-600 hover:text-gray-800'
+          }`}
+        >
+          <Clock className="h-4 w-4 inline mr-2" />
+          Age in Years & Months
+        </button>
+        <button
+          onClick={() => setInputMethod('birthdate')}
+          className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            inputMethod === 'birthdate'
+              ? 'bg-white text-begin-blue shadow-sm'
+              : 'text-gray-600 hover:text-gray-800'
+          }`}
+        >
+          <Calendar className="h-4 w-4 inline mr-2" />
+          Birth Date
+        </button>
+      </div>
+
+      {/* Age Input Method */}
+      {inputMethod === 'age' && (
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Years Old
+            </label>
+            <select
+              value={years}
+              onChange={(e) => setYears(parseInt(e.target.value))}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-begin-teal focus:border-transparent text-lg"
+            >
+              {Array.from({ length: 8 }, (_, i) => i + 3).map(year => (
+                <option key={year} value={year}>{year} years</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Additional Months
+            </label>
+            <select
+              value={months}
+              onChange={(e) => setMonths(parseInt(e.target.value))}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-begin-teal focus:border-transparent text-lg"
+            >
+              {Array.from({ length: 12 }, (_, i) => i).map(month => (
+                <option key={month} value={month}>
+                  {month === 0 ? 'No extra months' : `${month} month${month > 1 ? 's' : ''}`}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* Birth Date Input Method */}
+      {inputMethod === 'birthdate' && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Child's Birth Date
+          </label>
+          <input
+            type="date"
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
+            min={minDate.toISOString().split('T')[0]}
+            max={maxDate.toISOString().split('T')[0]}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-begin-teal focus:border-transparent text-lg"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            We'll calculate the exact age for you!
+          </p>
+        </div>
+      )}
+
+      {/* Age Display & Group Information */}
+      <div className={`p-4 rounded-xl border-2 ${ageGroupInfo.color}`}>
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <h4 className="font-semibold mb-1">
+              Your child is {years} years and {months} months old
+            </h4>
+            <p className="text-sm mb-2">{ageGroupInfo.description}</p>
+            <div className="flex items-center gap-4 text-xs">
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 bg-current rounded-full"></span>
+                Assessment Group: {ageGroupInfo.display}
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 bg-current rounded-full"></span>
+                {ageGroupInfo.questions} questions total
+              </span>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowDevelopmentalInfo(!showDevelopmentalInfo)}
+            className="p-2 hover:bg-white/50 rounded-lg transition-colors"
+          >
+            <Info className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Developmental Information */}
+      {showDevelopmentalInfo && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-blue-800">
+              <h5 className="font-semibold mb-2">About Age-Based Assessments</h5>
+              <ul className="space-y-1 text-xs">
+                <li>• Questions are tailored to your child's developmental stage</li>
+                <li>• Every child develops at their own pace - that's perfectly normal!</li>
+                <li>• If your child has special needs, choose the age that best matches their abilities</li>
+                <li>• You can always retake the assessment as your child grows</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edge Case Warnings */}
+      {years < 3 && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+            <div className="text-sm text-yellow-800">
+              <strong>Note:</strong> Our assessment is designed for children 3 years and older. 
+              For younger children, the questions may not accurately reflect their developmental stage.
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {years > 8 && (
+        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5" />
+            <div className="text-sm text-orange-800">
+              <strong>Extended Age Range:</strong> Our assessment covers children up to 8+ years. 
+              Questions are adapted to remain age-appropriate for older children.
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default PreciseAgeSelector

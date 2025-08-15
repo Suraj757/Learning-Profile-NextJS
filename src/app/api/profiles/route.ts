@@ -4,7 +4,18 @@ import { calculateScores, getPersonalityLabel, generateDescription } from '@/lib
 
 export async function POST(request: NextRequest) {
   try {
-    const { child_name, grade, age_group, responses, assignment_token } = await request.json()
+    const { 
+      child_name, 
+      grade, 
+      age_group, 
+      responses, 
+      assignment_token, 
+      precise_age_years, 
+      precise_age_months, 
+      birth_date, 
+      age_input_method, 
+      question_set_type 
+    } = await request.json()
 
     if (!child_name || !grade || !responses) {
       return NextResponse.json(
@@ -45,9 +56,15 @@ export async function POST(request: NextRequest) {
     } else {
       console.log('Supabase configured, attempting to save to database')
       
-      // Prepare the base data payload
+      // Prepare the base data payload with precise age support
       const baseData = {
         child_name,
+        // Enhanced age data
+        precise_age_years: precise_age_years || null,
+        precise_age_months: precise_age_months || null,
+        birth_date: birth_date || null,
+        age_input_method: age_input_method || 'age_group',
+        question_set_type: question_set_type || 'pure',
         age: 0, // Legacy field, kept for compatibility
         scores,
         personality_label,

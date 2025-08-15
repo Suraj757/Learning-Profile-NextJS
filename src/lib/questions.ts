@@ -1,4 +1,5 @@
-// Learning Assessment Questions - 6C Framework with Age-Specific Support
+// Learning Assessment Questions - 6C Framework with Enhanced Age-Specific Support
+// Now supports precise age selection and extended age ranges (3.0 - 8+ years)
 export const CATEGORIES = [
   'Communication',
   'Collaboration', 
@@ -80,6 +81,15 @@ export const CATEGORY_METADATA = {
 
 export type Category = typeof CATEGORIES[number]
 export type AgeGroup = '3-4' | '4-5' | '5+'
+
+// Extended age support for precise age selection
+export interface PreciseAgeInfo {
+  years: number
+  months: number
+  totalMonths: number
+  ageGroup: AgeGroup
+  questionSet: 'pure' | 'hybrid' | 'extended'
+}
 
 // Interest options from Interests.md
 export const INTEREST_OPTIONS = [
@@ -1100,6 +1110,53 @@ export function getQuestionsForAge(ageGroup: AgeGroup): Question[] {
   return AGE_SPECIFIC_QUESTIONS[ageGroup] || QUESTIONS
 }
 
+// Enhanced function to get questions based on precise age
+export function getQuestionsForPreciseAge(years: number, months: number): {
+  questions: Question[]
+  ageGroup: AgeGroup
+  metadata: {
+    questionSet: 'pure' | 'hybrid' | 'extended'
+    description: string
+    adaptations: string[]
+  }
+} {
+  const totalMonths = years * 12 + months
+  
+  // Import age routing logic from separate file to avoid circular imports
+  // This is a simplified version - full logic is in age-routing.ts
+  if (totalMonths < 42) {
+    return {
+      questions: AGE_SPECIFIC_QUESTIONS['3-4'],
+      ageGroup: '3-4',
+      metadata: {
+        questionSet: 'pure',
+        description: 'Early preschool development',
+        adaptations: ['Home-based scenarios', 'Simple choices', 'Basic social skills']
+      }
+    }
+  } else if (totalMonths < 66) {
+    return {
+      questions: AGE_SPECIFIC_QUESTIONS['4-5'],
+      ageGroup: '4-5',
+      metadata: {
+        questionSet: totalMonths < 54 ? 'hybrid' : 'pure',
+        description: 'Pre-K to Kindergarten readiness',
+        adaptations: ['School preparation', 'Social interaction', 'Academic readiness']
+      }
+    }
+  } else {
+    return {
+      questions: QUESTIONS,
+      ageGroup: '5+',
+      metadata: {
+        questionSet: totalMonths > 72 ? 'extended' : 'pure',
+        description: 'Elementary learning stage',
+        adaptations: ['Academic contexts', 'Complex scenarios', 'Independent learning']
+      }
+    }
+  }
+}
+
 // Function to get options for a specific age group and question
 export function getOptionsForAgeAndQuestion(ageGroup: AgeGroup, questionId: number): QuestionOption[] {
   if (ageGroup === '5+') {
@@ -1126,6 +1183,28 @@ export function getAgeGroupFromGrade(grade: string): AgeGroup {
   } else {
     return '5+'
   }
+}
+
+// Enhanced function to determine age group from precise age
+export function getAgeGroupFromPreciseAge(years: number, months: number): AgeGroup {
+  const totalMonths = years * 12 + months
+  
+  if (totalMonths < 42) return '3-4'  // < 3.5 years
+  if (totalMonths < 66) return '4-5'  // 3.5 - 5.5 years
+  return '5+'  // 5.5+ years
+}
+
+// Function to get recommended grade from precise age
+export function getRecommendedGrade(years: number, months: number): string {
+  const totalMonths = years * 12 + months
+  
+  if (totalMonths < 42) return 'Pre-K'
+  if (totalMonths < 54) return 'Pre-K'
+  if (totalMonths < 66) return 'Kindergarten'
+  if (totalMonths < 78) return '1st Grade'
+  if (totalMonths < 90) return '2nd Grade'
+  if (totalMonths < 102) return '3rd Grade'
+  return '4th Grade'
 }
 
 // Function to get age group display name

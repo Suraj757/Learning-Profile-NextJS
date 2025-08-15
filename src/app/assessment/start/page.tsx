@@ -2,16 +2,28 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { BookOpen, ArrowRight, Clock, Users, School, Star } from 'lucide-react'
+import { BookOpen, ArrowRight, Clock, Users, School, Star, Sparkles } from 'lucide-react'
+import PreciseAgeSelector from '@/components/PreciseAgeSelector'
+import { createPreciseAge, getQuestionsForPreciseAge, getAgeGroupInfo, validateAge } from '@/lib/age-routing'
+import type { AgeGroup } from '@/lib/questions'
+
+interface PreciseAgeData {
+  years: number
+  months: number
+  birthDate?: Date
+}
 
 function AssessmentStartContent() {
   const [childName, setChildName] = useState('')
-  const [ageGroup, setAgeGroup] = useState('')
+  const [preciseAge, setPreciseAge] = useState<PreciseAgeData>({ years: 5, months: 0 })
+  const [ageGroup, setAgeGroup] = useState<AgeGroup>('5+')
   const [grade, setGrade] = useState('')
   const [assignmentToken, setAssignmentToken] = useState('')
   const [isTeacherReferred, setIsTeacherReferred] = useState(false)
   const [teacherMessage, setTeacherMessage] = useState('')
   const [showDebugPanel, setShowDebugPanel] = useState(false)
+  const [ageValidation, setAgeValidation] = useState({ isValid: true, warnings: [] as string[], errors: [] as string[] })
+  const [useLegacyAgeSelection, setUseLegacyAgeSelection] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -29,12 +41,34 @@ function AssessmentStartContent() {
     }
   }, [searchParams])
 
+  // Handle precise age changes
+  const handleAgeChange = (ageData: PreciseAgeData) => {
+    setPreciseAge(ageData)
+    
+    // Validate age
+    const validation = validateAge(ageData.years, ageData.months)
+    setAgeValidation(validation)
+    
+    // Get appropriate age group and questions
+    if (validation.isValid) {
+      const preciseAgeObj = createPreciseAge(ageData.years, ageData.months)
+      const routing = getQuestionsForPreciseAge(preciseAgeObj)
+      setAgeGroup(routing.ageGroup)
+      
+      // Auto-suggest grade if not manually set
+      if (!grade) {
+        setGrade(getGradeFromPreciseAge(ageData))
+      }
+    }
+  }
+
   const handleStart = () => {
-    if (childName.trim() && ageGroup) {
-      // Store child info in sessionStorage
+    if (childName.trim() && ageValidation.isValid) {
+      // Store child info in sessionStorage with precise age
       sessionStorage.setItem('childName', childName)
       sessionStorage.setItem('ageGroup', ageGroup)
-      sessionStorage.setItem('grade', grade || getGradeFromAgeGroup(ageGroup))
+      sessionStorage.setItem('preciseAge', JSON.stringify(preciseAge))
+      sessionStorage.setItem('grade', grade || getGradeFromPreciseAge(preciseAge))
       
       // Store assignment token if from teacher
       if (assignmentToken) {
@@ -45,7 +79,20 @@ function AssessmentStartContent() {
     }
   }
   
-  // Helper function to get a default grade from age group
+  // Helper function to get a default grade from precise age
+  const getGradeFromPreciseAge = (ageData: PreciseAgeData) => {
+    const totalMonths = ageData.years * 12 + ageData.months
+    
+    if (totalMonths < 42) return 'Pre-K'  // < 3.5 years
+    if (totalMonths < 54) return 'Pre-K'  // 3.5-4.5 years  
+    if (totalMonths < 66) return 'Kindergarten'  // 4.5-5.5 years
+    if (totalMonths < 78) return '1st Grade'  // 5.5-6.5 years
+    if (totalMonths < 90) return '2nd Grade'  // 6.5-7.5 years
+    if (totalMonths < 102) return '3rd Grade'  // 7.5-8.5 years
+    return '4th Grade'  // 8.5+ years
+  }
+
+  // Legacy helper function for backward compatibility
   const getGradeFromAgeGroup = (age: string) => {
     switch (age) {
       case '3-4': return 'Pre-K'
@@ -247,7 +294,7 @@ function AssessmentStartContent() {
             </p>
           </div>
 
-          {/* Assessment Info */}
+          {/* Assessment Info - Dynamic based on age */}
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             <div className="text-center p-4 bg-begin-blue/5 rounded-2xl transform hover:scale-105 transition-transform duration-200">
               <Clock className="h-8 w-8 text-begin-blue mx-auto mb-2" />
@@ -256,13 +303,20 @@ function AssessmentStartContent() {
             </div>
             <div className="text-center p-4 bg-begin-teal/5 rounded-2xl transform hover:scale-105 transition-transform duration-200">
               <BookOpen className="h-8 w-8 text-begin-teal mx-auto mb-2" />
-              <h3 className="font-semibold text-begin-teal mb-1">{ageGroup === '3-4' ? '21' : ageGroup === '4-5' ? '21' : '24'} Smart Questions 📚</h3>
+              <h3 className="font-semibold text-begin-teal mb-1">
+                {(() => {
+                  if (!ageValidation.isValid) return '~25 Smart Questions 📚'
+                  const preciseAgeObj = createPreciseAge(preciseAge.years, preciseAge.months)
+                  const routing = getQuestionsForPreciseAge(preciseAgeObj)
+                  return `${routing.questions.length} Smart Questions 📚`
+                })()} 
+              </h3>
               <p className="text-sm text-gray-600">Age-appropriate and backed by learning science</p>
             </div>
             <div className="text-center p-4 bg-begin-cyan/10 rounded-2xl transform hover:scale-105 transition-transform duration-200">
-              <Users className="h-8 w-8 text-begin-cyan mx-auto mb-2" />
-              <h3 className="font-semibold text-begin-cyan mb-1">Teacher Approved ✨</h3>
-              <p className="text-sm text-gray-600">Perfect for sharing with educators</p>
+              <Sparkles className="h-8 w-8 text-begin-cyan mx-auto mb-2" />
+              <h3 className="font-semibold text-begin-cyan mb-1">Precise & Personal ✨</h3>
+              <p className="text-sm text-gray-600">Tailored to your child's exact developmental stage</p>
             </div>
           </div>
 
@@ -284,42 +338,90 @@ function AssessmentStartContent() {
             </div>
 
             <div>
-              <label htmlFor="ageGroup" className="block text-begin-heading font-semibold text-begin-blue mb-2">
-                Child&apos;s Age Group
-              </label>
-              <div className="space-y-3">
-                {ageGroups.map((group) => (
-                  <label key={group.value} className={`block p-4 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${
-                    ageGroup === group.value 
-                      ? 'border-begin-teal bg-begin-teal/10 text-begin-teal' 
-                      : 'border-gray-200 hover:border-begin-teal/50 hover:bg-begin-teal/5'
-                  }`}>
-                    <div className="flex items-center">
-                      <input
-                        type="radio"
-                        name="ageGroup"
-                        value={group.value}
-                        checked={ageGroup === group.value}
-                        onChange={(e) => setAgeGroup(e.target.value)}
-                        className="sr-only"
-                      />
-                      <div className="flex-1">
-                        <div className="font-semibold">{group.label}</div>
-                        <div className="text-sm text-gray-500 mt-1">{group.description}</div>
-                      </div>
-                      {ageGroup === group.value && (
-                        <div className="w-5 h-5 bg-begin-teal rounded-full flex items-center justify-center">
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
-                        </div>
-                      )}
-                    </div>
-                  </label>
-                ))}
+              <div className="flex items-center justify-between mb-4">
+                <label className="block text-begin-heading font-semibold text-begin-blue">
+                  Child&apos;s Age
+                </label>
+                <button
+                  onClick={() => setUseLegacyAgeSelection(!useLegacyAgeSelection)}
+                  className="text-xs text-gray-500 hover:text-gray-700 underline"
+                >
+                  {useLegacyAgeSelection ? 'Use Precise Age' : 'Use Simple Groups'}
+                </button>
               </div>
+              
+              {!useLegacyAgeSelection ? (
+                // New Precise Age Selector
+                <div>
+                  <PreciseAgeSelector
+                    onAgeChange={handleAgeChange}
+                    selectedAge={preciseAge}
+                    className="mb-4"
+                  />
+                  
+                  {/* Age Validation Messages */}
+                  {ageValidation.warnings.length > 0 && (
+                    <div className="space-y-2 mb-4">
+                      {ageValidation.warnings.map((warning, index) => (
+                        <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
+                          <p className="text-sm text-yellow-800">{warning}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {ageValidation.errors.length > 0 && (
+                    <div className="space-y-2 mb-4">
+                      {ageValidation.errors.map((error, index) => (
+                        <div key={index} className="bg-red-50 border border-red-200 rounded-xl p-3">
+                          <p className="text-sm text-red-800">{error}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Legacy Age Group Selector
+                <div className="space-y-3">
+                  {ageGroups.map((group) => (
+                    <label key={group.value} className={`block p-4 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${
+                      ageGroup === group.value 
+                        ? 'border-begin-teal bg-begin-teal/10 text-begin-teal' 
+                        : 'border-gray-200 hover:border-begin-teal/50 hover:bg-begin-teal/5'
+                    }`}>
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          name="ageGroup"
+                          value={group.value}
+                          checked={ageGroup === group.value}
+                          onChange={(e) => {
+                            setAgeGroup(e.target.value as AgeGroup)
+                            // Set approximate precise age for legacy selection
+                            if (e.target.value === '3-4') setPreciseAge({ years: 3, months: 6 })
+                            else if (e.target.value === '4-5') setPreciseAge({ years: 4, months: 6 })
+                            else setPreciseAge({ years: 5, months: 6 })
+                          }}
+                          className="sr-only"
+                        />
+                        <div className="flex-1">
+                          <div className="font-semibold">{group.label}</div>
+                          <div className="text-sm text-gray-500 mt-1">{group.description}</div>
+                        </div>
+                        {ageGroup === group.value && (
+                          <div className="w-5 h-5 bg-begin-teal rounded-full flex items-center justify-center">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          </div>
+                        )}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Optional grade selection for additional context */}
-            {ageGroup && (
+            {(ageGroup || !useLegacyAgeSelection) && (
               <div>
                 <label htmlFor="grade" className="block text-begin-heading font-semibold text-begin-blue mb-2">
                   Current Grade Level <span className="text-sm font-normal text-gray-500">(optional)</span>
@@ -393,9 +495,9 @@ function AssessmentStartContent() {
             <div className="flex justify-center pt-4">
               <button
                 onClick={handleStart}
-                disabled={!childName.trim() || !ageGroup}
+                disabled={!childName.trim() || !ageValidation.isValid || ageValidation.errors.length > 0}
                 className={`btn-begin-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 transform transition-all duration-200 shadow-lg text-lg px-8 py-4 ${
-                  childName.trim() && ageGroup 
+                  childName.trim() && ageValidation.isValid && ageValidation.errors.length === 0
                     ? 'hover:scale-105 active:scale-95 hover:shadow-xl animate-pulse ring-2 ring-begin-blue/20' 
                     : ''
                 }`}
@@ -409,18 +511,24 @@ function AssessmentStartContent() {
               </button>
             </div>
 
-            {/* Visual Progress Indicator */}
-            {(childName.trim() || ageGroup) && (
+            {/* Enhanced Visual Progress Indicator */}
+            {(childName.trim() || ageValidation.isValid) && (
               <div className="flex justify-center mt-4">
                 <div className="flex items-center gap-2 text-sm text-begin-blue/70">
                   <div className={`w-3 h-3 rounded-full ${childName.trim() ? 'bg-begin-teal' : 'bg-gray-200'}`} />
                   <span>Name</span>
-                  <div className={`w-3 h-3 rounded-full ${ageGroup ? 'bg-begin-teal' : 'bg-gray-200'}`} />
-                  <span>Age</span>
-                  {childName.trim() && ageGroup && (
+                  <div className={`w-3 h-3 rounded-full ${ageValidation.isValid && ageValidation.errors.length === 0 ? 'bg-begin-teal' : 'bg-gray-200'}`} />
+                  <span>Age ({preciseAge.years}y {preciseAge.months}m)</span>
+                  {childName.trim() && ageValidation.isValid && ageValidation.errors.length === 0 && (
                     <>
                       <ArrowRight className="h-3 w-3 text-begin-teal ml-2" />
-                      <span className="text-begin-teal font-medium">Ready to start! ✨</span>
+                      <span className="text-begin-teal font-medium">
+                        Ready for {(() => {
+                          const preciseAgeObj = createPreciseAge(preciseAge.years, preciseAge.months)
+                          const routing = getQuestionsForPreciseAge(preciseAgeObj)
+                          return routing.questions.length
+                        })()} questions! ✨
+                      </span>
                     </>
                   )}
                 </div>

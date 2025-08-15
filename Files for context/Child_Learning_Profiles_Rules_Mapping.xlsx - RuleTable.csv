@@ -1,0 +1,6 @@
+Priority,ProfileFamily,GateCondition,Score Pattern %s
+1,A – Well‑Rounded High‑Flyer,4 or more skills in Strength tier,~26%
+2,B – Language & Creativity Lead,"At least 2 of (Creativity, Communication, Literacy) = Strength AND Math is not Strength AND total Strengths < 4",~11%
+3,C – STEM / Logic Lead,Math OR Critical‑Thinking = Strength AND Communication ≠ Strength AND total Strengths < 4,~26%
+4,D – Social / Confidence Lead,Collaboration OR Confidence = Strength AND total Strengths < 4,~20%
+5,E – Emerging Explorer,Anything that misses gates 1‑4,~18%
