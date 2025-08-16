@@ -16,14 +16,6 @@ const nextConfig = {
   // Bundle optimization
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion', 'recharts'],
-    turbo: {
-      rules: {
-        '*.css': {
-          loaders: ['css-loader'],
-          as: '*.css',
-        },
-      },
-    },
   },
   
   // Compiler optimizations
