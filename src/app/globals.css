@@ -36,9 +36,22 @@ body {
 
 /* Begin Learning Button Styles */
 .btn-begin-primary {
-  @apply bg-begin-teal text-white px-8 py-4 rounded-begin text-body-lg font-semibold hover:bg-begin-teal-hover transition-all duration-200 shadow-sm hover:shadow-md;
+  background-color: #007A72;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 48px;
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+  line-height: 1.6;
+  font-weight: 600;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   position: relative;
   overflow: hidden;
+}
+
+.btn-begin-primary:hover {
+  background-color: #00625B;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 /* Enhanced primary button with shimmer effect */
@@ -58,17 +71,46 @@ body {
 }
 
 .btn-begin-secondary {
-  @apply border-2 border-begin-teal text-begin-teal px-8 py-4 rounded-begin text-body-lg font-semibold hover:bg-begin-teal hover:text-white transition-all duration-200;
+  border: 2px solid #007A72;
+  color: #007A72;
+  padding: 1rem 2rem;
+  border-radius: 48px;
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+  line-height: 1.6;
+  font-weight: 600;
+  transition: all 0.2s;
+  background-color: transparent;
+}
+
+.btn-begin-secondary:hover {
+  background-color: #007A72;
+  color: white;
 }
 
 /* Begin Learning Card Styles */
 .card-begin {
-  @apply bg-white rounded-card shadow-sm hover:shadow-md transition-shadow duration-200 p-6;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition: box-shadow 0.2s;
+  padding: 1.5rem;
+}
+
+.card-begin:hover {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 /* Begin Learning Section Spacing */
 .section-begin {
-  @apply py-16 lg:py-20;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+@media (min-width: 1024px) {
+  .section-begin {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
 }
 
 /* Typography Improvements */

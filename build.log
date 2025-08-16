@@ -1,0 +1,117 @@
+
+> learning-profile-nextjs@0.1.0 build
+> next build
+
+   ▲ Next.js 14.0.0
+   - Environments: .env.local, .env.production
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/59) ...
+   Generating static pages (14/59) 
+
+ ⚠ metadata.metadataBase is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+
+ ⚠ metadata.metadataBase is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+
+ ⚠ metadata.metadataBase is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+
+ ⚠ metadata.metadataBase is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+
+ ⚠ metadata.metadataBase is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+
+ ⚠ metadata.metadataBase is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+
+ ⚠ metadata.metadataBase is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+   Generating static pages (29/59) 
+   Generating static pages (44/59) 
+ ✓ Generating static pages (59/59) 
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                        Size     First Load JS
+┌ ○ /                                              184 B          94.8 kB
+├ ○ /_not-found                                    889 B          88.6 kB
+├ λ /api/assessment-progress                       0 B                0 B
+├ λ /api/assessment-progress/recover               0 B                0 B
+├ λ /api/auth/forgot-password                      0 B                0 B
+├ λ /api/auth/login                                0 B                0 B
+├ λ /api/auth/logout                               0 B                0 B
+├ λ /api/auth/register                             0 B                0 B
+├ λ /api/auth/reset-password                       0 B                0 B
+├ λ /api/auth/session                              0 B                0 B
+├ λ /api/auth/setup-password                       0 B                0 B
+├ λ /api/auth/validate-email                       0 B                0 B
+├ λ /api/auth/verify                               0 B                0 B
+├ λ /api/debug/user-storage                        0 B                0 B
+├ λ /api/emails/assessment-invitations             0 B                0 B
+├ λ /api/emails/bulk                               0 B                0 B
+├ λ /api/emails/send                               0 B                0 B
+├ λ /api/profiles                                  0 B                0 B
+├ λ /api/profiles/[id]                             0 B                0 B
+├ λ /api/profiles/[id]/privacy                     0 B                0 B
+├ λ /api/profiles/clp2-consolidate                 0 B                0 B
+├ λ /api/profiles/progressive                      0 B                0 B
+├ λ /api/sample-profiles                           0 B                0 B
+├ λ /api/sample-profiles/[id]                      0 B                0 B
+├ λ /api/sample-profiles/generate                  0 B                0 B
+├ λ /api/share/[token]                             0 B                0 B
+├ λ /api/teacher/classroom/[id]/at-risk            0 B                0 B
+├ λ /api/teacher/classroom/[id]/overview           0 B                0 B
+├ λ /api/teacher/classroom/[id]/seating-optimizer  0 B                0 B
+├ λ /api/teacher/communication/generate-template   0 B                0 B
+├ λ /api/test-scenarios                            0 B                0 B
+├ ○ /assessment/complete                           9.44 kB         114 kB
+├ λ /assessment/question/[id]                      10.2 kB         115 kB
+├ ○ /assessment/start                              10.3 kB         115 kB
+├ ○ /auth-demo                                     4.93 kB         110 kB
+├ ○ /auth/login                                    4.49 kB        99.1 kB
+├ ○ /auth/setup-password                           905 B           101 kB
+├ ○ /demo                                          4.43 kB         206 kB
+├ λ /demo/[id]                                     6.41 kB         217 kB
+├ λ /results/[id]                                  19.6 kB         240 kB
+├ λ /share/[token]                                 6.59 kB         208 kB
+├ ○ /support                                       3.06 kB        97.7 kB
+├ ○ /teacher/alerts                                8.74 kB         142 kB
+├ ○ /teacher/assignments                           5.33 kB         143 kB
+├ λ /teacher/classroom/[id]/analytics              37.8 kB         271 kB
+├ λ /teacher/classroom/[id]/students               5.01 kB         142 kB
+├ ○ /teacher/classroom/create                      4.01 kB         141 kB
+├ ○ /teacher/dashboard                             9.27 kB         154 kB
+├ ○ /teacher/day1-kit                              16.6 kB         165 kB
+├ ○ /teacher/demo                                  3.76 kB        98.4 kB
+├ ○ /teacher/forgot-password                       3.85 kB        98.5 kB
+├ ○ /teacher/help                                  4.91 kB         103 kB
+├ ○ /teacher/login                                 5.5 kB          100 kB
+├ ○ /teacher/onboarding                            5.76 kB         104 kB
+├ ○ /teacher/parent-updates                        12 kB           149 kB
+├ ○ /teacher/profiles                              3.04 kB         101 kB
+├ ○ /teacher/register                              5.98 kB         101 kB
+├ ○ /teacher/reports                               5.1 kB          142 kB
+├ ○ /teacher/reset-password                        4.34 kB          99 kB
+├ ○ /teacher/send-assessment                       5.65 kB         143 kB
+├ ○ /teacher/settings                              4.61 kB         103 kB
+├ ○ /teacher/student-cards                         8.88 kB         163 kB
+├ λ /teacher/student-cards/[id]                    2.79 kB         108 kB
+├ ○ /teachers                                      184 B          94.8 kB
+├ ○ /test                                          142 B          87.8 kB
+├ ○ /test-db                                       3.71 kB        98.4 kB
+├ ○ /test-samples                                  1.39 kB          96 kB
+├ ○ /test-scenarios                                7.24 kB         102 kB
+├ ○ /test/supabase                                 3.3 kB          130 kB
+└ ○ /test/teacher-flow                             4.14 kB         131 kB
++ First Load JS shared by all                      87.7 kB
+  ├ chunks/2472-a021f1e67b8674ef.js                32.4 kB
+  ├ chunks/fd9d1056-f0cd758032877c9b.js            53.2 kB
+  ├ chunks/main-app-326139e3b1ad7ee1.js            238 B
+  └ chunks/webpack-a3ab53be36dad2b3.js             1.93 kB
+
+
+ƒ Middleware                                       30 kB
+
+○  (Static)   prerendered as static HTML
+λ  (Dynamic)  server-rendered on demand using Node.js
+
