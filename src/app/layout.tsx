@@ -5,13 +5,9 @@ import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter",
-  display: 'swap',
-  preload: true,
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://learning-profile-next-9sxknplyf-suraj-7044s-projects.vercel.app'),
   title: "Begin Learning Profile - Discover Your Child's Learning Superpowers",
   description: "Help your child's teacher understand their unique learning style from Day 1. Free 5-minute assessment with personalized results and teacher-approved insights.",
   keywords: ["learning profile", "education", "child development", "teacher resources", "personalized learning"],
@@ -82,7 +78,7 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#007A72" />
         <meta name="msapplication-tap-highlight" content="no" />
       </head>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.className} antialiased`}>
         {children}
       </body>
     </html>

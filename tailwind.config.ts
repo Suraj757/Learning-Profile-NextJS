@@ -59,7 +59,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        'sans': ['var(--font-inter)', 'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        'sans': ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
       fontSize: {
         'display': ['clamp(2.5rem, 5vw, 3.5rem)', { lineHeight: '1.1' }],

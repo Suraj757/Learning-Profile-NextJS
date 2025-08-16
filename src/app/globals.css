@@ -15,8 +15,6 @@
   --begin-light-blue: #B1E2FE;
   --begin-gray: #EBECEC;
   
-  /* Font variables with fallbacks */
-  --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* Tailwind base styles will be applied via tailwind.config.ts */
