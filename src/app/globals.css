@@ -18,6 +18,7 @@
 }
 
 /* Tailwind base styles will be applied via tailwind.config.ts */
+/* Cache bust: Force new CSS hash generation after @apply directive fix */
 
 @media (prefers-color-scheme: dark) {
   :root {
