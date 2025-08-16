@@ -2,19 +2,25 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { BookOpen, Users, GraduationCap, Home, Share2, Download, Eye, TrendingUp, Star, Heart, Brain, Palette, MessageCircle, Zap } from 'lucide-react'
+import { BookOpen, Users, GraduationCap, Home, Share2, Download, Eye, TrendingUp, Star, Heart, Brain, Palette, MessageCircle, Zap, Award, Target, Lightbulb } from 'lucide-react'
 import { QuizType, RespondentType } from '@/lib/quiz-definitions'
+import { CLP2Scores, getCLP2PersonalityLabel, getCLP2StrengthsAndGrowth } from '@/lib/clp-scoring'
 
 interface ConsolidatedProfile {
   id: string
   child_name: string
-  consolidated_scores: Record<string, number>
+  consolidated_scores: Record<string, number> | CLP2Scores
   personality_label: string
   confidence_percentage: number
   completeness_percentage: number
   total_assessments: number
   parent_assessments: number
   teacher_assessments: number
+  age_group?: string
+  precise_age_months?: number
+  strengths?: string[]
+  growth_areas?: string[]
+  scoring_version?: 'CLP 2.0' | 'Legacy'
   view_context?: 'parent' | 'teacher' | 'student'
   data_sources?: Array<{
     quiz_type: string
@@ -78,6 +84,15 @@ export default function ContextualResultsPage({ profileId, initialProfile }: Con
     return <ProfileNotFound />
   }
 
+  // CLP 2.0 skills visualization
+  const renderSkillsVisualization = () => {
+    if (profile.scoring_version === 'CLP 2.0') {
+      return <CLP2SkillsVisualization profile={profile} viewContext={viewContext} />
+    }
+    // Legacy visualization for backward compatibility
+    return <LegacySkillsVisualization profile={profile} viewContext={viewContext} />
+  }
+
   return (
     <div className="min-h-screen bg-begin-cream">
       {/* Header with Context Switcher */}
@@ -93,6 +108,14 @@ export default function ContextualResultsPage({ profileId, initialProfile }: Con
                   <span>{profile.confidence_percentage}% Confidence</span>
                   <span>•</span>
                   <span>{profile.total_assessments} Assessment{profile.total_assessments !== 1 ? 's' : ''}</span>
+                  {profile.scoring_version && (
+                    <>
+                      <span>•</span>
+                      <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
+                        {profile.scoring_version}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -165,7 +188,7 @@ export default function ContextualResultsPage({ profileId, initialProfile }: Con
           {/* Left Column - Personality Overview */}
           <div className="lg:col-span-2 space-y-8">
             <PersonalityOverview profile={profile} viewContext={viewContext} />
-            <SixCRadarChart profile={profile} viewContext={viewContext} />
+            {renderSkillsVisualization()}
             <ContextualRecommendations profile={profile} viewContext={viewContext} />
           </div>
 
@@ -557,6 +580,143 @@ function ProfileNotFound() {
       </div>
     </div>
   )
+}
+
+// CLP 2.0 Skills Visualization Component
+function CLP2SkillsVisualization({ profile, viewContext }: { profile: ConsolidatedProfile; viewContext: string }) {
+  const clp2Skills = [
+    { key: 'Communication', icon: MessageCircle, color: 'text-blue-500', description: 'Expressing ideas clearly and listening actively' },
+    { key: 'Collaboration', icon: Users, color: 'text-green-500', description: 'Working effectively with others' },
+    { key: 'Content', icon: BookOpen, color: 'text-purple-500', description: 'Understanding and applying knowledge' },
+    { key: 'Critical Thinking', icon: Brain, color: 'text-orange-500', description: 'Analyzing and evaluating information' },
+    { key: 'Creative Innovation', icon: Palette, color: 'text-pink-500', description: 'Generating original ideas and solutions' },
+    { key: 'Confidence', icon: Zap, color: 'text-yellow-500', description: 'Self-assurance in learning and challenges' },
+    { key: 'Literacy', icon: BookOpen, color: 'text-indigo-500', description: 'Reading, writing, and language skills' },
+    { key: 'Math', icon: Target, color: 'text-red-500', description: 'Mathematical reasoning and problem-solving' }
+  ]
+
+  const scores = profile.consolidated_scores as CLP2Scores
+  
+  return (
+    <div className="card-begin">
+      <h3 className="text-xl font-semibold text-begin-blue mb-6 flex items-center gap-2">
+        <Star className="h-6 w-6 text-begin-teal" />
+        CLP 2.0 Skills Profile
+        <span className="text-sm font-normal text-gray-500 ml-2">(0-3 Point Scale)</span>
+      </h3>
+      
+      <div className="grid md:grid-cols-2 gap-6">
+        {clp2Skills.map(({ key, icon: Icon, color, description }) => {
+          const score = scores[key as keyof CLP2Scores] || 0
+          const percentage = (score / 3) * 100
+          const level = score >= 2.5 ? 'Strong' : score >= 1.5 ? 'Developing' : score >= 0.5 ? 'Emerging' : 'Beginning'
+          
+          return (
+            <div key={key} className="space-y-3">
+              <div className="flex items-center gap-3">
+                <Icon className={`h-5 w-5 ${color}`} />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-gray-900">{key}</span>
+                    <div className="text-right">
+                      <span className="text-sm font-medium text-begin-teal">{score.toFixed(1)}/3</span>
+                      <span className="text-xs text-gray-500 ml-2">{level}</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-600 mt-1">{description}</p>
+                </div>
+              </div>
+              
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-gradient-to-r from-begin-teal to-begin-cyan h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${percentage}%` }}
+                />
+              </div>
+              
+              {viewContext !== 'combined' && (
+                <p className="text-xs text-gray-600">
+                  {getCLP2ContextualInsight(key, score, viewContext)}
+                </p>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// Legacy Skills Visualization for backward compatibility
+function LegacySkillsVisualization({ profile, viewContext }: { profile: ConsolidatedProfile; viewContext: string }) {
+  const categories = [
+    { key: 'Communication', icon: MessageCircle, color: 'text-blue-500' },
+    { key: 'Collaboration', icon: Users, color: 'text-green-500' },
+    { key: 'Content', icon: BookOpen, color: 'text-purple-500' },
+    { key: 'Critical Thinking', icon: Brain, color: 'text-orange-500' },
+    { key: 'Creative Innovation', icon: Palette, color: 'text-pink-500' },
+    { key: 'Confidence', icon: Zap, color: 'text-yellow-500' }
+  ]
+
+  return (
+    <div className="card-begin">
+      <h3 className="text-xl font-semibold text-begin-blue mb-6">Learning Strengths Profile (Legacy)</h3>
+      
+      <div className="grid md:grid-cols-2 gap-6">
+        {categories.map(({ key, icon: Icon, color }) => {
+          const score = profile.consolidated_scores[key] || 0
+          const percentage = (score / 5) * 100
+          
+          return (
+            <div key={key} className="space-y-3">
+              <div className="flex items-center gap-3">
+                <Icon className={`h-5 w-5 ${color}`} />
+                <span className="font-medium text-gray-900">{key}</span>
+                <span className="text-sm text-gray-500 ml-auto">{score.toFixed(1)}/5</span>
+              </div>
+              
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className="bg-gradient-to-r from-begin-teal to-begin-cyan h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${percentage}%` }}
+                />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// Helper function for CLP 2.0 contextual insights
+function getCLP2ContextualInsight(skill: string, score: number, viewContext: string): string {
+  const level = score >= 2.5 ? 'strong' : score >= 1.5 ? 'developing' : score >= 0.5 ? 'emerging' : 'beginning'
+  
+  const contextInsights: Record<string, Record<string, string>> = {
+    parent: {
+      Communication: level === 'strong' ? 'Expresses themselves clearly during family conversations' : 'Growing communication skills at home',
+      Collaboration: level === 'strong' ? 'Works well with siblings and family activities' : 'Learning to cooperate in family settings',
+      Content: level === 'strong' ? 'Shows strong interest in learning new things' : 'Building foundational knowledge at home',
+      'Critical Thinking': level === 'strong' ? 'Asks thoughtful questions and analyzes situations' : 'Developing reasoning skills',
+      'Creative Innovation': level === 'strong' ? 'Demonstrates creativity in play and problem-solving' : 'Exploring creative expression',
+      Confidence: level === 'strong' ? 'Shows self-assurance in trying new things' : 'Building confidence through encouragement',
+      Literacy: level === 'strong' ? 'Strong reading and writing skills for their age' : 'Developing literacy foundations',
+      Math: level === 'strong' ? 'Enjoys mathematical thinking and problem-solving' : 'Building mathematical understanding'
+    },
+    teacher: {
+      Communication: level === 'strong' ? 'Participates actively in class discussions' : 'Working on classroom communication',
+      Collaboration: level === 'strong' ? 'Excellent teamwork in group activities' : 'Learning collaborative skills',
+      Content: level === 'strong' ? 'Grasps academic content effectively' : 'Building subject knowledge',
+      'Critical Thinking': level === 'strong' ? 'Shows analytical thinking in assignments' : 'Developing critical analysis',
+      'Creative Innovation': level === 'strong' ? 'Brings original ideas to projects' : 'Exploring creative approaches',
+      Confidence: level === 'strong' ? 'Self-assured in academic challenges' : 'Growing academic confidence',
+      Literacy: level === 'strong' ? 'Reading and writing above grade level' : 'Meeting literacy milestones',
+      Math: level === 'strong' ? 'Strong mathematical reasoning abilities' : 'Progressing in math skills'
+    }
+  }
+  
+  return contextInsights[viewContext]?.[skill] || `${skill}: ${level} level`
 }
 
 // Share modal component

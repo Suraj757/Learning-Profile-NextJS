@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { calculateScores, getPersonalityLabel, generateDescription } from '@/lib/scoring'
+import { calculateCLP2Scores, getCLP2PersonalityLabel, getCLP2StrengthsAndGrowth, type CLP2Scores } from '@/lib/clp-scoring'
 import { getQuizDefinition, calculateQuizContribution, type QuizType, type RespondentType } from '@/lib/quiz-definitions'
 
 /**
@@ -14,6 +15,8 @@ interface ProgressiveProfileRequest {
   child_name: string
   age_group?: string
   grade?: string
+  precise_age_months?: number
+  birth_date?: string
   
   // Quiz context
   quiz_type: QuizType
@@ -23,6 +26,9 @@ interface ProgressiveProfileRequest {
   
   // Assessment data
   responses: Record<number, number | string | string[]>
+  
+  // CLP 2.0 options
+  use_clp2_scoring?: boolean
   
   // Profile linking (for existing profiles)
   existing_profile_id?: string
@@ -42,11 +48,14 @@ export async function POST(request: NextRequest) {
       child_name,
       age_group = '5+',
       grade,
+      precise_age_months,
+      birth_date,
       quiz_type,
       respondent_type,
       respondent_id,
       respondent_name,
       responses,
+      use_clp2_scoring = true, // Default to CLP 2.0
       existing_profile_id,
       assignment_token,
       school_context
@@ -69,10 +78,31 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Calculate scores for this specific assessment
-    const scores = calculateScores(responses, age_group)
-    const personality_label = getPersonalityLabel(scores)
-    const description = generateDescription(scores)
+    // Calculate scores using appropriate scoring system
+    let scores: Record<string, number> | CLP2Scores
+    let personality_label: string
+    let description: string
+    let strengths: string[] = []
+    let growthAreas: string[] = []
+    
+    if (use_clp2_scoring) {
+      // CLP 2.0 Scoring System
+      scores = calculateCLP2Scores(
+        responses, 
+        quiz_type as 'parent_home' | 'teacher_classroom' | 'general',
+        age_group as '3-4' | '4-5' | '5+'
+      )
+      personality_label = getCLP2PersonalityLabel(scores)
+      const strengthsAndGrowth = getCLP2StrengthsAndGrowth(scores)
+      strengths = strengthsAndGrowth.strengths
+      growthAreas = strengthsAndGrowth.growthAreas
+      description = `This child demonstrates strong ${strengths[0] || 'learning'} skills with opportunities to grow in ${growthAreas[0] || 'various areas'}.`
+    } else {
+      // Legacy scoring system
+      scores = calculateScores(responses, age_group)
+      personality_label = getPersonalityLabel(scores)
+      description = generateDescription(scores)
+    }
     
     // Calculate contribution metrics
     const contribution = calculateQuizContribution(quiz_type, responses)
@@ -104,10 +134,14 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Start transaction for multiple table operations
-    const { data, error } = await supabase.rpc('handle_progressive_profile', {
+    // Use CLP 2.0 RPC function if available, fallback to legacy
+    const rpcFunction = use_clp2_scoring ? 'handle_clp_progressive_profile' : 'handle_progressive_profile'
+    
+    const { data, error } = await supabase.rpc(rpcFunction, {
       p_child_name: child_name,
       p_age_group: age_group,
+      p_precise_age_months: precise_age_months,
+      p_birth_date: birth_date,
       p_grade: grade,
       p_quiz_type: quiz_type,
       p_respondent_type: respondent_type,
@@ -167,6 +201,11 @@ export async function POST(request: NextRequest) {
         consolidated_scores: data.consolidated_scores,
         personality_label: data.personality_label,
         confidence_percentage: data.confidence_percentage,
+        age_group: data.age_group || age_group,
+        precise_age_months: data.precise_age_months || precise_age_months,
+        strengths,
+        growth_areas: growthAreas,
+        scoring_version: use_clp2_scoring ? 'CLP 2.0' : 'Legacy',
         completeness_percentage: data.completeness_percentage,
         total_assessments: data.total_assessments,
         parent_assessments: data.parent_assessments,

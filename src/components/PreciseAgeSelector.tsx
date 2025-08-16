@@ -53,7 +53,7 @@ export function PreciseAgeSelector({ onAgeChange, selectedAge, className = '' }:
     onAgeChange(ageData)
   }, [years, months, birthDate, inputMethod, onAgeChange])
 
-  // Get age group display
+  // Get CLP 2.0 age group display
   const getAgeGroupInfo = () => {
     const totalMonths = years * 12 + months
     
@@ -62,7 +62,9 @@ export function PreciseAgeSelector({ onAgeChange, selectedAge, className = '' }:
         group: '3-4',
         display: '3-4 years old',
         description: 'Preschool age, exploring and learning through play',
-        questions: 26,
+        questions: 24, // CLP 2.0: 8 skills × 3 questions
+        preferences: 4,
+        scoringSystem: 'CLP 2.0',
         color: 'bg-pink-50 border-pink-200 text-pink-700'
       }
     } else if (totalMonths < 66) { // 3.5 - 5.5 years
@@ -70,16 +72,50 @@ export function PreciseAgeSelector({ onAgeChange, selectedAge, className = '' }:
         group: '4-5', 
         display: '4-5 years old',
         description: 'Pre-K to Kindergarten, developing school readiness',
-        questions: 26,
+        questions: 24, // CLP 2.0: 8 skills × 3 questions
+        preferences: 4,
+        scoringSystem: 'CLP 2.0',
         color: 'bg-purple-50 border-purple-200 text-purple-700'
+      }
+    } else if (totalMonths < 84) { // 5.5 - 7 years
+      return {
+        group: '5-6',
+        display: '5-7 years old', 
+        description: 'Kindergarten to 1st grade, formal learning begins',
+        questions: 24, // CLP 2.0: 8 skills × 3 questions
+        preferences: 4,
+        scoringSystem: 'CLP 2.0',
+        color: 'bg-blue-50 border-blue-200 text-blue-700'
+      }
+    } else if (totalMonths < 108) { // 7 - 9 years
+      return {
+        group: '6-8',
+        display: '7-9 years old',
+        description: '1st to 3rd grade, building foundational academic skills',
+        questions: 36, // CLP 2.0: Core + extended questions
+        preferences: 4,
+        scoringSystem: 'CLP 2.0 Extended',
+        color: 'bg-green-50 border-green-200 text-green-700'
+      }
+    } else if (totalMonths < 132) { // 9 - 11 years
+      return {
+        group: '8-10',
+        display: '9-11 years old',
+        description: '3rd to 5th grade, developing complex thinking skills',
+        questions: 42, // CLP 2.0: Core + extended questions
+        preferences: 4,
+        scoringSystem: 'CLP 2.0 Extended',
+        color: 'bg-teal-50 border-teal-200 text-teal-700'
       }
     } else {
       return {
-        group: '5+',
-        display: '5+ years old', 
-        description: 'Elementary age, engaged in formal learning',
-        questions: 29,
-        color: 'bg-blue-50 border-blue-200 text-blue-700'
+        group: '10+',
+        display: '11+ years old',
+        description: 'Middle school+, advanced academic and social development',
+        questions: 45, // CLP 2.0: Full extended question set
+        preferences: 4,
+        scoringSystem: 'CLP 2.0 Extended',
+        color: 'bg-indigo-50 border-indigo-200 text-indigo-700'
       }
     }
   }
@@ -88,7 +124,7 @@ export function PreciseAgeSelector({ onAgeChange, selectedAge, className = '' }:
   const maxDate = new Date()
   maxDate.setFullYear(maxDate.getFullYear() - 3) // Minimum 3 years old
   const minDate = new Date()
-  minDate.setFullYear(minDate.getFullYear() - 10) // Maximum 10 years old
+  minDate.setFullYear(minDate.getFullYear() - 14) // Maximum 14 years old (extended support)
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -130,7 +166,7 @@ export function PreciseAgeSelector({ onAgeChange, selectedAge, className = '' }:
               onChange={(e) => setYears(parseInt(e.target.value))}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-begin-teal focus:border-transparent text-lg"
             >
-              {Array.from({ length: 8 }, (_, i) => i + 3).map(year => (
+              {Array.from({ length: 11 }, (_, i) => i + 3).map(year => (
                 <option key={year} value={year}>{year} years</option>
               ))}
             </select>
@@ -189,7 +225,11 @@ export function PreciseAgeSelector({ onAgeChange, selectedAge, className = '' }:
               </span>
               <span className="flex items-center gap-1">
                 <span className="w-2 h-2 bg-current rounded-full"></span>
-                {ageGroupInfo.questions} questions total
+                {ageGroupInfo.questions} skills + {ageGroupInfo.preferences} preferences
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 bg-current rounded-full"></span>
+                {ageGroupInfo.scoringSystem}
               </span>
             </div>
           </div>
@@ -208,11 +248,13 @@ export function PreciseAgeSelector({ onAgeChange, selectedAge, className = '' }:
           <div className="flex items-start gap-2">
             <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-blue-800">
-              <h5 className="font-semibold mb-2">About Age-Based Assessments</h5>
+              <h5 className="font-semibold mb-2">About CLP 2.0 Age-Based Assessments</h5>
               <ul className="space-y-1 text-xs">
-                <li>• Questions are tailored to your child's developmental stage</li>
+                <li>• Questions are tailored to your child's developmental stage using the CLP 2.0 framework</li>
+                <li>• Assesses 8 key skills: 6Cs + Literacy + Math with precise month-level accuracy</li>
                 <li>• Every child develops at their own pace - that's perfectly normal!</li>
                 <li>• If your child has special needs, choose the age that best matches their abilities</li>
+                <li>• Progressive scoring allows for multiple assessments to build a complete profile</li>
                 <li>• You can always retake the assessment as your child grows</li>
               </ul>
             </div>
@@ -233,13 +275,13 @@ export function PreciseAgeSelector({ onAgeChange, selectedAge, className = '' }:
         </div>
       )}
       
-      {years > 8 && (
+      {years > 10 && (
         <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
           <div className="flex items-start gap-2">
             <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5" />
             <div className="text-sm text-orange-800">
-              <strong>Extended Age Range:</strong> Our assessment covers children up to 8+ years. 
-              Questions are adapted to remain age-appropriate for older children.
+              <strong>CLP 2.0 Extended Age Range:</strong> Our assessment now covers children up to 14 years using developmentally appropriate questions. 
+              The CLP 2.0 Extended framework includes advanced academic and social development measures for middle school students.
             </div>
           </div>
         </div>

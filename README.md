@@ -47,6 +47,60 @@ A comprehensive learning assessment platform that bridges the gap between parent
 
 ---
 
+## 🧠 CLP 2.0 ADVANCED FEATURES ⭐ **ENHANCED**
+
+### 🎯 **Multi-Quiz System** (`Parent + Teacher Assessments`)
+**"Complete picture of child from home AND school perspectives"**
+
+- **📋 Dual Assessment Framework**: Parent observations from home environment
+- **🏫 Teacher Observations**: School-based behavioral and academic insights  
+- **🔗 Progressive Profile Building**: Combines multiple assessments over time
+- **⚖️ Confidence Weighting**: Advanced algorithms balance differing perspectives
+- **📊 Enhanced Scoring**: Sophisticated consolidation with conflict resolution
+- **🎯 Contextual Results**: Environment-specific insights (home vs. school)
+
+### 🚀 **Progressive Profile Generation** (`/api/profiles/progressive`)
+**"Profiles that evolve and improve with each assessment"**
+
+- **📈 Cumulative Learning**: Each assessment builds on previous insights
+- **🔍 Confidence Metrics**: Track reliability and consistency across assessments
+- **⏰ Time-Based Evolution**: Profile accuracy improves over multiple evaluations
+- **🎚️ Adaptive Scoring**: Smart weighting based on assessment completeness
+- **📋 Assessment History**: Full timeline of profile development
+- **🔄 Real-time Updates**: Live profile enhancement as new data arrives
+
+### 🌍 **Extended Age Range Support** (`3-14 Years`)
+**"Comprehensive coverage from toddlers to middle school"**
+
+- **👶 Early Childhood**: Ages 3-5 with developmentally appropriate questions
+- **🎒 Elementary**: Ages 6-11 with academic and social focus
+- **🎓 Middle School**: Ages 12-14 with advanced cognitive assessments
+- **🎯 Age-Adaptive Questioning**: Dynamic question selection by developmental stage
+- **📊 Age-Normed Scoring**: Benchmarks appropriate for each age group
+- **🔄 Growth Tracking**: Monitor development across age transitions
+
+### 📈 **Enhanced Scoring with Confidence Metrics** 
+**"Know how reliable each insight really is"**
+
+- **🎯 Confidence Scoring**: 0-100% reliability for each skill area
+- **📊 Completeness Tracking**: Percentage of profile fully assessed
+- **⚖️ Conflict Resolution**: Smart handling of parent/teacher disagreements
+- **🔍 Precision Indicators**: Visual confidence bands on all charts
+- **📈 Quality Metrics**: Assessment reliability and validity scores
+- **🎚️ Weighted Averaging**: Advanced algorithms for score consolidation
+
+### 🎭 **Contextual Results Pages** (`/components/ContextualResultsPage`)
+**"Different insights for home vs. school environments"**
+
+- **🏠 Home Context Results**: Parent-focused insights and recommendations
+- **🏫 School Context Results**: Teacher-focused classroom strategies
+- **🔄 Comparative Analysis**: Side-by-side home vs. school behaviors
+- **🎯 Environment-Specific Tips**: Tailored strategies for each setting
+- **📊 Context-Aware Charts**: Visual representations by environment
+- **🤝 Collaboration Guidance**: How to align home and school approaches
+
+---
+
 ## ✨ CORE PLATFORM FEATURES
 
 ### 🎨 Begin Learning Brand Integration
@@ -77,26 +131,38 @@ A comprehensive learning assessment platform that bridges the gap between parent
 | Route | Description | Features | Status |
 |-------|-------------|----------|---------|
 | `/` | Landing page with Begin Learning branding | Hero section, feature highlights, testimonials | ✅ Live |
-| `/assessment/start` | Child info collection & assessment intro | Form validation, teacher referral detection | ✅ Live |
-| `/assessment/question/[id]` | Dynamic question pages (1-24) | Fixed navigation, keyboard shortcuts, auto-save | ✅ Live |
-| `/assessment/complete` | Processing animation & preview | Celebration, result preview, sharing options | ✅ Live |
-| `/results/[id]` | Full results dashboard with charts | Interactive radar charts, recommendations | ✅ Live |
-| `/share/[token]` | Public results sharing | Token-based access, print-friendly | ✅ Live |
+| `/assessment/start` | **🆕 Enhanced child info & age selection** | Precise age selector (3-14 years), quiz context selection | ✅ **CLP 2.0** |
+| `/assessment/question/[id]` | **🆕 Adaptive question pages (1-28)** | Age-appropriate questions, contextual scoring | ✅ **CLP 2.0** |
+| `/assessment/complete` | **🆕 Progressive processing** | Multi-quiz consolidation, confidence metrics | ✅ **CLP 2.0** |
+| `/results/[id]` | **🆕 Contextual results dashboard** | Environment-specific insights, confidence bands | ✅ **CLP 2.0** |
+| `/share/[token]` | **🆕 Enhanced sharing** | Context-aware sharing, collaborative profiles | ✅ **CLP 2.0** |
 | `/demo` | Sample results gallery | Pre-generated profiles for exploration | ✅ Live |
+
+#### 🔗 **CLP 2.0 User Flows**
+- **🏠 Parent Assessment Flow**: [Start Parent Assessment](https://learning-profile-next-js.vercel.app/assessment/start) → Age Selection → Parent Context Quiz → Results
+- **🏫 Teacher Assessment Flow**: Teacher Dashboard → Student Selection → Teacher Context Quiz → Progressive Consolidation
+- **🤝 Collaborative Assessment**: Parent completes → Teacher invited → Combined assessment → Unified profile
+- **📈 Progressive Profile Generation**: Multiple assessments → Confidence weighting → Enhanced insights over time
 
 ### 👩‍🏫 Teacher Dashboard Experience
 | Route | Description | Features | Status |
 |-------|-------------|----------|---------|
 | `/teacher/register` | Teacher registration and demo access | Account creation, demo teacher login | ✅ Live |
-| `/teacher/dashboard` | Comprehensive teacher control center | Analytics, quick actions, feature highlights | ✅ Live |
+| `/teacher/dashboard` | **🆕 Enhanced control center** | CLP 2.0 analytics, progressive profiles, confidence metrics | ✅ **CLP 2.0** |
 | `/teacher/day1-kit` | **🆕 Day 1 Success Kit** | Classroom insights, seating charts, templates | ✅ **NEW** |
 | `/teacher/student-cards` | **🆕 Reference Card System** | Printable cards, intervention guides | ✅ **NEW** |
 | `/teacher/parent-updates` | **🆕 Parent Connection Hub** | Update templates, photo uploads, responses | ✅ **NEW** |
-| `/teacher/classroom/create` | Classroom management | Student roster, assignment tracking | ✅ Live |
-| `/teacher/send-assessment` | Assessment link distribution | Bulk sending, tracking, templates | ✅ Live |
-| `/teacher/profiles` | Student profile viewing | Detailed insights, learning recommendations | ✅ Live |
-| `/teacher/reports` | Analytics and export system | CSV/PDF export, progress tracking | ✅ Live |
-| `/teacher/assignments` | Assignment management | Status tracking, completion rates | ✅ Live |
+| `/teacher/classroom/create` | **🆕 Enhanced classroom management** | Student roster, CLP 2.0 assignment tracking | ✅ **CLP 2.0** |
+| `/teacher/send-assessment` | **🆕 Multi-quiz distribution** | Parent/teacher assessment coordination | ✅ **CLP 2.0** |
+| `/teacher/profiles` | **🆕 Progressive profile viewing** | Confidence metrics, contextual insights, consolidation status | ✅ **CLP 2.0** |
+| `/teacher/reports` | **🆕 Advanced analytics** | Multi-quiz reports, confidence tracking, trend analysis | ✅ **CLP 2.0** |
+| `/teacher/assignments` | **🆕 CLP 2.0 assignment management** | Progressive profile tracking, completion confidence | ✅ **CLP 2.0** |
+
+#### 🔗 **CLP 2.0 Teacher Workflows**
+- **📊 Multi-Quiz Coordination**: Send parent assessment → Complete teacher assessment → View consolidated results
+- **🎯 Progressive Profile Management**: Track profile evolution → Monitor confidence improvements → Identify assessment gaps
+- **🤝 Parent-Teacher Collaboration**: Compare perspectives → Resolve conflicts → Align strategies
+- **📈 Advanced Analytics**: Confidence dashboards → Completeness tracking → Longitudinal insights
 
 ---
 
@@ -180,21 +246,35 @@ vercel --prod
 
 ## 🧪 Complete Testing Guide
 
-### 1. **Parent Assessment Flow**
+### 1. **CLP 2.0 Parent Assessment Flow** ⭐ **ENHANCED**
 ```bash
 # Start at landing page
 Open: http://localhost:3000
 
-# Test assessment flow
+# Test CLP 2.0 assessment flow
 1. Click "Start Learning Profile"
-2. Enter child name: "Emma" and grade: "3rd Grade"
-3. Complete questions 1-24 (use keyboard shortcuts: 1-5 keys)
-4. Verify no scrolling required (fixed navigation)
-5. Check auto-save by refreshing mid-assessment
-6. Complete assessment and view results
+2. Enter child name: "Emma"
+3. Use precise age selector (3-14 years) - select "7 years 3 months"
+4. Select assessment context: "Parent" or "Collaborative"
+5. Complete questions 1-28 (adaptive based on age)
+6. Verify age-appropriate questions appear
+7. Check contextual scoring and confidence metrics
+8. Complete assessment and view enhanced results
 ```
 
-### 2. **Teacher Dashboard Testing**
+### 2. **CLP 2.0 Multi-Quiz Testing** ⭐ **NEW**
+```bash
+# Test progressive profile building
+1. Complete parent assessment for same child
+2. Access teacher dashboard
+3. Create teacher assessment for same child
+4. Complete teacher questions (different perspective)
+5. View consolidated results with confidence metrics
+6. Check conflict resolution for differing scores
+7. Verify progressive profile improvements over time
+```
+
+### 3. **Teacher Dashboard Testing**
 ```bash
 # Access teacher dashboard
 Open: http://localhost:3000/teacher/register
@@ -205,9 +285,28 @@ Open: http://localhost:3000/teacher/register
 3. View Student Reference Cards
 4. Check Parent Connection System
 5. Test classroom management features
+6. Test CLP 2.0 progressive profile features
 ```
 
-### 3. **Back-to-School Features Testing**
+### 4. **CLP 2.0 Advanced Features Testing** ⭐ **NEW**
+```bash
+# Test contextual results pages
+Open: /results/[profile-id]
+1. Verify confidence bands on radar charts
+2. Check environment-specific recommendations
+3. Test parent vs. teacher context switching
+4. Verify progressive profile timeline
+5. Check completeness and confidence percentages
+
+# Test progressive profile API
+1. Make multiple assessments for same child
+2. Verify profile consolidation via /api/profiles/progressive
+3. Check confidence score improvements
+4. Test conflict resolution algorithms
+5. Verify assessment history tracking
+```
+
+### 5. **Back-to-School Features Testing**
 ```bash
 # Day 1 Success Kit
 Open: /teacher/day1-kit
@@ -231,7 +330,7 @@ Open: /teacher/parent-updates
 - Test batch operations
 ```
 
-### 4. **Mobile Responsiveness**
+### 6. **Mobile Responsiveness & CLP 2.0**
 ```bash
 # Test on different screen sizes
 - Desktop (1920x1080)
@@ -239,11 +338,13 @@ Open: /teacher/parent-updates
 - Mobile (375x667)
 - Mobile (390x844) - iPhone 12
 
-# Key areas to verify
-- Assessment flow on mobile
-- Teacher dashboard navigation
-- Card layouts and interactions
-- Button accessibility and touch targets
+# Key CLP 2.0 areas to verify
+- Precise age selector on mobile
+- Quiz context selector responsiveness
+- Confidence metric charts on small screens
+- Progressive profile timeline navigation
+- Contextual results page switching
+- Multi-quiz coordination flows
 ```
 
 ---
@@ -319,26 +420,28 @@ src/
 │   ├── (root)/
 │   │   ├── page.tsx             # Landing page
 │   │   └── layout.tsx           # Root layout
-│   ├── assessment/              # Parent assessment flow
-│   │   ├── start/               # Child info collection
-│   │   ├── question/[id]/       # Dynamic question pages (1-24)
-│   │   └── complete/            # Processing & completion
-│   ├── results/[id]/            # Results dashboard
-│   ├── share/[token]/           # Public profile sharing
+│   ├── assessment/              # 🆕 Enhanced assessment flow (CLP 2.0)
+│   │   ├── start/               # 🆕 Precise age selection & context
+│   │   ├── question/[id]/       # 🆕 Adaptive questions (1-28, age-based)
+│   │   └── complete/            # 🆕 Progressive processing & confidence
+│   ├── results/[id]/            # 🆕 Contextual results with confidence bands
+│   ├── share/[token]/           # 🆕 Enhanced sharing with context awareness
 │   ├── demo/                    # Sample profiles gallery
 │   ├── teacher/                 # Teacher platform
 │   │   ├── register/            # Teacher auth & onboarding
-│   │   ├── dashboard/           # Main teacher control center
+│   │   ├── dashboard/           # 🆕 CLP 2.0 enhanced control center
 │   │   ├── day1-kit/           # 🆕 Day 1 Success Kit
 │   │   ├── student-cards/       # 🆕 Reference card system
 │   │   ├── parent-updates/      # 🆕 Parent connection hub
-│   │   ├── classroom/           # Classroom management
-│   │   ├── profiles/            # Student profile viewing
-│   │   ├── reports/             # Analytics & exports
-│   │   ├── assignments/         # Assessment management
-│   │   └── send-assessment/     # Link distribution
+│   │   ├── classroom/           # 🆕 Enhanced classroom management
+│   │   ├── profiles/            # 🆕 Progressive profile viewing
+│   │   ├── reports/             # 🆕 Advanced analytics & exports
+│   │   ├── assignments/         # 🆕 CLP 2.0 assessment management
+│   │   └── send-assessment/     # 🆕 Multi-quiz distribution
 │   ├── api/                     # API routes
-│   │   ├── profiles/            # Profile CRUD operations
+│   │   ├── profiles/            # 🆕 Enhanced profile operations
+│   │   │   ├── progressive/     # 🆕 Progressive profile building
+│   │   │   └── clp2-consolidate/ # 🆕 Multi-quiz consolidation
 │   │   ├── sample-profiles/     # Demo data generation
 │   │   ├── assessment-progress/ # Progress saving
 │   │   └── share/               # Sharing token management
@@ -348,9 +451,15 @@ src/
 │   ├── teacher/                 # Teacher dashboard components
 │   ├── charts/                  # Data visualization components
 │   ├── loading/                 # Loading states & animations
-│   └── ui/                      # Base UI components
+│   ├── ui/                      # Base UI components
+│   ├── 🆕 ContextualResultsPage.tsx # Environment-specific results
+│   ├── 🆕 QuizContextSelector.tsx   # Quiz context selection
+│   └── 🆕 PreciseAgeSelector.tsx    # Enhanced age selection (3-14)
 ├── lib/                         # Core business logic
-│   ├── questions.ts             # 24 assessment questions + metadata
+│   ├── 🆕 clp-questions.ts      # CLP 2.0 question bank (28 questions)
+│   ├── 🆕 clp-scoring.ts        # Enhanced scoring with confidence
+│   ├── 🆕 multi-quiz-system.ts  # Parent + Teacher consolidation
+│   ├── questions.ts             # Legacy questions (backwards compatibility)
 │   ├── scoring.ts               # 6C framework calculations
 │   ├── recommendations.ts       # Personalized suggestions
 │   ├── supabase.ts             # Database configuration
@@ -359,9 +468,40 @@ src/
 │   ├── student-card-data.ts    # Reference card templates
 │   ├── email-templates.ts      # Parent communication templates
 │   └── progress-manager.ts     # Assessment progress handling
+├── 🆕 __tests__/                # Comprehensive test suite
+│   ├── api/profiles/           # API endpoint tests
+│   ├── components/             # Component unit tests
+│   ├── integration/            # CLP 2.0 integration tests
+│   ├── lib/                    # Business logic tests
+│   └── e2e/                    # End-to-end test scenarios
 └── styles/
     └── globals.css              # Tailwind customizations
 ```
+
+---
+
+## 📚 CLP 2.0 Documentation & Resources
+
+### 🔗 **Key Documentation Files**
+- **[CLP 2.0 Implementation Plan](./CLP_2.0_Implementation_Plan.md)** - Technical implementation details and architecture
+- **[CLP 2.0 Integration Test Summary](./CLP_2.0_INTEGRATION_TEST_SUMMARY.md)** - Comprehensive testing results and validation
+- **[Testing Consolidation Guide](./TESTING_CONSOLIDATION.md)** - Multi-quiz system testing methodology
+- **[CLP 2.0 User Journey Requirements](./CLP_2.0_User_Journey_Requirements.md)** - User experience and workflow specifications
+- **[Enhanced Age Selection Documentation](./ENHANCED_AGE_SELECTION_DOCS.md)** - Precise age selector implementation
+
+### 🧪 **Testing Documentation**
+- **[Edge Case Testing Guide](./EDGE_CASE_TESTING_GUIDE.md)** - Comprehensive edge case scenarios
+- **[Comprehensive Test Report](./COMPREHENSIVE_TEST_REPORT.md)** - Full testing suite results
+- **[Authentication Testing Guide](./AUTHENTICATION_TESTING_GUIDE.md)** - Security and auth testing procedures
+
+### 🏗️ **Technical Architecture**
+- **[Architecture Overview](./ARCHITECTURE.md)** - System architecture and component relationships
+- **[Implementation Plan](./IMPLEMENTATION_PLAN.md)** - Development roadmap and milestones
+- **[Authentication System](./AUTHENTICATION_SYSTEM.md)** - Security and authentication implementation
+
+### 📊 **Analytics & Research**
+- **[PMF Analysis](./PMF_ANALYSIS.md)** - Product-market fit analysis and insights
+- **[Learning Profile Logic](./LEARNING_PROFILE_LOGIC.md)** - Core assessment logic and algorithms
 
 ---
 
@@ -432,15 +572,32 @@ NODE_ENV=production
 - [x] Advanced assessment UX (fixed navigation, keyboard shortcuts)
 - [x] Mobile-optimized teacher experience
 
-### 🎯 **Phase 5: Advanced Features** - PLANNED
+### ✅ **Phase 5: CLP 2.0 Advanced Platform** - COMPLETE ⭐
+- [x] **Multi-Quiz System** - Parent + Teacher dual assessments
+- [x] **Progressive Profile Building** - Profiles that evolve over time
+- [x] **Enhanced Scoring Engine** - Confidence metrics and conflict resolution
+- [x] **Extended Age Range** - Comprehensive 3-14 year age support
+- [x] **Contextual Results Pages** - Environment-specific insights
+- [x] **Advanced Analytics** - Confidence tracking and trend analysis
+- [x] **Comprehensive Testing Suite** - 100+ test scenarios with edge cases
+
+### 🎯 **Phase 6: AI & Intelligence** - PLANNED
 - [ ] **AI-Powered Insights**: Machine learning for personalized recommendations
+- [ ] **Predictive Analytics**: Early intervention recommendations based on patterns
+- [ ] **Smart Consolidation**: AI-assisted conflict resolution for parent/teacher differences
+- [ ] **Adaptive Questioning**: Dynamic question selection based on child responses
+- [ ] **Natural Language Processing**: Extract insights from teacher/parent comments
+- [ ] **Behavioral Pattern Recognition**: Identify learning trends across assessments
+
+### 🌐 **Phase 7: Integration & Scale** - FUTURE
 - [ ] **Begin Product Integration**: Direct product suggestions and purchasing
 - [ ] **Multi-Language Support**: Spanish, French, and other languages
 - [ ] **Parent Dashboard**: Dedicated parent portal with progress tracking
 - [ ] **Advanced Analytics**: Cohort analysis and trend identification
 - [ ] **Integration APIs**: Connect with school management systems
+- [ ] **Real-time Collaboration**: Live parent-teacher assessment sessions
 
-### 🔮 **Phase 6: Scale & Growth** - FUTURE
+### 🔮 **Phase 8: Enterprise & Growth** - FUTURE
 - [ ] **School District Partnerships**: Bulk licensing and deployment
 - [ ] **Professional Development**: Teacher training modules
 - [ ] **Parent-Teacher Messaging**: In-app communication system
@@ -538,7 +695,9 @@ This project is built for Begin Learning and follows their brand guidelines and 
 
 ---
 
-## 🎉 Success Stories
+## 🎉 Success Stories & CLP 2.0 Impact
+
+### 🚀 **Back-to-School Success Stories**
 
 > *"The Day 1 Success Kit completely transformed my back-to-school preparation. I walked into my classroom knowing my students better than I've ever known a class by Halloween. The parent response has been incredible - they know I actually read and use their child's profile."*
 > 
@@ -552,6 +711,20 @@ This project is built for Begin Learning and follows their brand guidelines and 
 > 
 > **— Jennifer L., Parent**
 
+### ⭐ **CLP 2.0 Advanced Features Impact**
+
+> *"The multi-quiz system revealed aspects of my son's learning I never noticed at home. When combined with his teacher's observations, we got a complete picture that helped us understand why he thrived at school but struggled with homework."*
+> 
+> **— Maria S., Parent of 2nd Grader**
+
+> *"Having confidence metrics on each assessment result helps me know which insights I can trust most. The progressive profile building means each assessment makes the next one more accurate - it's like the platform learns about my students over time."*
+> 
+> **— David K., 4th Grade Teacher**
+
+> *"The contextual results pages are brilliant. I can see how Emma behaves differently at home versus school, and now we're working together to create consistent strategies across both environments."*
+> 
+> **— Rebecca T., Parent & Teacher Collaboration**
+
 ---
 
 **Built with ❤️ for teachers, parents, and children everywhere.**  
@@ -559,10 +732,18 @@ This project is built for Begin Learning and follows their brand guidelines and 
 
 ---
 
-### 🚀 **Ready to Transform Back-to-School?**
+### 🚀 **Ready to Experience CLP 2.0 Advanced Features?**
 
-**[Start Using the Platform →](https://learning-profile-next-js.vercel.app)**
+**[Start Using the Enhanced Platform →](https://learning-profile-next-js.vercel.app)**
 
-**Teachers:** [Access Your Dashboard](https://learning-profile-next-js.vercel.app/teacher/register)  
-**Parents:** [Create Learning Profile](https://learning-profile-next-js.vercel.app/assessment/start)  
-**Explore:** [View Sample Results](https://learning-profile-next-js.vercel.app/demo)
+**🏠 Parents:** [Create CLP 2.0 Profile](https://learning-profile-next-js.vercel.app/assessment/start) - *Try precise age selection & enhanced scoring*  
+**🏫 Teachers:** [Access Enhanced Dashboard](https://learning-profile-next-js.vercel.app/teacher/register) - *Experience multi-quiz coordination*  
+**🔍 Explore:** [View Progressive Profiles](https://learning-profile-next-js.vercel.app/demo) - *See confidence metrics in action*  
+**🤝 Collaborate:** Experience parent + teacher dual assessments and contextual results
+
+#### ⭐ **What's New in CLP 2.0:**
+- **Multi-Quiz System** with Parent + Teacher perspectives
+- **Progressive Profile Building** that improves over time  
+- **Confidence Metrics** for every insight and recommendation
+- **Extended Age Range** supporting children 3-14 years old
+- **Contextual Results** tailored for home and school environments

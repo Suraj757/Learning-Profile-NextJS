@@ -8,20 +8,52 @@ const createJestConfig = nextJest({
 
 // Add any custom config to be passed to Jest
 const config = {
-  // Add more setup options before each test is run
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  
-  testEnvironment: 'jsdom',
-  
-  // Module name mapping for absolute imports
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-  },
-  
-  // Test patterns
-  testMatch: [
-    '**/__tests__/**/*.(js|jsx|ts|tsx)',
-    '**/*.(test|spec).(js|jsx|ts|tsx)'
+  // Test environment selection
+  projects: [
+    {
+      displayName: 'React Components',
+      testEnvironment: 'jsdom',
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+      testMatch: [
+        '<rootDir>/src/**/__tests__/**/*.(js|jsx|ts|tsx)',
+        '<rootDir>/src/**/*.(test|spec).(js|jsx|ts|tsx)',
+      ],
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/src/$1',
+      },
+      transform: {
+        '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+      },
+      testEnvironmentOptions: {
+        customExportConditions: [''],
+      },
+    },
+    {
+      displayName: 'API/Node Tests',
+      testEnvironment: 'node',
+      setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
+      testMatch: [
+        '<rootDir>/tests/**/*.test.js'
+      ],
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/src/$1',
+      },
+      transform: {
+        '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { 
+          presets: [
+            ['@babel/preset-env', { targets: { node: 'current' } }],
+            '@babel/preset-typescript'
+          ]
+        }],
+      },
+      globals: {
+        'ts-jest': {
+          useESM: true
+        }
+      },
+      extensionsToTreatAsEsm: ['.ts'],
+      moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
+    },
   ],
   
   // Coverage configuration
@@ -44,21 +76,14 @@ const config = {
     },
   },
   
-  // Transform configuration
-  transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
-  },
-  
   // Module file extensions
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
   
-  // Test environment options
-  testEnvironmentOptions: {
-    customExportConditions: [''],
-  },
-  
   // Verbose output for debugging
   verbose: true,
+  
+  // Global test timeout
+  testTimeout: 30000,
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

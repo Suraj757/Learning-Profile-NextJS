@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, ArrowRight, Clock, Users, School, Star, Sparkles } from 'lucide-react'
 import PreciseAgeSelector from '@/components/PreciseAgeSelector'
+import QuizContextSelector from '@/components/QuizContextSelector'
 import { createPreciseAge, getQuestionsForPreciseAge, getAgeGroupInfo, validateAge } from '@/lib/age-routing'
 import type { AgeGroup } from '@/lib/questions'
 
@@ -24,6 +25,16 @@ function AssessmentStartContent() {
   const [showDebugPanel, setShowDebugPanel] = useState(false)
   const [ageValidation, setAgeValidation] = useState({ isValid: true, warnings: [] as string[], errors: [] as string[] })
   const [useLegacyAgeSelection, setUseLegacyAgeSelection] = useState(false)
+  
+  // CLP 2.0 Multi-Quiz State
+  const [currentStep, setCurrentStep] = useState<'age' | 'context' | 'ready'>('age')
+  const [quizContext, setQuizContext] = useState<{
+    quizType: 'parent_home' | 'teacher_classroom' | 'general'
+    ageGroup: '3-4' | '4-5' | '5+' | '6+'
+    questionCount: number
+    estimatedTime: number
+  } | null>(null)
+  const [respondentType, setRespondentType] = useState<'parent' | 'teacher' | 'self'>('parent')
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -59,16 +70,24 @@ function AssessmentStartContent() {
       if (!grade) {
         setGrade(getGradeFromPreciseAge(ageData))
       }
+      
+      // Move to context selection after age is valid
+      if (currentStep === 'age' && validation.isValid) {
+        setCurrentStep('context')
+      }
     }
   }
 
   const handleStart = () => {
-    if (childName.trim() && ageValidation.isValid) {
-      // Store child info in sessionStorage with precise age
+    if (childName.trim() && ageValidation.isValid && quizContext) {
+      // Store child info in sessionStorage with CLP 2.0 context
       sessionStorage.setItem('childName', childName)
-      sessionStorage.setItem('ageGroup', ageGroup)
+      sessionStorage.setItem('ageGroup', quizContext.ageGroup)
       sessionStorage.setItem('preciseAge', JSON.stringify(preciseAge))
       sessionStorage.setItem('grade', grade || getGradeFromPreciseAge(preciseAge))
+      sessionStorage.setItem('quizType', quizContext.quizType)
+      sessionStorage.setItem('respondentType', respondentType)
+      sessionStorage.setItem('useCLP2', 'true') // Enable CLP 2.0 scoring
       
       // Store assignment token if from teacher
       if (assignmentToken) {
@@ -77,6 +96,26 @@ function AssessmentStartContent() {
       
       router.push('/assessment/question/1')
     }
+  }
+  
+  const handleContextSelect = (context: {
+    quizType: 'parent_home' | 'teacher_classroom' | 'general'
+    ageGroup: '3-4' | '4-5' | '5+' | '6+'
+    questionCount: number
+    estimatedTime: number
+  }) => {
+    setQuizContext(context)
+    
+    // Auto-detect respondent type from quiz type
+    if (context.quizType === 'parent_home') {
+      setRespondentType('parent')
+    } else if (context.quizType === 'teacher_classroom') {
+      setRespondentType('teacher')
+    } else {
+      // Keep current selection for general assessment
+    }
+    
+    setCurrentStep('ready')
   }
   
   // Helper function to get a default grade from precise age
